@@ -557,6 +557,246 @@
         font-size: 0.75rem;
       }
     }
+
+    /* ── Story sections ── */
+    .story-section {
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+      padding: 6rem 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .story-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .story-section:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+    .story-text {
+      flex: 1;
+    }
+    .story-text h2 {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.15;
+      text-align: left;
+    }
+    .story-text p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      text-align: left;
+    }
+    .story-illustration {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 260px;
+    }
+
+    /* Illustration 1: Browser tab typing animation */
+    .illust-browser {
+      width: 100%;
+      max-width: 340px;
+      background: #1e1e1e;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .illust-browser-bar {
+      background: #2a2a2a;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .illust-browser-dots {
+      display: flex;
+      gap: 5px;
+    }
+    .illust-browser-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .illust-browser-dots span:nth-child(1) { background: #ff5f57; }
+    .illust-browser-dots span:nth-child(2) { background: #ffbd2e; }
+    .illust-browser-dots span:nth-child(3) { background: #28c840; }
+    .illust-url-bar {
+      flex: 1;
+      background: #383838;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      color: #999;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .illust-url-bar .typed-text {
+      color: #ccc;
+      border-right: 2px solid var(--accent);
+      padding-right: 2px;
+      animation: blink-cursor 0.8s infinite;
+    }
+    @keyframes blink-cursor {
+      0%, 100% { border-color: var(--accent); }
+      50% { border-color: transparent; }
+    }
+    .illust-browser-body {
+      padding: 2rem;
+      text-align: center;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .illust-browser-body .shame-text {
+      color: #555;
+      font-size: 0.85rem;
+      font-style: italic;
+      opacity: 0;
+      animation: fade-shame 6s infinite;
+    }
+    @keyframes fade-shame {
+      0%, 40% { opacity: 0; }
+      55%, 80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Illustration 2: App icon with trash animation */
+    .illust-app-stack {
+      position: relative;
+      width: 200px;
+      height: 200px;
+    }
+    .illust-app-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 18px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .illust-app-icon.blocker {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      animation: app-drag 4s ease-in-out infinite;
+    }
+    @keyframes app-drag {
+      0%, 30% { transform: translate(-50%, -50%) rotate(0deg); opacity: 1; }
+      60% { transform: translate(60px, 60px) rotate(15deg); opacity: 0.6; }
+      70% { transform: translate(60px, 60px) rotate(15deg) scale(0.3); opacity: 0; }
+      71%, 100% { transform: translate(-50%, -50%) rotate(0deg); opacity: 0; }
+    }
+    .illust-trash {
+      position: absolute;
+      bottom: 5px;
+      right: 15px;
+      font-size: 2rem;
+      opacity: 0.3;
+      animation: trash-glow 4s ease-in-out infinite;
+    }
+    @keyframes trash-glow {
+      0%, 50% { opacity: 0.3; }
+      65% { opacity: 1; transform: scale(1.15); }
+      80%, 100% { opacity: 0.3; transform: scale(1); }
+    }
+    .illust-app-back {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      opacity: 0;
+      animation: app-reappear 4s ease-in-out infinite;
+    }
+    @keyframes app-reappear {
+      0%, 75% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      90%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    .illust-app-back .blocker { animation: none; opacity: 1; transform: none; position: static; }
+
+    /* Illustration 3: Search bar with fading results */
+    .illust-rewire {
+      width: 100%;
+      max-width: 300px;
+    }
+    .illust-search-bar {
+      background: #2a2a2a;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #383838;
+    }
+    .illust-search-bar .search-icon {
+      color: #555;
+      font-size: 1rem;
+    }
+    .illust-search-bar .search-text {
+      color: #777;
+      font-size: 0.85rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .illust-results {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .illust-result-line {
+      height: 10px;
+      background: #e74c3c;
+      border-radius: 5px;
+      animation: result-fade 3s ease-in-out infinite;
+    }
+    .illust-result-line:nth-child(1) { width: 85%; animation-delay: 0s; }
+    .illust-result-line:nth-child(2) { width: 70%; animation-delay: 0.15s; }
+    .illust-result-line:nth-child(3) { width: 60%; animation-delay: 0.3s; }
+    .illust-result-line:nth-child(4) { width: 40%; animation-delay: 0.45s; }
+    @keyframes result-fade {
+      0%, 20% { opacity: 0.7; background: #e74c3c; }
+      50% { opacity: 0.15; background: #333; }
+      80%, 100% { opacity: 0; background: #333; width: 0; }
+    }
+    .illust-blocked-msg {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: #28c840;
+      font-weight: 600;
+      opacity: 0;
+      animation: blocked-appear 3s ease-in-out infinite;
+    }
+    @keyframes blocked-appear {
+      0%, 40% { opacity: 0; }
+      60%, 90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @media (max-width: 700px) {
+      .story-section, .story-section:nth-child(even) {
+        flex-direction: column;
+        gap: 2rem;
+        padding: 4rem 1.5rem;
+        text-align: center;
+      }
+      .story-text h2, .story-text p {
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -599,104 +839,72 @@
     <span class="cta-sub">One-time payment. No subscription. No account.</span>
   </div>
 
-  <!-- How it works -->
-  <section id="how">
-    <h2>How it works</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-text">
-          <h3>Copy the command above</h3>
-          <p>Click copy, or select it manually. It's one line.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-text">
-          <h3>Paste it in Terminal</h3>
-          <p>Open Terminal (Mac) or PowerShell as Admin (Windows). Paste the command, hit enter.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-text">
-          <h3>Enter your password. Done.</h3>
-          <p>Porn is blocked at the system level. Search engines are filtered. Bypass tricks are disabled. It takes 10 seconds.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">⏰</div>
-        <div class="step-text">
-          <h3>Free for 72 hours</h3>
-          <p>The free trial auto-reverts after 72 hours. Want it blocked permanently? <a href="#buy" style="color: var(--accent); text-decoration: underline;">Get the permanent version for $29.</a></p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Story sections -->
+  <div class="story-sections">
 
-  <!-- Comparison -->
-  <section>
-    <h2>This isn't an app</h2>
-    <div class="comparison">
-      <div class="comp-card bad">
-        <h3>🚫 Porn blocker apps</h3>
-        <ul>
-          <li>$10-15/month subscription</li>
-          <li>Background app eating battery & RAM</li>
-          <li>Drag to trash = porn is back</li>
-          <li>Routes traffic through their VPN</li>
-          <li>"Allow unidentified developer" warning</li>
-          <li>You have to trust them with your data</li>
-        </ul>
+    <!-- Section 1: Resisting is never enough -->
+    <div class="story-section">
+      <div class="story-text">
+        <h2>Resisting is never enough</h2>
+        <p>You work on your computer, everything is fine, then suddenly, you find yourself opening a tab, typing the first initials, enter — and you wake up after the act, with shame.</p>
+        <p style="margin-top: 0.8rem; color: #fff; font-weight: 600;">Do not resist. Just make sure those filthy sites are never accessible again from your device.</p>
       </div>
-      <div class="comp-card good">
-        <h3>✅ nogoon.io</h3>
-        <ul>
-          <li>Free for 72 hours, $29 for permanent</li>
-          <li>No app running — zero performance impact</li>
-          <li>Nothing to uninstall or drag to trash</li>
-          <li>Works at the system level, not a proxy</li>
-          <li>One terminal command, no permissions popup</li>
-          <li>No data ever leaves your machine</li>
-        </ul>
+      <div class="story-illustration">
+        <div class="illust-browser">
+          <div class="illust-browser-bar">
+            <div class="illust-browser-dots"><span></span><span></span><span></span></div>
+            <div class="illust-url-bar"><span class="typed-text" id="typedUrl"></span></div>
+          </div>
+          <div class="illust-browser-body">
+            <span class="shame-text">...you wake up after the act</span>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- What gets blocked -->
-  <section>
-    <h2>What exactly happens</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">🔒</div>
-        <div class="step-text">
-          <h3>All porn sites are blocked</h3>
-          <p>60+ major sites hardcoded + DNS-level filtering that catches 100,000+ adult domains — including new ones as they appear.</p>
-        </div>
+    <!-- Section 2: Apps do not work -->
+    <div class="story-section">
+      <div class="story-text">
+        <h2>Apps do not work</h2>
+        <p>Apps give you the possibility to reverse it. Temptation will always get the best of you.</p>
+        <p style="margin-top: 0.8rem; color: #fff; font-weight: 600;">If you are really committed to stop, run the script once then it's done. Evil is cut at its root forever.</p>
       </div>
-      <div class="step">
-        <div class="step-num">🔍</div>
-        <div class="step-text">
-          <h3>Searching for porn returns nothing</h3>
-          <p>Google and Bing SafeSearch are forced on. You can't find explicit content through search.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">🛡️</div>
-        <div class="step-text">
-          <h3>Bypass tricks are disabled</h3>
-          <p>DNS-over-HTTPS endpoints are blocked. Browsers can't circumvent the filter.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">✅</div>
-        <div class="step-text">
-          <h3>Everything else works normally</h3>
-          <p>YouTube, Reddit, Twitter, Netflix, gaming — all unaffected. Only porn is blocked.</p>
+      <div class="story-illustration">
+        <div class="illust-app-stack">
+          <div class="illust-app-icon blocker">🛡️</div>
+          <div class="illust-trash">🗑️</div>
+          <div class="illust-app-back">
+            <div style="width: 80px; height: 80px; border-radius: 18px; background: linear-gradient(135deg, #e74c3c, #c0392b); display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 8px 30px rgba(0,0,0,0.3);">🛡️</div>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+
+    <!-- Section 3: Retake control of your dopamine -->
+    <div class="story-section">
+      <div class="story-text">
+        <h2>Retake control of your dopamine</h2>
+        <p>Once porn is permanently blocked, typing the initials in the search bar will actually rewire your dopaminergic circuits.</p>
+        <p style="margin-top: 0.8rem; color: #fff; font-weight: 600;">Do it once, twice, thrice — after a while, this habit will fade because there is no instant reward after you tap enter.</p>
+      </div>
+      <div class="story-illustration">
+        <div class="illust-rewire">
+          <div class="illust-search-bar">
+            <span class="search-icon">🔍</span>
+            <span class="search-text">p o r ...</span>
+          </div>
+          <div class="illust-results">
+            <div class="illust-result-line"></div>
+            <div class="illust-result-line"></div>
+            <div class="illust-result-line"></div>
+            <div class="illust-result-line"></div>
+          </div>
+          <div class="illust-blocked-msg">✓ Blocked — nothing here</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
   <!-- FAQ -->
   <section id="faq">
@@ -840,6 +1048,39 @@
       const prompt = `I'm about to run this command:\n\n${cmd}\n\nHere is the full source code: ${src}\n\nBased solely on reviewing the code, does this script contain any malicious behavior (such as backdoors, credential harvesting, remote code execution, hidden downloads, or data exfiltration), or does it strictly perform the DNS and hosts-file modifications expected from a porn blocker? Answer briefly.`;
       window.open('https://chatgpt.com/?q=' + encodeURIComponent(prompt), '_blank');
     });
+
+    // Scroll reveal for story sections
+    const storyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          storyObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.story-section').forEach(s => storyObserver.observe(s));
+
+    // Typing animation for browser illustration
+    (function typeLoop() {
+      const el = document.getElementById('typedUrl');
+      if (!el) return;
+      const text = 'por';
+      let i = 0;
+      function typeChar() {
+        if (i <= text.length) {
+          el.textContent = text.slice(0, i);
+          i++;
+          setTimeout(typeChar, 400 + Math.random() * 200);
+        } else {
+          setTimeout(() => {
+            el.textContent = '';
+            i = 0;
+            setTimeout(typeChar, 1500);
+          }, 2500);
+        }
+      }
+      typeChar();
+    })();
   </script>
 
 </body>
