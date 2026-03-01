@@ -14,6 +14,12 @@ try {
 }
 
 export default async function handler(req, res) {
+  // CORS — allow local file:// and any origin (admin is secret-protected)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'x-admin-secret');
+  if (req.method === 'OPTIONS') { res.status(200).end(); return; }
+
   // Auth check
   const secret = req.query.secret || req.headers['x-admin-secret'];
   if (secret !== process.env.ADMIN_SECRET) {
