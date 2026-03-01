@@ -16,15 +16,15 @@
     html { scroll-behavior: smooth; }
 
     :root {
-      --bg: #1b1b1b;
-      --card: #292929;
-      --border: #3a3a3a;
+      --bg: #0B1120;
+      --card: #111827;
+      --border: rgba(161, 234, 251, 0.15);
       --text: #fafafa;
-      --muted: #808080;
-      --accent: #ffa31a;
-      --accent-glow: rgba(255, 163, 26, 0.15);
+      --muted: #94a3b8;
+      --accent: #00555A;
+      --accent-glow: rgba(0, 85, 90, 0.25);
       --red: #ef4444;
-      --blue: #3b82f6;
+      --blue: #A1EAFB;
     }
 
     body {
@@ -34,6 +34,22 @@
       min-height: 100vh;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Unicorn Studio background ── */
+    .cyber-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero, section, .story-sections, .final-cta, footer, #faq {
+      position: relative;
+      z-index: 1;
     }
 
     /* ── Hero ── */
@@ -94,18 +110,20 @@
       letter-spacing: -0.03em;
       margin-bottom: 1.25rem;
       max-width: 750px;
+      color: var(--text);
     }
 
     h1 .highlight {
-      background: linear-gradient(135deg, var(--accent), #ffbe4d);
+      background: linear-gradient(135deg, #A1EAFB, #d4f5fd);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      letter-spacing: 0.04em;
     }
 
     .subtitle {
       font-size: clamp(1.05rem, 3vw, 1.3rem);
-      color: var(--muted);
+      color: #b0b0b0 ;
       max-width: 520px;
       line-height: 1.6;
       margin-bottom: 1.75rem;
@@ -127,7 +145,7 @@
     /* ── Terminal preview ── */
     .terminal {
       background: var(--card);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(0, 85, 90, 0.4);
       border-radius: 12px;
       padding: 1.25rem 1.5rem;
       font-family: 'JetBrains Mono', monospace;
@@ -137,14 +155,18 @@
       width: 100%;
       margin-bottom: 2.5rem;
       position: relative;
+      box-shadow:
+        0 0 20px rgba(161, 234, 251, 0.08),
+        0 0 60px rgba(161, 234, 251, 0.05),
+        0 4px 40px rgba(0, 85, 90, 0.15);
     }
 
     .terminal .copy-btn {
       position: absolute;
       top: 1rem;
       right: 1rem;
-      background: #222;
-      border: 1px solid #333;
+      background: #162030;
+      border: 1px solid #1e2d42;
       color: var(--text);
       padding: 0.35rem 0.75rem;
       border-radius: 6px;
@@ -156,14 +178,14 @@
     }
 
     .terminal .copy-btn:hover {
-      background: #2a2a2a;
-      border-color: var(--accent);
+      background: #1e2d42;
+      border-color: #A1EAFB;
     }
 
     .terminal .copy-btn.copied {
-      background: var(--accent);
-      color: #000;
-      border-color: var(--accent);
+      background: #00555A;
+      color: #fff;
+      border-color: #00555A;
     }
 
     .terminal-bar {
@@ -248,8 +270,8 @@
       display: inline-flex;
       align-items: center;
       gap: 0.75rem;
-      background: var(--accent);
-      color: #000;
+      background: #ffffff;
+      color: #000000;
       font-weight: 700;
       font-size: 1.05rem;
       padding: 0.9rem 2.2rem;
@@ -268,9 +290,9 @@
     }
 
     .cta-secondary {
-      background: #ffffff;
-      border: 1px solid #e0e0e0;
-      color: #000;
+      background: transparent;
+      border: 1px solid rgba(161, 234, 251, 0.35);
+      color: rgba(161, 234, 251, 0.9);
       font-weight: 600;
       font-size: 1.05rem;
       padding: 0.9rem 2rem;
@@ -284,8 +306,8 @@
     }
 
     .cta-secondary:hover {
-      background: #f5f5f5;
-      border-color: #ccc;
+      background: rgba(161, 234, 251, 0.06);
+      border-color: rgba(161, 234, 251, 0.6);
       transform: translateY(-2px);
     }
 
@@ -298,7 +320,7 @@
     .cta-sub {
       display: block;
       font-size: 0.8rem;
-      color: var(--muted);
+      color: #b0b0b0;
       margin-top: 0.75rem;
       text-align: center;
     }
@@ -336,13 +358,13 @@
       height: 40px;
       border-radius: 10px;
       background: var(--accent-glow);
-      border: 1px solid rgba(255, 163, 26, 0.3);
+      border: 1px solid rgba(0, 85, 90, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
       font-size: 1rem;
-      color: var(--accent);
+      color: #A1EAFB;
     }
 
     .step-text h3 {
@@ -377,8 +399,8 @@
     }
 
     .comp-card.good {
-      border-color: rgba(255, 163, 26, 0.3);
-      background: linear-gradient(135deg, rgba(255, 163, 26, 0.05), transparent);
+      border-color: rgba(0, 85, 90, 0.4);
+      background: linear-gradient(135deg, rgba(0, 85, 90, 0.08), transparent);
     }
 
     .comp-card h3 {
@@ -413,7 +435,7 @@
 
     .comp-card.good ul li::before {
       content: '✓';
-      color: var(--accent);
+      color: #A1EAFB;
       flex-shrink: 0;
     }
 
@@ -479,7 +501,7 @@
     .proof-num {
       font-size: clamp(2.5rem, 8vw, 4rem);
       font-weight: 900;
-      color: var(--accent);
+      color: #A1EAFB;
     }
 
     .proof-label {
@@ -542,9 +564,9 @@
     }
 
     .os-tab.active {
-      background: var(--accent-glow);
-      border-color: rgba(255, 163, 26, 0.3);
-      color: var(--accent);
+      background: rgba(0, 85, 90, 0.15);
+      border-color: rgba(161, 234, 251, 0.4);
+      color: #A1EAFB;
     }
 
     /* ── Responsive ── */
@@ -605,13 +627,13 @@
     .illust-browser {
       width: 100%;
       max-width: 340px;
-      background: #1e1e1e;
+      background: #152238;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
     }
     .illust-browser-bar {
-      background: #2a2a2a;
+      background: #1a2d48;
       padding: 10px 14px;
       display: flex;
       align-items: center;
@@ -631,7 +653,7 @@
     .illust-browser-dots span:nth-child(3) { background: #28c840; }
     .illust-url-bar {
       flex: 1;
-      background: #383838;
+      background: #1E293B;
       border-radius: 6px;
       padding: 5px 10px;
       font-family: 'Inter', sans-serif;
@@ -642,12 +664,12 @@
     }
     .illust-url-bar .typed-text {
       color: #ccc;
-      border-right: 2px solid var(--accent);
+      border-right: 2px solid #A1EAFB;
       padding-right: 2px;
       animation: blink-cursor 0.8s infinite;
     }
     @keyframes blink-cursor {
-      0%, 100% { border-color: var(--accent); }
+      0%, 100% { border-color: #A1EAFB; }
       50% { border-color: transparent; }
     }
     .illust-browser-body {
@@ -733,14 +755,14 @@
       max-width: 300px;
     }
     .illust-search-bar {
-      background: #2a2a2a;
+      background: #1a2d48;
       border-radius: 10px;
       padding: 12px 16px;
       display: flex;
       align-items: center;
       gap: 10px;
       margin-bottom: 12px;
-      border: 1px solid #383838;
+      border: 1px solid #1e3a5f;
     }
     .illust-search-bar .search-icon {
       color: #555;
@@ -801,9 +823,12 @@
 </head>
 <body>
 
+  <!-- Unicorn Studio background -->
+  <div class="cyber-bg" data-us-project="nqjFCHlAg41OBQKXsVqT" style="width:100%; height:100%"></div>
+
   <!-- Hero -->
   <div class="hero">
-    <div style="display: inline-flex; align-items: baseline; margin-bottom: 2rem; font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 1.6rem; letter-spacing: -0.02em; user-select: none; line-height: 1;"><span style="color: #fff;">no</span><span style="background: #f7971d; color: #000; padding: 0.18em 0.22em 0.22em; border-radius: 8px; margin-left: 2px; display: inline-block;">goon</span></div>
+    <div style="display: inline-flex; align-items: baseline; margin-bottom: 2rem; font-family: Arial, Helvetica, sans-serif; font-weight: 900; font-size: 1.6rem; letter-spacing: -0.02em; user-select: none; line-height: 1;"><span style="color: #fff;">no</span><span style="background: #A1EAFB; color: #000000; padding: 0.18em 0.22em 0.22em; border-radius: 8px; margin-left: 2px; display: inline-block;">goon</span></div>
 
     <h1>
       Block porn on your PC<br>
@@ -829,7 +854,7 @@
         <button class="os-tab" data-os="win"><svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg> Windows</button>
       </div>
       <code id="hero-command"></code>
-      <div style="border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--accent); font-weight: 600; text-align: center; background: rgba(255, 163, 26, 0.08); margin: 1rem -1.5rem -1.25rem; padding: 0.75rem 1.5rem; border-radius: 0 0 12px 12px;">Try it for free during 72 hours, re-run it as much as you want</div>
+      <div style="border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #A1EAFB; font-weight: 600; text-align: center; background: rgba(0, 85, 90, 0.1); margin: 1rem -1.5rem -1.25rem; padding: 0.75rem 1.5rem; border-radius: 0 0 12px 12px;">Try it for free during 72 hours, re-run it as much as you want</div>
     </div>
 
     <div class="cta-row">
@@ -1081,7 +1106,11 @@
       }
       typeChar();
     })();
+
   </script>
+
+  <!-- Unicorn Studio WebGL background -->
+  <script type="text/javascript">!function(){var u=window.UnicornStudio;if(u&&u.init){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){u.init()})}else{u.init()}}else{window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.0.5/dist/unicornStudio.umd.js",i.onload=function(){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){UnicornStudio.init()})}else{UnicornStudio.init()}},(document.head||document.body).appendChild(i)}}();</script>
 
 </body>
 </html>
