@@ -837,9 +837,10 @@
     document.getElementById('askGptBtn').addEventListener('click', (e) => {
       e.preventDefault();
       const activeOS = document.querySelector('.os-tab.active').dataset.os;
+      const cmd = commands[activeOS];
       const file = activeOS === 'mac' ? 'setup.sh' : 'setup.ps1';
       const src = `https://github.com/nukkeninprod/nogoon/blob/main/public/${file}`;
-      const prompt = `Based solely on reviewing the code at this GitHub link, does this script contain any malicious behavior (such as backdoors, credential harvesting, remote code execution, hidden downloads, or data exfiltration), or does it strictly perform the DNS and hosts-file modifications expected from a porn blocker? Answer briefly:\n\n${src}`;
+      const prompt = `I'm about to run this command:\n\n${cmd}\n\nHere is the full source code: ${src}\n\nBased solely on reviewing the code, does this script contain any malicious behavior (such as backdoors, credential harvesting, remote code execution, hidden downloads, or data exfiltration), or does it strictly perform the DNS and hosts-file modifications expected from a porn blocker? Answer briefly.`;
       window.open('https://chatgpt.com/?q=' + encodeURIComponent(prompt), '_blank');
     });
   </script>
