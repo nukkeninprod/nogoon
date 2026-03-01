@@ -1245,8 +1245,110 @@
   <!-- Vercel Analytics -->
   <script defer src="/_vercel/insights/script.js"></script>
 
-  <!-- Crisp Chat -->
-  <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="381154bf-a51f-4361-b8a0-6aace0520a1a";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+  <!-- Chat Widget -->
+  <div id="chat-bubble" onclick="toggleChat()" title="Need help?">
+    <svg id="chat-icon" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+    <svg id="chat-close-icon" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2" style="display:none"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+  </div>
+  <div id="chat-panel">
+    <div class="chat-header">Contact Support</div>
+    <form id="chat-form" onsubmit="return sendSupport(event)">
+      <input type="email" id="chat-email" placeholder="Your email" required autocomplete="email">
+      <textarea id="chat-msg" placeholder="How can we help?" required rows="4"></textarea>
+      <button type="submit" id="chat-send">Send Message</button>
+    </form>
+    <div id="chat-success" style="display:none">
+      <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <p>Message sent! We'll reply to your email.</p>
+    </div>
+  </div>
+
+  <style>
+    #chat-bubble {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--accent); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(0,85,90,0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #chat-bubble:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,85,90,0.7); }
+    #chat-panel {
+      position: fixed; bottom: 92px; right: 24px; z-index: 9999;
+      width: 340px; max-width: calc(100vw - 48px);
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 0;
+      display: none; flex-direction: column;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    #chat-panel.open { display: flex; }
+    .chat-header {
+      padding: 16px 20px; font-weight: 700; font-size: 15px;
+      color: var(--blue); border-bottom: 1px solid var(--border);
+      font-family: 'Inter', sans-serif;
+    }
+    #chat-form { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+    #chat-form input, #chat-form textarea {
+      width: 100%; padding: 10px 14px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg);
+      color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px;
+      outline: none; transition: border-color 0.2s;
+    }
+    #chat-form input:focus, #chat-form textarea:focus { border-color: var(--accent); }
+    #chat-form textarea { resize: none; }
+    #chat-send {
+      padding: 10px 0; border-radius: 8px; border: none;
+      background: var(--accent); color: #fff; font-weight: 600;
+      font-size: 14px; cursor: pointer; transition: opacity 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    #chat-send:hover { opacity: 0.88; }
+    #chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+    #chat-success {
+      padding: 32px 20px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    #chat-success p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+    @media (max-width: 480px) {
+      #chat-panel { right: 12px; bottom: 84px; width: calc(100vw - 24px); }
+      #chat-bubble { right: 16px; bottom: 16px; }
+    }
+  </style>
+
+  <script>
+    function toggleChat() {
+      const panel = document.getElementById('chat-panel');
+      const ico = document.getElementById('chat-icon');
+      const clo = document.getElementById('chat-close-icon');
+      const open = panel.classList.toggle('open');
+      ico.style.display = open ? 'none' : 'block';
+      clo.style.display = open ? 'block' : 'none';
+    }
+    async function sendSupport(e) {
+      e.preventDefault();
+      const btn = document.getElementById('chat-send');
+      const email = document.getElementById('chat-email').value.trim();
+      const msg = document.getElementById('chat-msg').value.trim();
+      if (!email || !msg) return false;
+      btn.disabled = true; btn.textContent = 'Sending…';
+      try {
+        const res = await fetch('/api/support', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, message: msg })
+        });
+        if (!res.ok) throw new Error();
+        document.getElementById('chat-form').style.display = 'none';
+        document.getElementById('chat-success').style.display = 'flex';
+        if (typeof window.va === 'function') window.va('event', { name: 'support_message' });
+      } catch {
+        btn.disabled = false; btn.textContent = 'Send Message';
+        alert('Something went wrong. Try emailing us directly.');
+      }
+      return false;
+    }
+  </script>
 
   <!-- Unicorn Studio WebGL background -->
   <script type="text/javascript">!function(){var u=window.UnicornStudio;if(u&&u.init){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){u.init()})}else{u.init()}}else{window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.0.5/dist/unicornStudio.umd.js",i.onload=function(){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){UnicornStudio.init()})}else{UnicornStudio.init()}},(document.head||document.body).appendChild(i)}}();</script>
