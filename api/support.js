@@ -39,6 +39,8 @@ export default async function handler(req, res) {
 
   // Send to Slack
   const SLACK_WEBHOOK = process.env.SLACK_WEBHOOK_URL;
+  let slackOk = false;
+
   if (SLACK_WEBHOOK) {
     let email = null;
     if (redis) {
@@ -46,50 +48,61 @@ export default async function handler(req, res) {
     }
 
     const replyUrl = `https://nogoon.io/reply.html?c=${encodeURIComponent(chatId)}&s=${encodeURIComponent(process.env.ADMIN_SECRET || '')}`;
+    const fallbackText = `💬 ${email || 'Visitor'}: ${message}`;
 
-    const blocks = [
-      {
-        type: 'section',
-        text: { type: 'mrkdwn', text: `💬 *${email || 'Visitor'}*` }
-      },
-      {
-        type: 'section',
-        text: { type: 'mrkdwn', text: `> ${message}` }
-      },
-      {
-        type: 'context',
-        elements: [
-          { type: 'mrkdwn', text: `\`${chatId}\` · ${new Date(ts).toUTCString()}` }
-        ]
-      },
-      {
-        type: 'actions',
-        elements: [
-          {
-            type: 'button',
-            text: { type: 'plain_text', text: '↩️ Reply in Chat', emoji: true },
-            url: replyUrl,
-            style: 'primary'
-          },
-          ...(email ? [{
-            type: 'button',
-            text: { type: 'plain_text', text: '📧 Email', emoji: true },
-            url: `mailto:${email}?subject=Re: nogoon support`
-          }] : [])
-        ]
-      }
-    ];
+    const payload = {
+      text: fallbackText,
+      blocks: [
+        {
+          type: 'section',
+          text: { type: 'mrkdwn', text: `💬 *${email || 'Visitor'}*` }
+        },
+        {
+          type: 'section',
+          text: { type: 'mrkdwn', text: `> ${message}` }
+        },
+        {
+          type: 'context',
+          elements: [
+            { type: 'mrkdwn', text: `\`${chatId}\` · ${new Date(ts).toUTCString()}` }
+          ]
+        },
+        {
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: { type: 'plain_text', text: '↩️ Reply in Chat', emoji: true },
+              url: replyUrl,
+              style: 'primary'
+            },
+            ...(email ? [{
+              type: 'button',
+              text: { type: 'plain_text', text: '📧 Email', emoji: true },
+              url: `mailto:${email}?subject=Re: nogoon support`
+            }] : [])
+          ]
+        }
+      ]
+    };
 
     try {
-      await fetch(SLACK_WEBHOOK, {
+      const slackRes = await fetch(SLACK_WEBHOOK, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ blocks })
+        body: JSON.stringify(payload)
       });
+      const slackBody = await slackRes.text();
+      slackOk = slackRes.ok && slackBody === 'ok';
+      if (!slackOk) {
+        console.error('Slack error:', slackRes.status, slackBody);
+      }
     } catch (e) {
-      console.error('Slack error:', e.message);
+      console.error('Slack fetch error:', e.message);
     }
+  } else {
+    console.error('SLACK_WEBHOOK_URL not set');
   }
 
-  return res.status(200).json({ ok: true });
+  return res.status(200).json({ ok: true, slack: slackOk });
 }
