@@ -1337,6 +1337,7 @@
     @keyframes mFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
     .m-av { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; margin-top: 2px; }
+    .m-av-spacer { width: 28px; flex-shrink: 0; }
     .m-row.visitor .m-av { display: none; }
 
     .m-body { max-width: 78%; }
@@ -1396,7 +1397,6 @@
     var isOpen = false, pollTimer = null, bgTimer = null;
     var lastTs = parseInt(localStorage.getItem('nogoon_lts') || '0');
     var loaded = false;
-    var askedEmail = localStorage.getItem('nogoon_ae') === '1';
     var hasUserMsg = false;
 
     function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
@@ -1405,16 +1405,20 @@
       return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
     }
 
+    var lastSender = '';
+
     function agentBubble(text, ts) {
       var c = document.getElementById('ch-msgs');
       var row = document.createElement('div');
       row.className = 'm-row agent';
-      row.innerHTML = '<img class="m-av" src="' + AGENT.av + '" alt="' + AGENT.name + '">'
-        + '<div class="m-body"><div class="m-name">' + AGENT.name + '</div>'
+      var showName = (lastSender !== 'agent');
+      row.innerHTML = (showName ? '<img class="m-av" src="' + AGENT.av + '" alt="' + AGENT.name + '">' : '<div class="m-av-spacer"></div>')
+        + '<div class="m-body">' + (showName ? '<div class="m-name">' + AGENT.name + '</div>' : '')
         + '<div class="m-bubble">' + esc(text) + '</div>'
         + '<div class="m-time">' + fmtTime(ts) + '</div></div>';
       c.appendChild(row);
       c.scrollTop = c.scrollHeight;
+      lastSender = 'agent';
     }
 
     function userBubble(text, ts) {
@@ -1426,6 +1430,7 @@
         + '<div class="m-time">' + fmtTime(ts) + '</div></div>';
       c.appendChild(row);
       c.scrollTop = c.scrollHeight;
+      lastSender = 'user';
     }
 
     function typingEl() {
@@ -1493,35 +1498,15 @@
       input.value = '';
       hasUserMsg = true;
 
-      // Detect email
-      var isEmail = /^[\w.+\-]+@[\w.\-]+\.\w{2,}$/.test(msg);
-
-      var t = typingEl();
       try {
         var res = await fetch('/api/support', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ chatId: chatId, message: msg })
         });
-        rmEl(t);
         if (!res.ok) throw 0;
-
-        // First message: ask for email
-        if (!askedEmail) {
-          askedEmail = true;
-          localStorage.setItem('nogoon_ae', '1');
-          if (isEmail) {
-            agentBubble("Got it, saved your email! I'll get back to you shortly.");
-          } else {
-            agentBubble("Sent! Leave your email here so I can follow up, or I'll reply in this chat.");
-          }
-        } else if (isEmail) {
-          agentBubble("Email saved! I'll follow up there if needed.");
-        }
-
         if (typeof window.va === 'function') window.va('event', { name: 'support_message' });
       } catch(err) {
-        rmEl(t);
         agentBubble("Something went wrong. Please try again.");
       }
       input.focus();
