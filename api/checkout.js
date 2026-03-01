@@ -19,7 +19,7 @@ export default async function handler(req, res) {
               name: 'nogoon.io — Permanent porn block',
               description: 'One-time setup. macOS & Windows. No subscription.',
             },
-            unit_amount: 2900, // $29.00
+            unit_amount: 900, // $9.00
           },
           quantity: 1,
         },
