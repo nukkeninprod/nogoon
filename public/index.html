@@ -1093,7 +1093,9 @@
     // FAQ accordion
     document.querySelectorAll('.faq-q').forEach(q => {
       q.addEventListener('click', () => {
+        const wasOpen = q.parentElement.classList.contains('open');
         q.parentElement.classList.toggle('open');
+        if (!wasOpen) track('faq_open', { question: q.textContent.trim().slice(0, 50) });
       });
     });
 
@@ -1138,9 +1140,13 @@
       tab.addEventListener('click', () => switchOS(tab.dataset.os, 'mid'));
     });
 
+    // Analytics helper
+    function track(name, data) { if (window.va) window.va('event', { name, data }); }
+
     // Copy hero command
     function copyHeroCommand() {
       const activeOS = document.querySelector('#hero-terminal .os-tab.active').dataset.os;
+      track('copy_command', { location: 'hero', os: activeOS });
       navigator.clipboard.writeText(commands[activeOS]).then(() => {
         const btn = document.getElementById('heroCopyBtn');
         btn.textContent = 'Copied!';
@@ -1152,6 +1158,7 @@
     // Copy mid command
     function copyMidCommand() {
       const activeOS = document.querySelector('#mid-terminal .os-tab.active').dataset.os;
+      track('copy_command', { location: 'mid', os: activeOS });
       navigator.clipboard.writeText(commands[activeOS]).then(() => {
         const btn = document.getElementById('midCopyBtn');
         btn.textContent = 'Copied!';
@@ -1170,9 +1177,11 @@
     }
 
     // Stripe checkout — creates a session and redirects
-    document.querySelectorAll('.stripe-buy').forEach(btn => {
+    document.querySelectorAll('.stripe-buy').forEach((btn, i) => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
+        const loc = i === 0 ? 'hero' : i === 1 ? 'mid' : 'footer';
+        track('click_buy', { location: loc });
         window.location.href = '/api/checkout';
       });
     });
@@ -1180,6 +1189,7 @@
     // Ask GPT if it's safe
     document.getElementById('askGptBtn').addEventListener('click', (e) => {
       e.preventDefault();
+      track('click_ask_gpt');
       const activeOS = document.querySelector('#hero-terminal .os-tab.active').dataset.os;
       const cmd = commands[activeOS];
       const file = activeOS === 'mac' ? 'setup.sh' : 'setup.ps1';
@@ -1198,6 +1208,14 @@
       });
     }, { threshold: 0.15 });
     document.querySelectorAll('.story-section').forEach(s => storyObserver.observe(s));
+
+    // Scroll depth tracking
+    const depths = [25, 50, 75, 100];
+    const firedDepths = new Set();
+    window.addEventListener('scroll', () => {
+      const pct = Math.round((window.scrollY + window.innerHeight) / document.body.scrollHeight * 100);
+      depths.forEach(d => { if (pct >= d && !firedDepths.has(d)) { firedDepths.add(d); track('scroll_depth', { percent: d }); } });
+    }, { passive: true });
 
     // Typing animation for browser illustration
     (function typeLoop() {
