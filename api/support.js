@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { email, message } = req.body || {};
+  const { email, message, chatId } = req.body || {};
   if (!email || !message) {
     return res.status(400).json({ error: 'Email and message are required' });
   }
@@ -18,18 +18,24 @@ export default async function handler(req, res) {
     blocks: [
       {
         type: 'header',
-        text: { type: 'plain_text', text: '💬 New Support Message', emoji: true }
+        text: { type: 'plain_text', text: '💬 Support Chat Message', emoji: true }
       },
       {
         type: 'section',
         fields: [
           { type: 'mrkdwn', text: `*From:*\n${email}` },
-          { type: 'mrkdwn', text: `*Time:*\n${new Date().toUTCString()}` }
+          { type: 'mrkdwn', text: `*Session:*\n\`${chatId || 'n/a'}\`` }
         ]
       },
       {
         type: 'section',
-        text: { type: 'mrkdwn', text: `*Message:*\n${message}` }
+        text: { type: 'mrkdwn', text: `> ${message}` }
+      },
+      {
+        type: 'context',
+        elements: [
+          { type: 'mrkdwn', text: `🕐 ${new Date().toUTCString()}` }
+        ]
       },
       {
         type: 'actions',
