@@ -377,9 +377,10 @@
 
     function getCommand(os) {
       if (!sessionId) return '';
+      const host = window.location.origin;
       return os === 'mac'
-        ? `curl -sL "nogoon.io/api/go?s=${sessionId}&os=mac" | sudo bash`
-        : `irm "nogoon.io/api/go?s=${sessionId}&os=win" | iex`;
+        ? `curl -sL "${host}/api/go?s=${sessionId}&os=mac" | sudo bash`
+        : `irm "${host}/api/go?s=${sessionId}&os=win" | iex`;
     }
 
     function switchOS(os) {
