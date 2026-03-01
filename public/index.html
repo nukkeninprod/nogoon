@@ -584,7 +584,7 @@
         <button class="os-tab active" data-os="mac"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> macOS</button>
         <button class="os-tab" data-os="win"><svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg> Windows</button>
       </div>
-      <code id="hero-command">curl -sL nogoon.io/setup.sh | sudo bash</code>
+      <code id="hero-command"></code>
       <div style="border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--accent); font-weight: 600; text-align: center; background: rgba(255, 163, 26, 0.08); margin: 1rem -1.5rem -1.25rem; padding: 0.75rem 1.5rem; border-radius: 0 0 12px 12px;">Try it for free during 72 hours</div>
     </div>
 
@@ -774,9 +774,10 @@
       <span class="win-controls">— ☐ ✕</span>
     </div>`;
 
+    const host = window.location.origin;
     const commands = {
-      mac: 'curl -sL nogoon.io/setup.sh | sudo bash',
-      win: 'irm nogoon.io/setup.ps1 | iex'
+      mac: `curl -sL ${host}/setup.sh | sudo bash`,
+      win: `irm ${host}/setup.ps1 | iex`
     };
 
     function switchHeroOS(os) {
@@ -795,15 +796,11 @@
       tab.addEventListener('click', () => switchHeroOS(tab.dataset.os));
     });
 
-    // Copy hero command
-    const plainCommands = {
-      mac: 'curl -sL nogoon.io/setup.sh | sudo bash',
-      win: 'irm nogoon.io/setup.ps1 | iex'
-    };
+    // Copy hero command (reuses same commands object)
 
     function copyHeroCommand() {
       const activeOS = document.querySelector('.os-tab.active').dataset.os;
-      navigator.clipboard.writeText(plainCommands[activeOS]).then(() => {
+      navigator.clipboard.writeText(commands[activeOS]).then(() => {
         const btn = document.getElementById('heroCopyBtn');
         btn.textContent = 'Copied!';
         btn.classList.add('copied');
@@ -817,6 +814,8 @@
     // Auto-detect OS
     if (navigator.userAgent.includes('Windows')) {
       switchHeroOS('win');
+    } else {
+      switchHeroOS('mac');
     }
 
     // Stripe checkout — creates a session and redirects
