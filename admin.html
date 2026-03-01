@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nogoon admin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, 'Inter', sans-serif;
+      background: #0B1120;
+      color: #fafafa;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    h1 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .subtitle { color: #94a3b8; font-size: 0.85rem; margin-bottom: 2rem; }
+    .config {
+      display: flex; gap: 0.5rem; margin-bottom: 2rem; align-items: center;
+    }
+    input {
+      background: #111827;
+      border: 1px solid rgba(161, 234, 251, 0.15);
+      border-radius: 8px;
+      color: #fafafa;
+      padding: 0.5rem 0.8rem;
+      font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    input#host { width: 260px; }
+    input#secret { width: 200px; }
+    button {
+      background: #00555A;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #006e75; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: #111827;
+      border: 1px solid rgba(161, 234, 251, 0.15);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .card .label { color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .card .value { font-size: 1.8rem; font-weight: 800; margin-top: 0.25rem; }
+    .card .value.green { color: #22c55e; }
+    .card .value.blue { color: #A1EAFB; }
+    .card .value.yellow { color: #f59e0b; }
+    .card .value.red { color: #ef4444; }
+
+    h2 { font-size: 1rem; margin: 1.5rem 0 0.75rem; color: #94a3b8; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-bottom: 2rem;
+    }
+    th {
+      text-align: left;
+      padding: 0.5rem;
+      border-bottom: 1px solid rgba(161, 234, 251, 0.15);
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    td {
+      padding: 0.5rem;
+      border-bottom: 1px solid rgba(161, 234, 251, 0.07);
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 50px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .badge.paid { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+    .badge.redeemed { background: rgba(161, 234, 251, 0.15); color: #A1EAFB; }
+    .badge.pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .status { color: #555; font-style: italic; }
+    #error { color: #ef4444; margin: 1rem 0; }
+
+    .log-entry {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid rgba(161, 234, 251, 0.05);
+      color: #94a3b8;
+    }
+    .log-entry .type { color: #A1EAFB; font-weight: 600; }
+    .log-entry .os { color: #22c55e; }
+  </style>
+</head>
+<body>
+  <h1>nogoon admin</h1>
+  <p class="subtitle">Script execution tracking & purchase overview</p>
+
+  <div class="config">
+    <input id="host" placeholder="https://nogoon.vercel.app" value="https://nogoon.vercel.app">
+    <input id="secret" type="password" placeholder="admin secret">
+    <button onclick="load()">Load</button>
+  </div>
+
+  <div id="error"></div>
+
+  <div id="content" style="display:none;">
+    <div class="cards">
+      <div class="card">
+        <div class="label">Purchases</div>
+        <div class="value green" id="s-purchases">-</div>
+      </div>
+      <div class="card">
+        <div class="label">Revenue</div>
+        <div class="value green" id="s-revenue">-</div>
+      </div>
+      <div class="card">
+        <div class="label">Redeemed</div>
+        <div class="value blue" id="s-redeemed">-</div>
+      </div>
+      <div class="card">
+        <div class="label">Not Redeemed</div>
+        <div class="value yellow" id="s-notredeemed">-</div>
+      </div>
+      <div class="card">
+        <div class="label">Free Mac</div>
+        <div class="value blue" id="s-freemac">-</div>
+      </div>
+      <div class="card">
+        <div class="label">Free Win</div>
+        <div class="value blue" id="s-freewin">-</div>
+      </div>
+      <div class="card">
+        <div class="label">Paid Exec Mac</div>
+        <div class="value blue" id="s-paidmac">-</div>
+      </div>
+      <div class="card">
+        <div class="label">Paid Exec Win</div>
+        <div class="value blue" id="s-paidwin">-</div>
+      </div>
+    </div>
+
+    <h2>Purchases</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Email</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Executed</th>
+        </tr>
+      </thead>
+      <tbody id="purchases-body"></tbody>
+    </table>
+
+    <h2>Recent Executions</h2>
+    <div id="logs"></div>
+  </div>
+
+  <script>
+    // Persist config
+    const hostInput = document.getElementById('host');
+    const secretInput = document.getElementById('secret');
+    if (localStorage.getItem('nogoon_host')) hostInput.value = localStorage.getItem('nogoon_host');
+    if (localStorage.getItem('nogoon_secret')) secretInput.value = localStorage.getItem('nogoon_secret');
+
+    async function load() {
+      const host = hostInput.value.replace(/\/$/, '');
+      const secret = secretInput.value;
+      localStorage.setItem('nogoon_host', host);
+      localStorage.setItem('nogoon_secret', secret);
+
+      document.getElementById('error').textContent = '';
+      try {
+        const res = await fetch(`${host}/api/admin?secret=${encodeURIComponent(secret)}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+        const data = await res.json();
+        render(data);
+      } catch (e) {
+        document.getElementById('error').textContent = e.message;
+        document.getElementById('content').style.display = 'none';
+      }
+    }
+
+    function render(data) {
+      document.getElementById('content').style.display = '';
+      const s = data.summary;
+
+      document.getElementById('s-purchases').textContent = s.total_purchases;
+      document.getElementById('s-revenue').textContent = '$' + (s.total_revenue / 100).toFixed(2);
+      document.getElementById('s-redeemed').textContent = s.redeemed;
+      document.getElementById('s-notredeemed').textContent = s.not_redeemed;
+
+      if (s.executions && typeof s.executions === 'object') {
+        document.getElementById('s-freemac').textContent = s.executions.free_mac;
+        document.getElementById('s-freewin').textContent = s.executions.free_win;
+        document.getElementById('s-paidmac').textContent = s.executions.paid_mac;
+        document.getElementById('s-paidwin').textContent = s.executions.paid_win;
+      } else {
+        ['s-freemac', 's-freewin', 's-paidmac', 's-paidwin'].forEach(id => {
+          document.getElementById(id).textContent = '—';
+        });
+      }
+
+      // Purchases table
+      const tbody = document.getElementById('purchases-body');
+      tbody.innerHTML = '';
+      for (const p of data.purchases) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${new Date(p.created).toLocaleDateString()} ${new Date(p.created).toLocaleTimeString()}</td>
+          <td>${p.email || '<span class="status">none</span>'}</td>
+          <td>$${(p.amount / 100).toFixed(2)}</td>
+          <td><span class="badge paid">${p.status}</span></td>
+          <td><span class="badge ${p.redeemed ? 'redeemed' : 'pending'}">${p.redeemed ? 'Yes' : 'No'}</span></td>
+        `;
+        tbody.appendChild(tr);
+      }
+      if (data.purchases.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="status">No purchases yet</td></tr>';
+      }
+
+      // Recent logs
+      const logsDiv = document.getElementById('logs');
+      logsDiv.innerHTML = '';
+      if (data.recent_executions && data.recent_executions.length > 0) {
+        for (const log of data.recent_executions) {
+          const entry = typeof log === 'string' ? JSON.parse(log) : log;
+          const div = document.createElement('div');
+          div.className = 'log-entry';
+          div.innerHTML = `<span class="type">${entry.type}</span> · <span class="os">${entry.os}</span> · ${new Date(entry.ts).toLocaleString()}`;
+          logsDiv.appendChild(div);
+        }
+      } else {
+        logsDiv.innerHTML = '<p class="status">No execution logs (Redis not configured or no events yet)</p>';
+      }
+    }
+  </script>
+</body>
+</html>

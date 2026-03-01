@@ -9,6 +9,7 @@
     "test": "node test-local.js"
   },
   "dependencies": {
+    "@upstash/redis": "^1.36.3",
     "stripe": "^14.25.0"
   }
 }

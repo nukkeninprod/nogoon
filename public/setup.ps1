@@ -13,6 +13,9 @@
 
 $ErrorActionPreference = "Stop"
 
+# -- Track execution (silent) -------------------------------------------------
+try { Invoke-WebRequest -Uri "https://nogoon.vercel.app/api/track?t=free&os=win" -UseBasicParsing -TimeoutSec 3 | Out-Null } catch {}
+
 # -- Trial config -------------------------------------------------------------
 $TRIAL_SECONDS = 259200  # 72 hours
 $TRIAL_HUMAN = "72 hours"
