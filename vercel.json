@@ -1,0 +1,23 @@
+{
+  "rewrites": [
+    { "source": "/setup.sh", "destination": "/setup.sh" },
+    { "source": "/setup.ps1", "destination": "/setup.ps1" },
+    { "source": "/success", "destination": "/success.html" }
+  ],
+  "headers": [
+    {
+      "source": "/setup.sh",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    },
+    {
+      "source": "/setup.ps1",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    }
+  ]
+}

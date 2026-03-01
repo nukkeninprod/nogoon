@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nogoon.io — Block porn on your PC. Permanently.</title>
+  <meta name="description" content="One terminal command. No app. No subscription. Block porn on your PC permanently.">
+  <meta property="og:title" content="nogoon.io — Block porn on your PC. Permanently.">
+  <meta property="og:description" content="One terminal command. No app. No subscription. Block porn on your PC permanently.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nogoon.io">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg: #1b1b1b;
+      --card: #292929;
+      --border: #3a3a3a;
+      --text: #fafafa;
+      --muted: #808080;
+      --accent: #ffa31a;
+      --accent-glow: rgba(255, 163, 26, 0.15);
+      --red: #ef4444;
+      --blue: #3b82f6;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 1.5rem;
+      position: relative;
+      gap: 0.25rem;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 8vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      max-width: 750px;
+    }
+
+    h1 .highlight {
+      background: linear-gradient(135deg, var(--accent), #ffbe4d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: clamp(1.05rem, 3vw, 1.3rem);
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    .arrow-hint {
+      color: var(--muted);
+      font-size: 1.8rem;
+      margin-bottom: 0.75rem;
+      animation: bounce 2s infinite;
+      user-select: none;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    /* ── Terminal preview ── */
+    .terminal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      text-align: left;
+      max-width: 440px;
+      width: 100%;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .terminal .copy-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #222;
+      border: 1px solid #333;
+      color: var(--text);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 2;
+    }
+
+    .terminal .copy-btn:hover {
+      background: #2a2a2a;
+      border-color: var(--accent);
+    }
+
+    .terminal .copy-btn.copied {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1rem;
+      min-height: 14px;
+    }
+
+    .terminal-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .terminal-dots span {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .terminal-dots span:nth-child(1) { background: #ff5f57; }
+    .terminal-dots span:nth-child(2) { background: #ffbd2e; }
+    .terminal-dots span:nth-child(3) { background: #28c840; }
+
+    .terminal-win-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .terminal-win-bar .win-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.5;
+    }
+
+    .terminal-win-bar .win-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .terminal-win-bar .win-controls {
+      display: flex;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: #555;
+    }
+
+    .terminal code {
+      color: var(--accent);
+      word-break: break-all;
+      line-height: 1.6;
+    }
+
+    .terminal .prompt {
+      color: var(--muted);
+    }
+
+    /* ── CTA Buttons ── */
+    .cta-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 0.25rem;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 0.9rem 2.2rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+    }
+
+    .cta-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 0.9rem 2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cta-secondary:hover {
+      border-color: #444;
+      transform: translateY(-2px);
+    }
+
+    .cta-sub {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+
+    /* ── How it works ── */
+    section {
+      padding: 5rem 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(255, 163, 26, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    .step-text h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .step-text p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* ── Comparison ── */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .comp-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+
+    .comp-card.bad {
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .comp-card.good {
+      border-color: rgba(255, 163, 26, 0.3);
+      background: linear-gradient(135deg, rgba(255, 163, 26, 0.05), transparent);
+    }
+
+    .comp-card h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .comp-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .comp-card ul li {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .comp-card.bad ul li::before {
+      content: '✘';
+      color: var(--red);
+      flex-shrink: 0;
+    }
+
+    .comp-card.good ul li::before {
+      content: '✓';
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── FAQ ── */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .faq-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .faq-q {
+      padding: 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      user-select: none;
+    }
+
+    .faq-q::after {
+      content: '+';
+      font-size: 1.3rem;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+
+    .faq-item.open .faq-q::after {
+      transform: rotate(45deg);
+    }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .faq-item.open .faq-a {
+      max-height: 300px;
+    }
+
+    .faq-a p {
+      padding: 0 1.25rem 1.25rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ── Social proof ── */
+    .proof {
+      text-align: center;
+      padding: 3rem 1.5rem;
+    }
+
+    .proof-num {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 900;
+      color: var(--accent);
+    }
+
+    .proof-label {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-top: 0.25rem;
+    }
+
+    /* ── Final CTA ── */
+    .final-cta {
+      text-align: center;
+      padding: 5rem 1.5rem 6rem;
+    }
+
+    .final-cta h2 {
+      margin-bottom: 1rem;
+    }
+
+    .final-cta p {
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    /* ── OS Tabs ── */
+    .os-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .os-tab {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .os-tab svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .os-tab.active {
+      background: var(--accent-glow);
+      border-color: rgba(255, 163, 26, 0.3);
+      color: var(--accent);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .comparison {
+        grid-template-columns: 1fr;
+      }
+
+      .terminal {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="badge">
+      <span class="dot"></span>
+      macOS & Windows — takes 10 seconds
+    </div>
+
+    <h1>
+      Block porn on your PC<br>
+      <span class="highlight">PERMANENTLY</span>
+    </h1>
+
+    <p class="subtitle">
+      Open <strong id="app-name">Terminal</strong>, paste this, hit enter. That's it.
+    </p>
+
+    
+
+    <div class="terminal" id="hero-terminal">
+      <button class="copy-btn" id="heroCopyBtn" onclick="copyHeroCommand()">Copy</button>
+      <div class="terminal-bar" id="terminal-bar">
+        <div class="terminal-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="terminal-title">Terminal</span>
+      </div>
+      <div class="os-tabs">
+        <button class="os-tab active" data-os="mac"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> macOS</button>
+        <button class="os-tab" data-os="win"><svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg> Windows</button>
+      </div>
+      <code id="hero-command">curl -sL nogoon.io/setup.sh | sudo bash</code>
+      <div style="border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--accent); font-weight: 600; text-align: center; background: rgba(255, 163, 26, 0.08); margin: 1rem -1.5rem -1.25rem; padding: 0.75rem 1.5rem; border-radius: 0 0 12px 12px;">Try it for free during 72 hours</div>
+    </div>
+
+    <div class="cta-row">
+      <a href="#how" class="cta-secondary">How it works</a>
+      <a href="#" class="cta stripe-buy">Buy permanent block</a>
+    </div>
+    <span class="cta-sub">One-time payment. No subscription. No account.</span>
+  </div>
+
+  <!-- How it works -->
+  <section id="how">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <h3>Copy the command above</h3>
+          <p>Click copy, or select it manually. It's one line.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <h3>Paste it in Terminal</h3>
+          <p>Open Terminal (Mac) or PowerShell as Admin (Windows). Paste the command, hit enter.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <h3>Enter your password. Done.</h3>
+          <p>Porn is blocked at the system level. Search engines are filtered. Bypass tricks are disabled. It takes 10 seconds.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">⏰</div>
+        <div class="step-text">
+          <h3>Free for 72 hours</h3>
+          <p>The free trial auto-reverts after 72 hours. Want it blocked permanently? <a href="#buy" style="color: var(--accent); text-decoration: underline;">Get the permanent version for $29.</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison -->
+  <section>
+    <h2>This isn't an app</h2>
+    <div class="comparison">
+      <div class="comp-card bad">
+        <h3>🚫 Porn blocker apps</h3>
+        <ul>
+          <li>$10-15/month subscription</li>
+          <li>Background app eating battery & RAM</li>
+          <li>Drag to trash = porn is back</li>
+          <li>Routes traffic through their VPN</li>
+          <li>"Allow unidentified developer" warning</li>
+          <li>You have to trust them with your data</li>
+        </ul>
+      </div>
+      <div class="comp-card good">
+        <h3>✅ nogoon.io</h3>
+        <ul>
+          <li>Free for 72 hours, $29 for permanent</li>
+          <li>No app running — zero performance impact</li>
+          <li>Nothing to uninstall or drag to trash</li>
+          <li>Works at the system level, not a proxy</li>
+          <li>One terminal command, no permissions popup</li>
+          <li>No data ever leaves your machine</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- What gets blocked -->
+  <section>
+    <h2>What exactly happens</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">🔒</div>
+        <div class="step-text">
+          <h3>All porn sites are blocked</h3>
+          <p>60+ major sites hardcoded + DNS-level filtering that catches 100,000+ adult domains — including new ones as they appear.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">🔍</div>
+        <div class="step-text">
+          <h3>Searching for porn returns nothing</h3>
+          <p>Google and Bing SafeSearch are forced on. You can't find explicit content through search.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">🛡️</div>
+        <div class="step-text">
+          <h3>Bypass tricks are disabled</h3>
+          <p>DNS-over-HTTPS endpoints are blocked. Browsers can't circumvent the filter.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">✅</div>
+        <div class="step-text">
+          <h3>Everything else works normally</h3>
+          <p>YouTube, Reddit, Twitter, Netflix, gaming — all unaffected. Only porn is blocked.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <h2>FAQ</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">Can I really not undo this?</div>
+        <div class="faq-a">
+          <p>The free trial reverts automatically after 72 hours. The paid permanent version is locked at the system level. You'd need advanced terminal knowledge to reverse it — and that friction is the whole point. The urge to watch porn lasts ~15 minutes. By the time you'd figure out how to undo it, the urge is gone.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Does this slow down my Mac?</div>
+        <div class="faq-a">
+          <p>No. There's no app, no background process, no VPN. It modifies system-level DNS settings and a text file. Zero performance impact.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Will it affect YouTube, Netflix, or gaming?</div>
+        <div class="faq-a">
+          <p>No. Only dedicated porn sites are blocked. YouTube, Netflix, Twitch, Steam, and every other normal site works exactly as before.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I also block Reddit or Twitter?</div>
+        <div class="faq-a">
+          <p>Yes. After payment, you can customize your command to optionally block Reddit, Twitter/X, and Tumblr — platforms known for unfiltered NSFW content.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What about my phone?</div>
+        <div class="faq-a">
+          <p>This works on Mac and Windows computers only. For your phone, use the built-in Screen Time settings on iOS or Digital Wellbeing on Android.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Does it work with VPNs?</div>
+        <div class="faq-a">
+          <p>The hosts file blocks work even with a VPN active. The DNS filtering works when the VPN is off. For full coverage, make sure your VPN's own DNS settings also use family-safe filters.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is this safe? What does the script actually do?</div>
+        <div class="faq-a">
+          <p>The script does three things: (1) sets your DNS to CleanBrowsing's adult content filter, (2) adds adult sites to your system hosts blocklist, (3) forces SafeSearch on Google/Bing. Nothing is installed. No data is sent anywhere. You can read the full script before running it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <div class="final-cta" id="buy">
+    <h2>Want it blocked forever?</h2>
+    <p>The free trial reverts after 72 hours. The permanent version never does.<br>One payment. One command. Porn gone for good.</p>
+    <a href="#" class="cta stripe-buy" id="buy-cta">
+      Get permanent — $29
+    </a>
+    <span class="cta-sub">One-time payment • Instant access • macOS & Windows</span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>nogoon.io — Built by someone who needed this too.</p>
+  </footer>
+
+  <script>
+    // FAQ accordion
+    document.querySelectorAll('.faq-q').forEach(q => {
+      q.addEventListener('click', () => {
+        q.parentElement.classList.toggle('open');
+      });
+    });
+
+    // OS tab switching
+    const macBar = `<div class="terminal-dots"><span></span><span></span><span></span></div><span class="terminal-title">Terminal</span>`;
+    const winBar = `<div class="terminal-win-bar">
+      <svg class="win-icon" viewBox="0 0 24 24" fill="#555"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg>
+      <span class="win-title">Windows PowerShell (Admin)</span>
+      <span class="win-controls">— ☐ ✕</span>
+    </div>`;
+
+    const commands = {
+      mac: 'curl -sL nogoon.io/setup.sh | sudo bash',
+      win: 'irm nogoon.io/setup.ps1 | iex'
+    };
+
+    function switchHeroOS(os) {
+      document.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.os-tab[data-os="${os}"]`).classList.add('active');
+      document.getElementById('terminal-bar').innerHTML = os === 'mac' ? macBar : winBar;
+      document.getElementById('hero-command').textContent = commands[os];
+      document.getElementById('app-name').textContent = 'Terminal';
+      // Reset copy button
+      const btn = document.getElementById('heroCopyBtn');
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }
+
+    document.querySelectorAll('.os-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchHeroOS(tab.dataset.os));
+    });
+
+    // Copy hero command
+    const plainCommands = {
+      mac: 'curl -sL nogoon.io/setup.sh | sudo bash',
+      win: 'irm nogoon.io/setup.ps1 | iex'
+    };
+
+    function copyHeroCommand() {
+      const activeOS = document.querySelector('.os-tab.active').dataset.os;
+      navigator.clipboard.writeText(plainCommands[activeOS]).then(() => {
+        const btn = document.getElementById('heroCopyBtn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Auto-detect OS
+    if (navigator.userAgent.includes('Windows')) {
+      switchHeroOS('win');
+    }
+
+    // Stripe checkout — creates a session and redirects
+    document.querySelectorAll('.stripe-buy').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = '/api/checkout';
+      });
+    });
+  </script>
+
+</body>
+</html>

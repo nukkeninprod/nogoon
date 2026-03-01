@@ -1,0 +1,14 @@
+{
+  "name": "unfap",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve public -p 3000",
+    "start": "npx serve public",
+    "test": "node test-local.js"
+  },
+  "dependencies": {
+    "stripe": "^14.25.0"
+  }
+}
