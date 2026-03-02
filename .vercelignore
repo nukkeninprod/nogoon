@@ -1,0 +1,3 @@
+# Don't deploy template or scaffolding script
+public/blog/_template.html
+new-post.cjs

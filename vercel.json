@@ -1,24 +1,51 @@
 {
   "rewrites": [
-    { "source": "/setup.sh", "destination": "/setup.sh" },
-    { "source": "/setup.ps1", "destination": "/setup.ps1" },
-    { "source": "/success", "destination": "/success.html" },
-    { "source": "/blog", "destination": "/blog/index.html" },
-    { "source": "/blog/best-permanent-porn-blocker-2026", "destination": "/blog/best-permanent-porn-blocker-2026.html" }
+    {
+      "source": "/setup.sh",
+      "destination": "/setup.sh"
+    },
+    {
+      "source": "/setup.ps1",
+      "destination": "/setup.ps1"
+    },
+    {
+      "source": "/success",
+      "destination": "/success.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/blog/index.html"
+    },
+    {
+      "source": "/blog/best-permanent-porn-blocker-2026",
+      "destination": "/blog/best-permanent-porn-blocker-2026.html"
+    }
   ],
   "headers": [
     {
       "source": "/setup.sh",
       "headers": [
-        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
-        { "key": "Cache-Control", "value": "no-cache" }
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
       ]
     },
     {
       "source": "/setup.ps1",
       "headers": [
-        { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
-        { "key": "Cache-Control", "value": "no-cache" }
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
       ]
     }
   ]
