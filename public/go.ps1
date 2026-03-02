@@ -21,7 +21,7 @@
 $ErrorActionPreference = "Stop"
 
 # -- Track execution (silent) -------------------------------------------------
-try { Invoke-WebRequest -Uri "https://nogoon.vercel.app/api/track?t=paid&os=win" -UseBasicParsing -TimeoutSec 3 | Out-Null } catch {}
+try { Invoke-WebRequest -Uri "https://nogoon.io/api/track?t=paid&os=win" -UseBasicParsing -TimeoutSec 3 | Out-Null } catch {}
 
 # -- Colors / helpers ---------------------------------------------------------
 function Write-Step($num, $total, $msg) {

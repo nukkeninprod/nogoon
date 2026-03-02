@@ -18,7 +18,7 @@
 set -e
 
 # ── Track execution (silent, non-blocking) ───────────────────────────────
-curl -s "https://nogoon.vercel.app/api/track?t=paid&os=mac" > /dev/null 2>&1 &
+curl -s "https://nogoon.io/api/track?t=paid&os=mac" > /dev/null 2>&1 &
 
 # ── Colors ──────────────────────────────────────────────────────────────────
 RED='\033[0;31m'

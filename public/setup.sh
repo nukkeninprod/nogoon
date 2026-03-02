@@ -13,7 +13,7 @@
 set -e
 
 # ── Track execution (silent, non-blocking) ───────────────────────────────
-curl -s "https://nogoon.vercel.app/api/track?t=free&os=mac" > /dev/null 2>&1 &
+curl -s "https://nogoon.io/api/track?t=free&os=mac" > /dev/null 2>&1 &
 
 # ── Config ──────────────────────────────────────────────────────────────────
 # TRIAL DURATION: 259200 = 72 hours
