@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Make Your Porn Blocker Impossible to Bypass (Mac & PC) — nogoon</title>
+  <meta name="description" content="Standard blockers are designed to be user-friendly — but that's exactly why they fail. Here's how to move to system-level blocking with no pause button, no uninstall, and no easy way out.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://nogoon.io/blog/how-to-make-porn-blocker-impossible-to-bypass">
+
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nogoon.io/blog/how-to-make-porn-blocker-impossible-to-bypass">
+  <meta property="og:title" content="How to Make Your Porn Blocker Impossible to Bypass (Mac & PC)">
+  <meta property="og:description" content="Standard blockers are designed to be user-friendly — but that's exactly why they fail. Here's how to move to system-level blocking with no pause button, no uninstall, and no easy way out.">
+  <meta property="og:image" content="https://nogoon.io/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0B1120">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "How to Make Your Porn Blocker Impossible to Bypass (Mac & PC)",
+    "description": "Standard blockers are designed to be user-friendly — but that's exactly why they fail. Here's how to move to system-level blocking with no pause button, no uninstall, and no easy way out.",
+    "author": { "@type": "Person", "name": "nogoon" },
+    "publisher": { "@type": "Organization", "name": "nogoon", "url": "https://nogoon.io" },
+    "datePublished": "2026-03-02",
+    "dateModified": "2026-03-02",
+    "mainEntityOfPage": "https://nogoon.io/blog/how-to-make-porn-blocker-impossible-to-bypass"
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    :root{--bg:#0B1120;--card:#111827;--border:rgba(161,234,251,.15);--text:#fafafa;--muted:#94a3b8;--accent:#00555A;--accent-glow:rgba(0,85,90,.25);--blue:#A1EAFB}
+    body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+    /* ── Header ── */
+    header{padding:1.5rem 2rem;display:flex;align-items:center;justify-content:center;position:relative;z-index:10}
+    header .header-logo{height:80px;width:auto}
+    header nav{position:absolute;right:2rem;display:flex;align-items:center;gap:1.25rem}
+    header nav a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .2s}
+    header nav a:hover{color:var(--text)}
+
+    /* ── Breadcrumb ── */
+    .breadcrumb{max-width:720px;margin:0 auto;padding:0 1.5rem;font-size:.8rem;color:var(--muted)}
+    .breadcrumb a{color:var(--muted);text-decoration:none;transition:color .2s}
+    .breadcrumb a:hover{color:var(--blue)}
+    .breadcrumb span{margin:0 .4rem;opacity:.5}
+
+    /* ── Article ── */
+    article{max-width:720px;margin:0 auto;padding:2rem 1.5rem 4rem;position:relative;z-index:1}
+    article h1{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:1rem}
+    article .meta{color:var(--muted);font-size:.85rem;margin-bottom:2.5rem}
+    article h2{font-size:1.4rem;font-weight:700;margin:2.5rem 0 1rem;color:var(--blue)}
+    article h3{font-size:1.15rem;font-weight:700;margin:2rem 0 .75rem}
+    article p{color:#cbd5e1;font-size:1.05rem;line-height:1.75;margin-bottom:1.25rem}
+    article strong{color:var(--text)}
+    article em{color:var(--muted);font-style:italic}
+    article ul,article ol{color:#cbd5e1;font-size:1.05rem;line-height:1.75;margin-bottom:1.25rem;padding-left:1.5rem}
+    article li{margin-bottom:.5rem}
+    article a{color:var(--blue);text-decoration:underline;text-underline-offset:2px}
+    article a:hover{color:#fff}
+    article code{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:.15rem .4rem;font-family:'JetBrains Mono',monospace;font-size:.88em;color:var(--blue)}
+    article pre{background:#0d1b2a;border:1px solid rgba(0,85,90,.4);border-radius:10px;padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:.85rem;color:#fff;overflow-x:auto;margin-bottom:1.25rem}
+
+    /* ── Comparison table ── */
+    .comp-table{width:100%;border-collapse:collapse;margin:2rem 0;font-size:.9rem}
+    .comp-table th{background:var(--card);color:var(--blue);text-align:left;padding:10px 14px;border:1px solid var(--border);font-weight:700}
+    .comp-table td{padding:10px 14px;border:1px solid var(--border);color:#cbd5e1}
+    .comp-table tr:nth-child(even) td{background:rgba(17,24,39,.5)}
+    @media(max-width:640px){.comp-table{font-size:.78rem}.comp-table th,.comp-table td{padding:8px 8px}}
+
+    /* ── Shortcut box (impulse bridge) ── */
+    .shortcut-box{background:rgba(0,85,90,.08);border:1px solid rgba(0,85,90,.35);border-radius:12px;padding:1.5rem 1.75rem;margin:0 0 2.5rem;font-size:.97rem;line-height:1.7;color:#cbd5e1}
+    .shortcut-box strong{color:var(--text);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.5rem;color:var(--blue)}
+    .shortcut-box a{color:var(--blue);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+    .shortcut-box a:hover{color:#fff}
+
+    /* ── Verdict / callout box ── */
+    .verdict{background:rgba(0,85,90,.1);border:1px solid rgba(0,85,90,.3);border-radius:12px;padding:1.5rem;margin:2rem 0}
+    .verdict strong{color:var(--blue)}
+
+    /* ── Trust signal box ── */
+    .trust-signal{background:var(--card);border-left:3px solid var(--blue);border-radius:0 10px 10px 0;padding:1.25rem 1.5rem;margin:1.5rem 0;font-size:.95rem;color:#cbd5e1;line-height:1.7}
+    .trust-signal strong{color:var(--text)}
+
+    /* ── Terminal visual ── */
+    .terminal-visual{background:#0d1b2a;border:1px solid rgba(0,85,90,.4);border-radius:14px;padding:1.5rem;margin:2rem 0;position:relative}
+    .terminal-visual .dots{display:flex;gap:6px;margin-bottom:1rem}
+    .terminal-visual .dots span{width:10px;height:10px;border-radius:50%}
+    .terminal-visual .dots span:nth-child(1){background:#ff5f57}
+    .terminal-visual .dots span:nth-child(2){background:#ffbd2e}
+    .terminal-visual .dots span:nth-child(3){background:#28ca41}
+    .terminal-visual code{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:#fff;display:block}
+
+    /* ── Success CTA banner ── */
+    .success-cta{background:linear-gradient(135deg,rgba(0,85,90,.2),rgba(0,85,90,.05));border:1px solid rgba(0,85,90,.4);border-radius:16px;padding:2.5rem 2rem;text-align:center;margin:3rem 0}
+    .success-cta h3{font-size:1.5rem;font-weight:800;margin-bottom:.5rem;color:var(--text)}
+    .success-cta p{color:var(--muted);font-size:.95rem;margin-bottom:1.5rem}
+    .success-cta .cta-btn-primary{display:inline-block;background:var(--blue);color:#0B1120;font-weight:700;padding:1rem 2.5rem;border-radius:10px;text-decoration:none;font-size:1.05rem;transition:transform .2s,box-shadow .2s}
+    .success-cta .cta-btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(161,234,251,.2)}
+
+    /* ── CTA block ── */
+    .blog-cta{background:var(--card);border:1px solid rgba(0,85,90,.4);border-radius:16px;padding:2.5rem 2rem;text-align:center;margin:3rem 0}
+    .blog-cta h3{font-size:1.4rem;font-weight:800;margin-bottom:.5rem}
+    .blog-cta p{color:var(--muted);margin-bottom:1.5rem;font-size:.95rem}
+    .blog-cta .terminal{background:#0d1b2a;border:1px solid rgba(0,85,90,.4);border-radius:10px;padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;text-align:left;max-width:500px;margin:0 auto 1.25rem;color:#fff;word-break:break-all;position:relative;cursor:pointer}
+    .blog-cta .terminal::after{content:'copy';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--muted);font-family:'Inter',sans-serif}
+    .blog-cta .terminal:hover::after{color:var(--blue)}
+    .blog-cta .or{color:var(--muted);font-size:.95rem;margin:1rem 0}
+    .blog-cta .cta-btn{display:inline-block;background:#fff;color:#000;font-weight:700;padding:.85rem 2rem;border-radius:10px;text-decoration:none;font-size:1rem;transition:transform .2s}
+    .blog-cta .cta-btn:hover{transform:translateY(-2px)}
+    .blog-cta .cta-sub{display:block;font-size:.8rem;color:var(--muted);margin-top:.75rem}
+
+    /* ── Related articles ── */
+    .related{margin-top:3rem}
+    .related h3{font-size:1.1rem;font-weight:700;margin-bottom:1rem;color:var(--muted)}
+    .related a{display:block;color:var(--blue);text-decoration:none;font-size:.95rem;padding:.5rem 0;border-bottom:1px solid var(--border);transition:color .2s}
+    .related a:hover{color:#fff}
+
+    /* ── Footer ── */
+    footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem;position:relative;z-index:1}
+    footer a{color:var(--muted);text-decoration:none}
+    footer a:hover{color:var(--text)}
+    footer .footer-logo{width:80px;height:auto;margin-bottom:.75rem;opacity:.5}
+    footer p{margin-top:.5rem}
+
+    /* ── Click-to-copy terminal ── */
+    .copyable{position:relative;cursor:pointer;transition:border-color .2s}
+    .copyable:hover{border-color:var(--blue)}
+    .copy-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(161,234,251,.08);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.7rem;color:var(--muted);font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;z-index:2}
+    .copy-btn:hover{background:rgba(161,234,251,.15);color:var(--blue);border-color:var(--blue)}
+    .copy-btn.copied{background:rgba(0,85,90,.2);color:var(--blue);border-color:var(--blue)}
+    .terminal-visual .copy-btn{top:1.5rem;top:auto;bottom:1rem;right:1rem;transform:none}
+
+    /* ── Copy toast popup ── */
+    .copy-toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(120px);background:var(--card);border:1px solid rgba(0,85,90,.5);border-radius:12px;padding:1rem 1.5rem;font-size:.88rem;color:#cbd5e1;z-index:9999;display:flex;align-items:center;gap:.75rem;box-shadow:0 12px 40px rgba(0,0,0,.5);transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .35s;opacity:0;pointer-events:none;max-width:420px}
+    .copy-toast.show{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+    .copy-toast .toast-icon{font-size:1.2rem;flex-shrink:0}
+    .copy-toast a{color:var(--blue);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+
+    /* ── Sticky progress bar ── */
+    #progress-bar{position:fixed;top:0;left:0;width:0%;height:3px;background:linear-gradient(90deg,var(--accent),var(--blue));z-index:10000;transition:width .1s linear}
+    #sticky-cta{position:fixed;top:0;left:0;right:0;height:44px;background:rgba(11,17,32,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:9999;display:flex;align-items:center;justify-content:center;gap:1rem;transform:translateY(-100%);transition:transform .3s ease;font-size:.88rem}
+    #sticky-cta.visible{transform:translateY(0)}
+    #sticky-cta span{color:var(--muted)}
+    #sticky-cta a{background:var(--blue);color:#0B1120;font-weight:700;padding:6px 18px;border-radius:8px;text-decoration:none;font-size:.82rem;transition:transform .15s}
+    #sticky-cta a:hover{transform:scale(1.04)}
+
+    /* ── Background glow ── */
+    .glow-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .glow-bg::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%)}
+  </style>
+</head>
+<body>
+
+  <!-- ═══ STICKY PROGRESS BAR + CTA ═══ -->
+  <div id="progress-bar"></div>
+  <div id="sticky-cta">
+    <span>Ready to block permanently?</span>
+    <a href="https://nogoon.io">Get Nogoon — $9 once</a>
+  </div>
+
+  <!-- ═══ COPY TOAST ═══ -->
+  <div class="copy-toast" id="copy-toast">
+    <span class="toast-icon">✓</span>
+    <span>Command copied! <a href="https://nogoon.io" target="_blank">Visit nogoon.io</a> to verify the script safety before running.</span>
+  </div>
+
+  <div class="glow-bg"></div>
+
+  <!-- ═══ HEADER ═══ -->
+  <header>
+    <a href="/">
+      <svg class="header-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="#fff" d="M3.4,10.9h0.9v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8H5v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H3.4V10.9z"/><path fill="#fff" d="M9.2,12.1c0-0.9,0.4-1.4,1.1-1.4c0.3,0,0.5,0.1,0.6,0.3v-0.2h0.9v2.7c0,0.7-0.5,1.1-1.3,1.1c-0.7,0-1.2-0.3-1.3-1h0.9c0,0.2,0.2,0.3,0.4,0.3c0.2,0,0.3-0.1,0.3-0.4v-0.4c-0.2,0.2-0.4,0.3-0.6,0.3C9.6,13.5,9.2,13,9.2,12.1z M10.9,12.1c0-0.4-0.1-0.6-0.4-0.6c-0.2,0-0.4,0.2-0.4,0.6s0.1,0.6,0.4,0.6C10.8,12.7,10.9,12.5,10.9,12.1z"/><path fill="#fff" d="M12.1,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C12.7,13.6,12.1,13.1,12.1,12.2z M13.9,12.2c0-0.4-0.1-0.7-0.4-0.7s-0.4,0.2-0.4,0.7c0,0.4,0.1,0.7,0.4,0.7S13.9,12.6,13.9,12.2z"/><path fill="#fff" d="M15,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C15.6,13.6,15,13.1,15,12.2z M16.8,12.2c0-0.4-0.1-0.7-0.4-0.7S16,11.8,16,12.2c0,0.4,0.1,0.7,0.4,0.7S16.8,12.6,16.8,12.2z"/><path fill="#fff" d="M18,10.9H19v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8h-0.9v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H18V10.9z"/><image style="overflow:visible;" width="512" height="512" href="/shield.png" transform="matrix(5.965982e-03 0 0 5.965982e-03 6.0347 10.6575)"/></svg>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/blog">Blog</a>
+    </nav>
+  </header>
+
+  <!-- ═══ BREADCRUMB ═══ -->
+  <div class="breadcrumb">
+    <a href="/">nogoon</a><span>›</span><a href="/blog">Blog</a><span>›</span>Best Permanent Porn Blocker 2026
+  </div>
+
+  <!-- ═══ ARTICLE ═══ -->
+  <article>
+    <!-- ════════════════════════════════════════════════════
+         1. THE "IMPULSE" HEADER — Immediate Bridge
+         ════════════════════════════════════════════════════ -->
+    <h1>How to Make Your Porn Blocker Impossible to Bypass (Mac & PC)</h1>
+    <div class="meta">March 2, 2026 · 5 min read</div>
+
+    <div class="shortcut-box">
+      <strong>Too busy to read?</strong>
+      If you keep finding ways to turn off your blocker when you're tempted, you are using the wrong tool. To get a permanent, terminal-level block for Mac or PC that physically cannot be paused or easily uninstalled — with no monthly fee — <a href="https://nogoon.io">go to nogoon.io</a>.
+    </div>
+
+    <h2>The Anatomy of a Bypass</h2>
+
+    <p>If you are reading this, you are probably trapped in a frustrating cycle. You install a new porn blocker, feel a surge of motivation, and go on a streak. But eventually, a bad day hits. Your willpower drops. And because you set the blocker up, you know exactly how to tear it down.</p>
+
+    <p>Depending on the software you use, "bypassing" usually looks like this:</p>
+
+    <ul>
+      <li><strong>The "Pause" Button:</strong> The app literally gives you a 15-minute window to relapse.</li>
+      <li><strong>Incognito Mode:</strong> You realize your Chrome extension doesn't have permission to run in private windows.</li>
+      <li><strong>The Task Manager Kill:</strong> You open Activity Monitor (Mac) or Task Manager (PC) and force-quit the background process.</li>
+      <li><strong>The Panic Uninstall:</strong> You drag the application to the trash, empty it, and reboot.</li>
+    </ul>
+
+    <p>The harsh reality of 2026 is that standard SaaS blockers are designed to be user-friendly. But when you are fighting an addiction, <strong>user-friendly is your worst enemy</strong>. You do not want a tool that is easy to manage. You want a tool that is impossible to bypass.</p>
+
+    <h2>Why Apps Fail (And What to Do Instead)</h2>
+
+    <p>You cannot make a standard application impossible to bypass. Apple and Microsoft operating systems require that standard user applications can be uninstalled.</p>
+
+    <p>To create an unbreakable wall, you have to go deeper. You have to move from the Application Layer down to the System Network Layer.</p>
+
+    <p>By modifying your computer's core DNS and hosts routing, you can instruct the operating system itself to drop all connections to explicit domains and their content delivery networks (CDNs). When you block at this level:</p>
+
+    <ul>
+      <li>There is no app running in the background to force-quit.</li>
+      <li>The block applies to every browser automatically (including Incognito).</li>
+      <li>It persists across reboots and new user accounts.</li>
+    </ul>
+
+    <h2>Enter Nogoon: The "No-UI" Blocker</h2>
+
+    <p>This is exactly why Nogoon was built. It is not an app you install from a store. It is a system-level script executed via your terminal.</p>
+
+    <p>It has no dashboard. It has no account settings. Most importantly, it has <strong>no "Pause" or "Uninstall" button</strong>. It is deliberately designed to be incredibly difficult to reverse in a moment of weakness, taking the choice to relapse completely out of your hands.</p>
+
+    <h2>How to install an unbreakable block in 15 seconds</h2>
+
+    <p>You don't need to create an account or set up a recurring subscription. You just open your terminal, paste a single line of code, and hit enter.</p>
+
+    <p><strong>On Mac (Open the 'Terminal' app):</strong></p>
+
+    <div class="terminal-visual copyable" onclick="copyCmd(this,'curl -sL https://nogoon.io/setup.sh | sudo bash')">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <code><span style="color:var(--muted)">$</span> curl -sL https://nogoon.io/setup.sh | sudo bash</code>
+      <button class="copy-btn">Copy</button>
+    </div>
+
+    <p><strong>On Windows (Open 'PowerShell' as Administrator):</strong></p>
+
+    <pre class="copyable" onclick="copyCmd(this,'irm https://nogoon.io/setup.ps1 | iex')">irm https://nogoon.io/setup.ps1 | iex<button class="copy-btn">Copy</button></pre>
+
+    <p style="text-align:center;margin:1.5rem 0"><a href="https://nogoon.io" style="color:var(--blue);font-weight:700;font-size:1.05rem">&rarr; Copy the command from the official site</a></p>
+
+    <p>That command downloads the script, applies the system-level block, and locks it into your OS network configuration. It instantly sets up a 72-hour free trial. No credit card. No account. If it successfully stops you from bypassing it, you pay a one-time $9 fee to keep it forever.</p>
+
+    <h2>Wait, is running a terminal script safe?</h2>
+
+    <p>Full transparency: You should always be cautious about running sudo or Administrator scripts.</p>
+
+    <div class="trust-signal">
+      <strong>Here's the difference:</strong> Unlike commercial SaaS blockers that hide their code inside a closed application (and can silently track your browsing history), Nogoon is a 100% transparent text script. Before you run it, we actively encourage you to copy the script URL, paste it into ChatGPT, and ask the AI to verify exactly what the code does. You will see that it simply routes explicit traffic to a black hole. Zero tracking. Zero data collection. Total privacy.
+    </div>
+
+    <h2>Standard Blockers vs. Unbreakable Scripts</h2>
+
+    <table class="comp-table">
+      <tr>
+        <th>Bypass Vector</th>
+        <th>Standard Blocker</th>
+        <th>Nogoon</th>
+      </tr>
+      <tr>
+        <td>Incognito Mode</td>
+        <td>Often bypasses block</td>
+        <td>Blocked at the network level</td>
+      </tr>
+      <tr>
+        <td>Force Quit</td>
+        <td>Kills the app</td>
+        <td>No app to quit</td>
+      </tr>
+      <tr>
+        <td>Uninstalling</td>
+        <td>Takes 15 seconds</td>
+        <td>Requires technical terminal reversal</td>
+      </tr>
+      <tr>
+        <td>The "Pause" Button</td>
+        <td>Built-in feature</td>
+        <td>Does not exist</td>
+      </tr>
+    </table>
+
+    <p>Bottom line: If you know how to turn your blocker off, it is only a matter of time until you do. Make it impossible.</p>
+
+    <div class="success-cta">
+      <h3>Stop relying on willpower.</h3>
+      <p>One command. One payment. Permanent block. No account. No easy way out.</p>
+      <a href="https://nogoon.io" class="cta-btn-primary">Try Nogoon Free for 72 Hours</a>
+    </div>
+
+        <!-- ═══ RELATED (SEO keyword-rich interlinks) ═══ -->
+    <div class="related">
+      <h3>Related articles</h3>
+      <a href="/blog/how-to-block-porn-forever">How to Block Porn Forever (The Only Method That Works in 2026)</a>
+      <a href="/blog/best-permanent-porn-blocker-2026">Best Permanent Porn Blocker 2026 (No Monthly Fee)</a>
+      <a href="/blog/nogoon-vs-cold-turkey">Nogoon vs. Cold Turkey: Which Blocker is Actually "Unbreakable"?</a>
+      <a href="/blog/nogoon-vs-covenant-eyes">Covenant Eyes vs. Nogoon: Which Blocker Actually Works in 2026?</a>
+      <a href="/blog/hosts-file-block-vs-nogoon">Hosts File Porn Block vs. Nogoon: Why DIY Methods Fail in 2026</a>
+    </div>
+  </article>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <svg class="footer-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="#fff" d="M3.4,10.9h0.9v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8H5v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H3.4V10.9z"/><path fill="#fff" d="M9.2,12.1c0-0.9,0.4-1.4,1.1-1.4c0.3,0,0.5,0.1,0.6,0.3v-0.2h0.9v2.7c0,0.7-0.5,1.1-1.3,1.1c-0.7,0-1.2-0.3-1.3-1h0.9c0,0.2,0.2,0.3,0.4,0.3c0.2,0,0.3-0.1,0.3-0.4v-0.4c-0.2,0.2-0.4,0.3-0.6,0.3C9.6,13.5,9.2,13,9.2,12.1z M10.9,12.1c0-0.4-0.1-0.6-0.4-0.6c-0.2,0-0.4,0.2-0.4,0.6s0.1,0.6,0.4,0.6C10.8,12.7,10.9,12.5,10.9,12.1z"/><path fill="#fff" d="M12.1,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C12.7,13.6,12.1,13.1,12.1,12.2z M13.9,12.2c0-0.4-0.1-0.7-0.4-0.7s-0.4,0.2-0.4,0.7c0,0.4,0.1,0.7,0.4,0.7S13.9,12.6,13.9,12.2z"/><path fill="#fff" d="M15,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C15.6,13.6,15,13.1,15,12.2z M16.8,12.2c0-0.4-0.1-0.7-0.4-0.7S16,11.8,16,12.2c0,0.4,0.1,0.7,0.4,0.7S16.8,12.6,16.8,12.2z"/><path fill="#fff" d="M18,10.9H19v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8h-0.9v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H18V10.9z"/><image style="overflow:visible;" width="512" height="512" href="/shield.png" transform="matrix(5.965982e-03 0 0 5.965982e-03 6.0347 10.6575)"/></svg>
+    <p>Built by someone who needed this too.</p>
+    <p style="margin-top:1rem;font-size:.75rem"><a href="/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="/terms.html">Terms of Service</a></p>
+  </footer>
+
+  <script>
+  /* ── Click-to-Copy with Toast ── */
+  function copyCmd(el, cmd) {
+    navigator.clipboard.writeText(cmd).then(() => {
+      const btn = el.querySelector('.copy-btn');
+      if (btn) { btn.textContent = 'Copied!'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000); }
+      const toast = document.getElementById('copy-toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4500);
+    });
+  }
+
+  /* ── Sticky Progress Bar + CTA ── */
+  (function() {
+    const bar = document.getElementById('progress-bar');
+    const cta = document.getElementById('sticky-cta');
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollTop = window.scrollY;
+        const docH = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = Math.min((scrollTop / docH) * 100, 100);
+        bar.style.width = pct + '%';
+        if (pct >= 50) {
+          cta.classList.add('visible');
+          bar.style.top = '44px';
+        } else {
+          cta.classList.remove('visible');
+          bar.style.top = '0';
+        }
+        ticking = false;
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+  </script>
+</body>
+</html>
