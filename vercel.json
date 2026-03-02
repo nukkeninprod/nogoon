@@ -2,7 +2,9 @@
   "rewrites": [
     { "source": "/setup.sh", "destination": "/setup.sh" },
     { "source": "/setup.ps1", "destination": "/setup.ps1" },
-    { "source": "/success", "destination": "/success.html" }
+    { "source": "/success", "destination": "/success.html" },
+    { "source": "/blog", "destination": "/blog/index.html" },
+    { "source": "/blog/best-permanent-porn-blocker-2026", "destination": "/blog/best-permanent-porn-blocker-2026.html" }
   ],
   "headers": [
     {
