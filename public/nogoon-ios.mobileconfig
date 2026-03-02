@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <dict>
+            <key>DNSSettings</key>
+            <dict>
+                <key>DNSProtocol</key>
+                <string>HTTPS</string>
+                <key>ServerAddresses</key>
+                <array>
+                    <string>1.1.1.3</string>
+                    <string>1.0.0.3</string>
+                </array>
+                <key>ServerURL</key>
+                <string>https://family.cloudflare-dns.com/dns-query</string>
+            </dict>
+            <key>OnDemandRules</key>
+            <array>
+                <dict>
+                    <key>Action</key>
+                    <string>Connect</string>
+                </dict>
+            </array>
+            <key>PayloadDescription</key>
+            <string>Routes all DNS queries through encrypted DNS-over-HTTPS to block adult content at the network level.</string>
+            <key>PayloadDisplayName</key>
+            <string>Nogoon DNS Block</string>
+            <key>PayloadIdentifier</key>
+            <string>io.nogoon.dns</string>
+            <key>PayloadType</key>
+            <string>com.apple.dnsSettings.managed</string>
+            <key>PayloadUUID</key>
+            <string>A8F3D1B2-4E56-7C90-ABCD-3F1234567890</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+        </dict>
+    </array>
+    <key>PayloadDescription</key>
+    <string>Nogoon iOS — System-level DNS block for adult content. Works across all browsers and apps. No data collected. No account required.</string>
+    <key>PayloadDisplayName</key>
+    <string>Nogoon — Permanent Porn Blocker</string>
+    <key>PayloadIdentifier</key>
+    <string>io.nogoon.profile</string>
+    <key>PayloadOrganization</key>
+    <string>Nogoon</string>
+    <key>PayloadRemovalDisallowed</key>
+    <false/>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>B9C4E2D3-5F67-8A01-BCDE-4G2345678901</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+    <key>ConsentText</key>
+    <dict>
+        <key>default</key>
+        <string>This profile configures your iPhone to use encrypted DNS-over-HTTPS that blocks adult content at the network level. It works across all apps, browsers, WiFi, and cellular data. No data is collected. No account is required. To remove: Settings → General → VPN &amp; Device Management → Nogoon → Remove Profile.</string>
+    </dict>
+</dict>
+</plist>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>nogoon — Block Porn on iPhone (No App Required)</title>
+  <meta name="description" content="Block porn on your iPhone permanently with a single tap. No app, no account. System-level DNS block that works across all apps and browsers.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://nogoon.io/ios">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0B1120">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nogoon.io/ios">
+  <meta property="og:title" content="nogoon — Block Porn on iPhone (No App)">
+  <meta property="og:description" content="One tap. No app. Porn blocked on your iPhone forever.">
+  <meta property="og:image" content="https://nogoon.io/og-image.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    :root{--bg:#0B1120;--card:#111827;--border:rgba(161,234,251,.15);--text:#fafafa;--muted:#94a3b8;--accent:#00555A;--accent-glow:rgba(0,85,90,.25);--blue:#A1EAFB;--green:#22c55e}
+    body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+    /* ── Glow ── */
+    .glow-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .glow-bg::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%)}
+
+    /* ── Header ── */
+    header{padding:1.5rem 2rem;display:flex;align-items:center;justify-content:center;position:relative;z-index:10}
+    header .header-logo{height:80px;width:auto}
+    header nav{position:absolute;right:2rem;display:flex;align-items:center;gap:1.25rem}
+    header nav a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .2s}
+    header nav a:hover{color:var(--text)}
+
+    /* ── Main ── */
+    main{max-width:640px;margin:0 auto;padding:1rem 1.5rem 4rem;position:relative;z-index:1}
+
+    h1{font-size:clamp(1.8rem,5vw,2.4rem);font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:.5rem;text-align:center}
+    .subtitle{color:var(--muted);font-size:1rem;text-align:center;margin-bottom:2.5rem;line-height:1.6}
+
+    /* ── Download Button ── */
+    .download-btn{display:block;width:100%;max-width:400px;margin:0 auto 2rem;padding:1.1rem 2rem;background:var(--accent);color:#fff;font-size:1.1rem;font-weight:700;text-align:center;text-decoration:none;border-radius:12px;transition:all .3s;border:1px solid rgba(161,234,251,.2);position:relative;overflow:hidden}
+    .download-btn:hover{background:#006d73;transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,85,90,.4)}
+    .download-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);pointer-events:none}
+    .download-btn .btn-sub{display:block;font-size:.8rem;font-weight:400;color:rgba(255,255,255,.7);margin-top:.25rem}
+
+    /* ── Steps ── */
+    .steps{margin:2.5rem 0}
+    .step{display:flex;gap:1rem;margin-bottom:1.5rem;align-items:flex-start}
+    .step-num{flex-shrink:0;width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:var(--blue)}
+    .step-content h3{font-size:1rem;font-weight:600;margin-bottom:.25rem}
+    .step-content p{color:var(--muted);font-size:.9rem;line-height:1.5}
+
+    /* ── Info Cards ── */
+    .info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+    .info-card h3{font-size:1rem;font-weight:700;margin-bottom:.5rem;color:var(--blue)}
+    .info-card p{color:var(--muted);font-size:.9rem;line-height:1.6}
+
+    /* ── Checklist ── */
+    .check-list{list-style:none;margin:1.5rem 0}
+    .check-list li{padding:.5rem 0;color:var(--muted);font-size:.9rem;display:flex;align-items:center;gap:.6rem}
+    .check-list li::before{content:'✓';color:var(--green);font-weight:700;font-size:1rem}
+
+    /* ── Trust ── */
+    .trust-signal{background:rgba(0,85,90,.15);border:1px solid rgba(161,234,251,.1);border-radius:10px;padding:1rem 1.25rem;margin:2rem 0;font-size:.9rem;line-height:1.6;color:var(--muted)}
+    .trust-signal strong{color:var(--text)}
+
+    /* ── PC link ── */
+    .pc-link{text-align:center;margin:2rem 0;padding:1.25rem;background:var(--card);border:1px solid var(--border);border-radius:12px}
+    .pc-link p{color:var(--muted);font-size:.9rem;margin-bottom:.5rem}
+    .pc-link a{color:var(--blue);font-weight:600;text-decoration:none;font-size:.95rem}
+    .pc-link a:hover{text-decoration:underline}
+
+    /* ── Footer ── */
+    footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem;position:relative;z-index:1}
+    footer a{color:var(--muted);text-decoration:none}
+    footer a:hover{color:var(--text)}
+    footer .footer-logo{width:80px;height:auto;margin-bottom:.75rem;opacity:.5}
+    footer p{margin-top:.5rem}
+  </style>
+</head>
+<body>
+
+  <div class="glow-bg"></div>
+
+  <header>
+    <a href="/">
+      <svg class="header-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="#fff" d="M3.4,10.9h0.9v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8H5v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H3.4V10.9z"/><path fill="#fff" d="M9.2,12.1c0-0.9,0.4-1.4,1.1-1.4c0.3,0,0.5,0.1,0.6,0.3v-0.2h0.9v2.7c0,0.7-0.5,1.1-1.3,1.1c-0.7,0-1.2-0.3-1.3-1h0.9c0,0.2,0.2,0.3,0.4,0.3c0.2,0,0.3-0.1,0.3-0.4v-0.4c-0.2,0.2-0.4,0.3-0.6,0.3C9.6,13.5,9.2,13,9.2,12.1z M10.9,12.1c0-0.4-0.1-0.6-0.4-0.6c-0.2,0-0.4,0.2-0.4,0.6s0.1,0.6,0.4,0.6C10.8,12.7,10.9,12.5,10.9,12.1z"/><path fill="#fff" d="M12.1,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C12.7,13.6,12.1,13.1,12.1,12.2z M13.9,12.2c0-0.4-0.1-0.7-0.4-0.7s-0.4,0.2-0.4,0.7c0,0.4,0.1,0.7,0.4,0.7S13.9,12.6,13.9,12.2z"/><path fill="#fff" d="M15,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C15.6,13.6,15,13.1,15,12.2z M16.8,12.2c0-0.4-0.1-0.7-0.4-0.7S16,11.8,16,12.2c0,0.4,0.1,0.7,0.4,0.7S16.8,12.6,16.8,12.2z"/><path fill="#fff" d="M18,10.9H19v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8h-0.9v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H18V10.9z"/><image style="overflow:visible;" width="512" height="512" href="/shield.png" transform="matrix(5.965982e-03 0 0 5.965982e-03 6.0347 10.6575)"/></svg>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/blog">Blog</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Block Porn on iPhone.<br>No App Required.</h1>
+    <p class="subtitle">One tap installs a system-level DNS block that works across every app, every browser, WiFi and cellular. No account. No subscription.</p>
+
+    <a href="/nogoon-ios.mobileconfig" class="download-btn">
+      ⬇ Install Nogoon for iOS
+      <span class="btn-sub">Free — Downloads a configuration profile</span>
+    </a>
+
+    <ul class="check-list">
+      <li>Works across Safari, Chrome, all apps</li>
+      <li>Blocks on WiFi and cellular data</li>
+      <li>No app to install or update</li>
+      <li>No account or email required</li>
+      <li>No data collected — zero tracking</li>
+      <li>Encrypted DNS-over-HTTPS (DoH)</li>
+    </ul>
+
+    <div class="steps">
+      <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;color:var(--blue)">How to install (30 seconds)</h2>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Tap "Install Nogoon for iOS" above</h3>
+          <p>Safari will show "This website is trying to download a configuration profile." Tap <strong>Allow</strong>.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Open Settings</h3>
+          <p>Go to <strong>Settings → General → VPN & Device Management</strong>. You'll see "Nogoon — Permanent Porn Blocker" listed as a downloaded profile.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Tap "Install"</h3>
+          <p>Enter your passcode when prompted. Tap <strong>Install</strong> again to confirm. That's it — the block is active immediately.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>How does it work?</h3>
+      <p>The profile configures your iPhone to route all DNS queries through <strong>encrypted DNS-over-HTTPS</strong>. Any request to a known adult domain gets blocked before it ever loads — across every app, every browser, including Safari Private Browsing. There's no VPN, no battery drain, and no speed impact.</p>
+    </div>
+
+    <div class="info-card">
+      <h3>Can it be removed?</h3>
+      <p>Yes, but it requires navigating to Settings → General → VPN & Device Management → Nogoon → Remove Profile. There's no "pause" button. No quick toggle. Just enough friction to stop a moment of weakness from undoing your decision.</p>
+    </div>
+
+    <div class="trust-signal">
+      <strong>Full transparency:</strong> This profile uses Cloudflare's Family DNS (1.1.1.3) which is a free, privacy-focused DNS service that blocks adult content. No data is sent to Nogoon. No account is created. The profile is a standard Apple configuration file — you can inspect the XML yourself before installing.
+    </div>
+
+    <div class="pc-link">
+      <p>Also need to block on your Mac or PC?</p>
+      <a href="/">→ Get the desktop version (permanent, $9 one-time)</a>
+    </div>
+  </main>
+
+  <footer>
+    <svg class="footer-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="#fff" d="M3.4,10.9h0.9v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8H5v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H3.4V10.9z"/><path fill="#fff" d="M9.2,12.1c0-0.9,0.4-1.4,1.1-1.4c0.3,0,0.5,0.1,0.6,0.3v-0.2h0.9v2.7c0,0.7-0.5,1.1-1.3,1.1c-0.7,0-1.2-0.3-1.3-1h0.9c0,0.2,0.2,0.3,0.4,0.3c0.2,0,0.3-0.1,0.3-0.4v-0.4c-0.2,0.2-0.4,0.3-0.6,0.3C9.6,13.5,9.2,13,9.2,12.1z M10.9,12.1c0-0.4-0.1-0.6-0.4-0.6c-0.2,0-0.4,0.2-0.4,0.6s0.1,0.6,0.4,0.6C10.8,12.7,10.9,12.5,10.9,12.1z"/><path fill="#fff" d="M12.1,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C12.7,13.6,12.1,13.1,12.1,12.2z M13.9,12.2c0-0.4-0.1-0.7-0.4-0.7s-0.4,0.2-0.4,0.7c0,0.4,0.1,0.7,0.4,0.7S13.9,12.6,13.9,12.2z"/><path fill="#fff" d="M15,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C15.6,13.6,15,13.1,15,12.2z M16.8,12.2c0-0.4-0.1-0.7-0.4-0.7S16,11.8,16,12.2c0,0.4,0.1,0.7,0.4,0.7S16.8,12.6,16.8,12.2z"/><path fill="#fff" d="M18,10.9H19v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8h-0.9v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H18V10.9z"/><image style="overflow:visible;" width="512" height="512" href="/shield.png" transform="matrix(5.965982e-03 0 0 5.965982e-03 6.0347 10.6575)"/></svg>
+    <p>Built by someone who needed this too.</p>
+    <p style="margin-top:1rem;font-size:.75rem"><a href="/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="/terms.html">Terms of Service</a></p>
+  </footer>
+</body>
+</html>
