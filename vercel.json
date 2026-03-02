@@ -39,6 +39,10 @@
     {
       "source": "/ios",
       "destination": "/ios.html"
+    },
+    {
+      "source": "/blog/how-to-block-porn-forever",
+      "destination": "/blog/how-to-block-porn-forever.html"
     }
   ],
   "headers": [
