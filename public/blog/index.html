@@ -15,14 +15,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    :root{--bg:#0B1120;--card:#111827;--border:rgba(161,234,251,.15);--text:#fafafa;--muted:#94a3b8;--accent:#00555A;--blue:#A1EAFB}
-    body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    html{scroll-behavior:smooth}
+    :root{--bg:#0B1120;--card:#111827;--border:rgba(161,234,251,.15);--text:#fafafa;--muted:#94a3b8;--accent:#00555A;--accent-glow:rgba(0,85,90,.25);--blue:#A1EAFB}
+    body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-    .blog-nav{padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;max-width:800px;margin:0 auto}
-    .blog-nav a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .2s}
-    .blog-nav a:hover{color:var(--text)}
+    /* ── Header ── */
+    header{padding:1.5rem 2rem;display:flex;align-items:center;justify-content:center;position:relative;z-index:10}
+    header .header-logo{height:56px;width:auto}
+    header nav{position:absolute;right:2rem;display:flex;align-items:center;gap:1.25rem}
+    header nav a{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .2s}
+    header nav a:hover{color:var(--text)}
 
-    main{max-width:720px;margin:0 auto;padding:2rem 1.5rem 4rem}
+    main{max-width:720px;margin:0 auto;padding:2rem 1.5rem 4rem;position:relative;z-index:1}
     h1{font-size:2.2rem;font-weight:800;margin-bottom:.5rem}
     .subtitle{color:var(--muted);font-size:1rem;margin-bottom:3rem}
 
@@ -33,16 +37,30 @@
     .post-card p{color:var(--muted);font-size:.9rem;line-height:1.5}
     .post-card .post-meta{color:#555;font-size:.8rem;margin-top:.6rem}
 
-    .blog-footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem;max-width:800px;margin:0 auto}
-    .blog-footer a{color:var(--muted);text-decoration:none}
-    .blog-footer a:hover{color:var(--text)}
+    /* ── Footer ── */
+    footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--muted);font-size:.8rem;position:relative;z-index:1}
+    footer a{color:var(--muted);text-decoration:none}
+    footer a:hover{color:var(--text)}
+    footer .footer-logo{width:80px;height:auto;margin-bottom:.75rem;opacity:.5}
+    footer p{margin-top:.5rem}
+
+    /* ── Glow ── */
+    .glow-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .glow-bg::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%)}
   </style>
 </head>
 <body>
 
-  <nav class="blog-nav">
-    <a href="/">← nogoon.io</a>
-  </nav>
+  <div class="glow-bg"></div>
+
+  <header>
+    <a href="/">
+      <svg class="header-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="#fff" d="M3.4,10.9h0.9v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8H5v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H3.4V10.9z"/><path fill="#fff" d="M9.2,12.1c0-0.9,0.4-1.4,1.1-1.4c0.3,0,0.5,0.1,0.6,0.3v-0.2h0.9v2.7c0,0.7-0.5,1.1-1.3,1.1c-0.7,0-1.2-0.3-1.3-1h0.9c0,0.2,0.2,0.3,0.4,0.3c0.2,0,0.3-0.1,0.3-0.4v-0.4c-0.2,0.2-0.4,0.3-0.6,0.3C9.6,13.5,9.2,13,9.2,12.1z M10.9,12.1c0-0.4-0.1-0.6-0.4-0.6c-0.2,0-0.4,0.2-0.4,0.6s0.1,0.6,0.4,0.6C10.8,12.7,10.9,12.5,10.9,12.1z"/><path fill="#fff" d="M12.1,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C12.7,13.6,12.1,13.1,12.1,12.2z M13.9,12.2c0-0.4-0.1-0.7-0.4-0.7s-0.4,0.2-0.4,0.7c0,0.4,0.1,0.7,0.4,0.7S13.9,12.6,13.9,12.2z"/><path fill="#fff" d="M15,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C15.6,13.6,15,13.1,15,12.2z M16.8,12.2c0-0.4-0.1-0.7-0.4-0.7S16,11.8,16,12.2c0,0.4,0.1,0.7,0.4,0.7S16.8,12.6,16.8,12.2z"/><path fill="#fff" d="M18,10.9H19v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8h-0.9v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H18V10.9z"/><image style="overflow:visible;" width="512" height="512" href="/shield.png" transform="matrix(5.965982e-03 0 0 5.965982e-03 6.0347 10.6575)"/></svg>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+    </nav>
+  </header>
 
   <main>
     <h1>Blog</h1>
@@ -59,8 +77,10 @@
     </div>
   </main>
 
-  <footer class="blog-footer">
-    <p>© 2026 <a href="/">nogoon</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></p>
+  <footer>
+    <svg class="footer-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="#fff" d="M3.4,10.9h0.9v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8H5v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H3.4V10.9z"/><path fill="#fff" d="M9.2,12.1c0-0.9,0.4-1.4,1.1-1.4c0.3,0,0.5,0.1,0.6,0.3v-0.2h0.9v2.7c0,0.7-0.5,1.1-1.3,1.1c-0.7,0-1.2-0.3-1.3-1h0.9c0,0.2,0.2,0.3,0.4,0.3c0.2,0,0.3-0.1,0.3-0.4v-0.4c-0.2,0.2-0.4,0.3-0.6,0.3C9.6,13.5,9.2,13,9.2,12.1z M10.9,12.1c0-0.4-0.1-0.6-0.4-0.6c-0.2,0-0.4,0.2-0.4,0.6s0.1,0.6,0.4,0.6C10.8,12.7,10.9,12.5,10.9,12.1z"/><path fill="#fff" d="M12.1,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C12.7,13.6,12.1,13.1,12.1,12.2z M13.9,12.2c0-0.4-0.1-0.7-0.4-0.7s-0.4,0.2-0.4,0.7c0,0.4,0.1,0.7,0.4,0.7S13.9,12.6,13.9,12.2z"/><path fill="#fff" d="M15,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C15.6,13.6,15,13.1,15,12.2z M16.8,12.2c0-0.4-0.1-0.7-0.4-0.7S16,11.8,16,12.2c0,0.4,0.1,0.7,0.4,0.7S16.8,12.6,16.8,12.2z"/><path fill="#fff" d="M18,10.9H19v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8h-0.9v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H18V10.9z"/><image style="overflow:visible;" width="512" height="512" href="/shield.png" transform="matrix(5.965982e-03 0 0 5.965982e-03 6.0347 10.6575)"/></svg>
+    <p>Built by someone who needed this too.</p>
+    <p style="margin-top:1rem;font-size:.75rem"><a href="/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="/terms.html">Terms of Service</a></p>
   </footer>
 </body>
 </html>
