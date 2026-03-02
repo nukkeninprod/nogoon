@@ -31,6 +31,10 @@
     {
       "source": "/blog/how-to-block-porn-forever-8-seconds",
       "destination": "/blog/how-to-block-porn-forever-8-seconds.html"
+    },
+    {
+      "source": "/blog/hosts-file-block-vs-nogoon",
+      "destination": "/blog/hosts-file-block-vs-nogoon.html"
     }
   ],
   "headers": [
