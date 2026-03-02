@@ -23,6 +23,10 @@
     {
       "source": "/blog/nogoon-vs-cold-turkey",
       "destination": "/blog/nogoon-vs-cold-turkey.html"
+    },
+    {
+      "source": "/blog/nogoon-vs-covenant-eyes",
+      "destination": "/blog/nogoon-vs-covenant-eyes.html"
     }
   ],
   "headers": [
