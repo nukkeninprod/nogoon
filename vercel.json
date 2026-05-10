@@ -41,6 +41,10 @@
       "destination": "/ios.html"
     },
     {
+      "source": "/stop-gooning",
+      "destination": "/stop-gooning.html"
+    },
+    {
       "source": "/blog/how-to-block-porn-forever",
       "destination": "/blog/how-to-block-porn-forever.html"
     },
