@@ -326,6 +326,23 @@
       z-index: 1;
     }
   </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17897044845"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-17897044845');
+
+    // Google Ads purchase conversion — fires once per success page view.
+    // TODO: replace CONVERSION_LABEL with the label from your Google Ads "Purchase" conversion action.
+    gtag('event', 'conversion', {
+      'send_to': 'AW-17897044845/CONVERSION_LABEL',
+      'value': 9.0,
+      'currency': 'USD',
+      'transaction_id': new URLSearchParams(window.location.search).get('session_id') || ''
+    });
+  </script>
 </head>
 <body>
 

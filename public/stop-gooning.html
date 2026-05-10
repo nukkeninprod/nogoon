@@ -899,6 +899,14 @@
       }
     }
   </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17897044845"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-17897044845');
+  </script>
 </head>
 <body>
 
@@ -1204,6 +1212,9 @@
         e.preventDefault();
         const loc = i === 0 ? 'hero' : i === 1 ? 'mid' : 'footer';
         track('click_buy', { location: loc });
+        if (typeof gtag === 'function') {
+          gtag('event', 'begin_checkout', { value: 9.0, currency: 'USD', location: loc });
+        }
         window.location.href = '/api/checkout';
       });
     });
