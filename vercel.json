@@ -71,6 +71,10 @@
     {
       "source": "/blog/best-apps-to-quit-porn",
       "destination": "/blog/best-apps-to-quit-porn.html"
+    },
+    {
+      "source": "/blog/how-to-actually-quit-porn",
+      "destination": "/blog/how-to-actually-quit-porn.html"
     }
   ],
   "headers": [
