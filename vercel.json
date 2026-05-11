@@ -95,6 +95,10 @@
     {
       "source": "/blog/nogoon-vs-qustodio",
       "destination": "/blog/nogoon-vs-qustodio.html"
+    },
+    {
+      "source": "/blog/nogoon-vs-net-nanny",
+      "destination": "/blog/nogoon-vs-net-nanny.html"
     }
   ],
   "headers": [
