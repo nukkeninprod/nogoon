@@ -103,6 +103,10 @@
     {
       "source": "/blog/nogoon-vs-bark",
       "destination": "/blog/nogoon-vs-bark.html"
+    },
+    {
+      "source": "/blog/how-to-block-porn-on-chrome-permanently",
+      "destination": "/blog/how-to-block-porn-on-chrome-permanently.html"
     }
   ],
   "headers": [
