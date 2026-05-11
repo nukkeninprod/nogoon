@@ -111,6 +111,10 @@
     {
       "source": "/blog/how-to-block-porn-on-safari-mac",
       "destination": "/blog/how-to-block-porn-on-safari-mac.html"
+    },
+    {
+      "source": "/blog/how-to-block-porn-on-firefox-permanently",
+      "destination": "/blog/how-to-block-porn-on-firefox-permanently.html"
     }
   ],
   "headers": [
