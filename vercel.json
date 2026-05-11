@@ -91,6 +91,10 @@
     {
       "source": "/blog/nogoon-vs-blocksite-2026",
       "destination": "/blog/nogoon-vs-blocksite-2026.html"
+    },
+    {
+      "source": "/blog/nogoon-vs-qustodio",
+      "destination": "/blog/nogoon-vs-qustodio.html"
     }
   ],
   "headers": [
