@@ -55,6 +55,10 @@
     {
       "source": "/blog/covenant-eyes-alternative",
       "destination": "/blog/covenant-eyes-alternative.html"
+    },
+    {
+      "source": "/blog/covenant-eyes-free-alternative",
+      "destination": "/blog/covenant-eyes-free-alternative.html"
     }
   ],
   "headers": [
