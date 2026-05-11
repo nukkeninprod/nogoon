@@ -111,6 +111,10 @@
     {
       "source": "/blog/easy-peasy-way-to-quit-porn",
       "destination": "/blog/easy-peasy-way-to-quit-porn.html"
+    },
+    {
+      "source": "/blog/the-easy-peasy-way-to-quit-porn",
+      "destination": "/blog/the-easy-peasy-way-to-quit-porn.html"
     }
   ],
   "headers": [
