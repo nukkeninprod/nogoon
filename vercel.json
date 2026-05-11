@@ -87,6 +87,10 @@
     {
       "source": "/blog/the-easy-peasy-way-to-quit-porn",
       "destination": "/blog/the-easy-peasy-way-to-quit-porn.html"
+    },
+    {
+      "source": "/blog/nogoon-vs-blocksite-2026",
+      "destination": "/blog/nogoon-vs-blocksite-2026.html"
     }
   ],
   "headers": [
