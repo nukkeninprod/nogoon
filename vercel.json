@@ -99,6 +99,10 @@
     {
       "source": "/blog/quit-porn-forever",
       "destination": "/blog/quit-porn-forever.html"
+    },
+    {
+      "source": "/blog/quit-porn-benefits",
+      "destination": "/blog/quit-porn-benefits.html"
     }
   ],
   "headers": [
