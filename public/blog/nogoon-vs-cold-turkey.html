@@ -159,13 +159,14 @@
     .glow-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
     .glow-bg::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%)}
   </style>
-  <!-- Google tag (gtag.js) -->
+  <!-- Google tag (gtag.js) — Google Ads + GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17897044845"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'AW-17897044845');
+    gtag('config', 'G-0TPCRYPNQT');
   </script>
 </head>
 <body>
@@ -326,8 +327,15 @@
       const toast = document.getElementById('copy-toast');
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 4500);
+      if (typeof gtag === 'function') gtag('event', 'copy_command', { location: 'blog', os: cmd.includes('powershell') || cmd.includes('irm') ? 'win' : 'mac' });
     });
   }
+  // Track blog CTA clicks to nogoon.io
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('a[href*="nogoon.io"], a.cta-btn, a.cta-btn-primary');
+    if (!a) return;
+    if (typeof gtag === 'function') gtag('event', 'click_blog_cta', { href: a.getAttribute('href') || '', text: (a.textContent||'').trim().slice(0,60) });
+  });
 
   /* ── Sticky Progress Bar + CTA ── */
   (function() {

@@ -333,6 +333,7 @@
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'AW-17897044845');
+    gtag('config', 'G-0TPCRYPNQT');
 
     // Google Ads purchase conversion — fires once per success page view.
     gtag('event', 'conversion', {
@@ -340,6 +341,14 @@
       'value': 9.0,
       'currency': 'USD',
       'transaction_id': new URLSearchParams(window.location.search).get('session_id') || ''
+    });
+
+    // GA4 purchase event
+    gtag('event', 'purchase', {
+      'transaction_id': new URLSearchParams(window.location.search).get('session_id') || '',
+      'value': 9.0,
+      'currency': 'USD',
+      'items': [{ 'item_id': 'nogoon_permanent', 'item_name': 'nogoon permanent block', 'price': 9.0, 'quantity': 1 }]
     });
   </script>
 </head>
