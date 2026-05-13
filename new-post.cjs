@@ -49,13 +49,39 @@ if (fs.existsSync(outputPath)) {
 // ── 3. Generate post from template ──
 let html = fs.readFileSync(templatePath, 'utf8');
 
-// Replace all placeholder tokens
-html = html.replace(/TITLE/g, title);
-html = html.replace(/META_DESCRIPTION/g, desc);
-html = html.replace(/OG_DESCRIPTION/g, desc);
-html = html.replace(/SLUG/g, slug);
-html = html.replace(/"datePublished": ".*?"/, `"datePublished": "${today}"`);
-html = html.replace(/"dateModified": ".*?"/, `"dateModified": "${today}"`);
+// Context-aware escaping: HTML attributes need &quot;, JSON-LD needs \"
+const htmlAttr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const jsonStr  = (s) => JSON.stringify(String(s)).slice(1, -1); // escapes " and \ for JSON
+
+// Split out the JSON-LD block so we can apply different escaping inside it
+const jsonldRe = /(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/;
+const m = html.match(jsonldRe);
+if (!m) { console.error('❌ Template missing JSON-LD block'); process.exit(1); }
+const [, openTag, jsonldBody, closeTag] = m;
+
+// Replace inside JSON-LD with JSON-escaped values
+let jsonld = jsonldBody
+  .replace(/TITLE/g, jsonStr(title))
+  .replace(/META_DESCRIPTION/g, jsonStr(desc))
+  .replace(/OG_DESCRIPTION/g, jsonStr(desc))
+  .replace(/SLUG/g, jsonStr(slug))
+  .replace(/"datePublished": ".*?"/, `"datePublished": "${today}"`)
+  .replace(/"dateModified": ".*?"/, `"dateModified": "${today}"`);
+
+// Replace outside JSON-LD with HTML-attribute-escaped values (but leave body H1/breadcrumb plain — handled below)
+const htmlBefore = html.slice(0, m.index);
+const htmlAfter  = html.slice(m.index + m[0].length);
+
+const escapeOutside = (chunk) => chunk
+  .replace(/META_DESCRIPTION/g, htmlAttr(desc))
+  .replace(/OG_DESCRIPTION/g, htmlAttr(desc))
+  .replace(/SLUG/g, slug);
+
+// TITLE appears in HTML attrs AND in plain body text (h1, <title>, breadcrumb).
+// Use HTML-escaped form; raw " will become &quot; which renders correctly in body too.
+const escapeTitle = (chunk) => chunk.replace(/TITLE/g, htmlAttr(title));
+
+html = escapeTitle(escapeOutside(htmlBefore)) + openTag + jsonld + closeTag + escapeTitle(escapeOutside(htmlAfter));
 
 // Replace the dummy breadcrumb label
 html = html.replace(/Best Permanent Porn Blocker 2026<\/div>/, `${title}</div>`);
