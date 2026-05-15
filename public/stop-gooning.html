@@ -1164,7 +1164,6 @@
       document.getElementById(barId).innerHTML = os === 'mac' ? macBar : winBar;
       const cmdId = scope === 'hero' ? 'hero-command' : 'mid-command';
       document.getElementById(cmdId).textContent = commands[os];
-      if (scope === 'hero') document.getElementById('app-name').textContent = 'Terminal';
       // Reset copy button
       const btnId = scope === 'hero' ? 'heroCopyBtn' : 'midCopyBtn';
       const btn = document.getElementById(btnId);
