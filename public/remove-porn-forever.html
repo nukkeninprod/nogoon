@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Primary Meta -->
+  <title>Remove Porn From Your Computer Forever — One Terminal Command</title>
+  <meta name="description" content="Remove adult sites from your computer in one terminal command. A clean digital reset for your machine. No app, no subscription, no willpower needed.">
+  <meta name="keywords" content="remove porn, digital reset, clean computer, dopamine reset, focus tool, productivity, deep work, healthy habits">
+  <meta name="author" content="nogoon">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://nogoon.io/remove-porn-forever">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nogoon.io/remove-porn-forever">
+  <meta property="og:title" content="Remove Porn From Your Computer Forever — One Terminal Command">
+  <meta property="og:description" content="Clean your computer of adult sites in one command. A digital reset for focus, sleep, and self-respect.">
+  <meta property="og:image" content="https://nogoon.io/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="nogoon">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://nogoon.io/remove-porn-forever">
+  <meta name="twitter:title" content="Remove Porn From Your Computer Forever — One Terminal Command">
+  <meta name="twitter:description" content="Clean your computer of adult sites in one command. A digital reset for focus, sleep, and self-respect.">
+  <meta name="twitter:image" content="https://nogoon.io/og-image.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0B1120">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "Remove Porn From Your Computer Forever",
+    "description": "Clean your computer of adult sites in one terminal command. A simple digital reset for focus and productivity.",
+    "url": "https://nogoon.io/remove-porn-forever",
+    "step": [
+      {"@type": "HowToStep", "name": "Open your terminal", "text": "Open Terminal on macOS or PowerShell (Admin) on Windows."},
+      {"@type": "HowToStep", "name": "Paste one command", "text": "Paste the nogoon command and hit enter."},
+      {"@type": "HowToStep", "name": "Adult sites removed", "text": "Adult sites are gone from your machine at the system level."}
+    ]
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg: #0B1120;
+      --card: #111827;
+      --border: rgba(161, 234, 251, 0.15);
+      --text: #fafafa;
+      --muted: #94a3b8;
+      --accent: #00555A;
+      --accent-glow: rgba(0, 85, 90, 0.25);
+      --red: #ef4444;
+      --blue: #A1EAFB;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Unicorn Studio background ── */
+    .cyber-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero, section, .story-sections, .final-cta, footer, #faq, header {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Header ── */
+    header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border-bottom: none;
+    }
+
+    header .header-logo {
+      height: 100px;
+      width: auto;
+    }
+
+    header nav {
+      position: absolute;
+      right: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    header nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .85rem;
+      transition: color .2s;
+    }
+    header nav a:hover {
+      color: var(--text);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      position: relative;
+      gap: 0.25rem;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 8vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      max-width: 750px;
+      color: var(--text);
+    }
+
+    h1 .highlight {
+      background: linear-gradient(135deg, #A1EAFB, #d4f5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      font-size: clamp(1.05rem, 3vw, 1.3rem);
+      color: #b0b0b0 ;
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    .arrow-hint {
+      color: var(--muted);
+      font-size: 1.8rem;
+      margin-bottom: 0.75rem;
+      animation: bounce 2s infinite;
+      user-select: none;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    /* ── Terminal preview ── */
+    .terminal {
+      background: var(--card);
+      border: 1px solid rgba(0, 85, 90, 0.4);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      text-align: left;
+      max-width: 550px;
+      width: 100%;
+      margin-bottom: 2.5rem;
+      position: relative;
+      box-shadow:
+        0 0 20px rgba(161, 234, 251, 0.08),
+        0 0 60px rgba(161, 234, 251, 0.05),
+        0 4px 40px rgba(0, 85, 90, 0.15);
+    }
+
+    .terminal .copy-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #162030;
+      border: 1px solid #1e2d42;
+      color: var(--text);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 2;
+    }
+
+    .terminal .copy-btn:hover {
+      background: #1e2d42;
+      border-color: #A1EAFB;
+    }
+
+    .terminal .copy-btn.copied {
+      background: #00555A;
+      color: #fff;
+      border-color: #00555A;
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1rem;
+      min-height: 14px;
+    }
+
+    .terminal-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .terminal-dots span {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .terminal-dots span:nth-child(1) { background: #ff5f57; }
+    .terminal-dots span:nth-child(2) { background: #ffbd2e; }
+    .terminal-dots span:nth-child(3) { background: #28c840; }
+
+    .terminal-win-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .terminal-win-bar .win-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.5;
+    }
+
+    .terminal-win-bar .win-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .terminal-win-bar .win-controls {
+      display: flex;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: #555;
+    }
+
+    .terminal code {
+      color: #fff;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+
+    .terminal .prompt {
+      color: var(--muted);
+    }
+
+    /* ── CTA Buttons ── */
+    .cta-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 0.25rem;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #ffffff;
+      color: #000000;
+      font-weight: 700;
+      font-size: 1.05rem;
+      padding: 0.9rem 2.2rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+    }
+
+    .cta-secondary {
+      background: transparent;
+      border: 1px solid rgba(161, 234, 251, 0.35);
+      color: rgba(161, 234, 251, 0.9);
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 0.9rem 2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cta-secondary:hover {
+      background: rgba(161, 234, 251, 0.06);
+      border-color: rgba(161, 234, 251, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .cta-secondary svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .cta-sub {
+      display: block;
+      font-size: 0.8rem;
+      color: #b0b0b0;
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+
+    /* ── How it works ── */
+    section {
+      padding: 5rem 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .step {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(0, 85, 90, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #A1EAFB;
+    }
+
+    .step-text h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .step-text p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* ── Comparison ── */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .comp-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+
+    .comp-card.bad {
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .comp-card.good {
+      border-color: rgba(0, 85, 90, 0.4);
+      background: linear-gradient(135deg, rgba(0, 85, 90, 0.08), transparent);
+    }
+
+    .comp-card h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .comp-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .comp-card ul li {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .comp-card.bad ul li::before {
+      content: '✘';
+      color: var(--red);
+      flex-shrink: 0;
+    }
+
+    .comp-card.good ul li::before {
+      content: '✓';
+      color: #A1EAFB;
+      flex-shrink: 0;
+    }
+
+    /* ── FAQ ── */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .faq-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .faq-q {
+      padding: 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      user-select: none;
+    }
+
+    .faq-q::after {
+      content: '+';
+      font-size: 1.3rem;
+      color: var(--muted);
+      transition: transform 0.2s;
+    }
+
+    .faq-item.open .faq-q::after {
+      transform: rotate(45deg);
+    }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .faq-item.open .faq-a {
+      max-height: 300px;
+    }
+
+    .faq-a p {
+      padding: 0 1.25rem 1.25rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ── Social proof ── */
+    .proof {
+      text-align: center;
+      padding: 3rem 1.5rem;
+    }
+
+    .proof-num {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 900;
+      color: #A1EAFB;
+    }
+
+    .proof-label {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-top: 0.25rem;
+    }
+
+    /* ── Final CTA ── */
+    .final-cta {
+      text-align: center;
+      padding: 5rem 1.5rem 6rem;
+    }
+
+    .final-cta h2 {
+      margin-bottom: 1rem;
+    }
+
+    .final-cta p {
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 1.05rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    /* ── OS Tabs ── */
+    .os-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .os-tab {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .os-tab svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .os-tab.active {
+      background: rgba(0, 85, 90, 0.15);
+      border-color: rgba(161, 234, 251, 0.4);
+      color: #A1EAFB;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .comparison {
+        grid-template-columns: 1fr;
+      }
+
+      .terminal {
+        font-size: 0.75rem;
+      }
+    }
+
+    /* ── Story sections ── */
+    .story-section {
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+      padding: 6rem 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .story-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .story-section:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+    .story-text {
+      flex: 1;
+    }
+    .story-text h2 {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.15;
+      text-align: left;
+    }
+    .story-text p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      text-align: left;
+    }
+    .story-illustration {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 260px;
+    }
+
+    /* Illustration 1: Browser tab typing animation */
+    .illust-browser {
+      width: 100%;
+      max-width: 340px;
+      background: #152238;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .illust-browser-bar {
+      background: #1a2d48;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .illust-browser-dots {
+      display: flex;
+      gap: 5px;
+    }
+    .illust-browser-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .illust-browser-dots span:nth-child(1) { background: #ff5f57; }
+    .illust-browser-dots span:nth-child(2) { background: #ffbd2e; }
+    .illust-browser-dots span:nth-child(3) { background: #28c840; }
+    .illust-url-bar {
+      flex: 1;
+      background: #1E293B;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      color: #999;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .illust-url-bar .typed-text {
+      color: #ccc;
+      border-right: 2px solid #A1EAFB;
+      padding-right: 2px;
+      animation: blink-cursor 0.8s infinite;
+    }
+    @keyframes blink-cursor {
+      0%, 100% { border-color: #A1EAFB; }
+      50% { border-color: transparent; }
+    }
+    .illust-browser-body {
+      padding: 2rem;
+      text-align: center;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .illust-browser-body .shame-text {
+      color: #555;
+      font-size: 0.85rem;
+      font-style: italic;
+      opacity: 0;
+      animation: fade-shame 6s infinite;
+    }
+    @keyframes fade-shame {
+      0%, 40% { opacity: 0; }
+      55%, 80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* Illustration 2: App icon with trash animation */
+    .illust-app-stack {
+      position: relative;
+      width: 200px;
+      height: 200px;
+    }
+    .illust-app-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 18px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .illust-app-icon.blocker {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      animation: app-drag 4s ease-in-out infinite;
+    }
+    @keyframes app-drag {
+      0%, 30% { transform: translate(-50%, -50%) rotate(0deg); opacity: 1; }
+      60% { transform: translate(60px, 60px) rotate(15deg); opacity: 0.6; }
+      70% { transform: translate(60px, 60px) rotate(15deg) scale(0.3); opacity: 0; }
+      71%, 100% { transform: translate(-50%, -50%) rotate(0deg); opacity: 0; }
+    }
+    .illust-trash {
+      position: absolute;
+      bottom: 5px;
+      right: 15px;
+      font-size: 2rem;
+      opacity: 0.3;
+      animation: trash-glow 4s ease-in-out infinite;
+    }
+    @keyframes trash-glow {
+      0%, 50% { opacity: 0.3; }
+      65% { opacity: 1; transform: scale(1.15); }
+      80%, 100% { opacity: 0.3; transform: scale(1); }
+    }
+    .illust-app-back {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      opacity: 0;
+      animation: app-reappear 4s ease-in-out infinite;
+    }
+    @keyframes app-reappear {
+      0%, 75% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      90%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    .illust-app-back .blocker { animation: none; opacity: 1; transform: none; position: static; }
+
+    /* Illustration 3: Search bar with fading results */
+    .illust-rewire {
+      width: 100%;
+      max-width: 300px;
+    }
+    .illust-search-bar {
+      background: #1a2d48;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #1e3a5f;
+    }
+    .illust-search-bar .search-icon {
+      color: #555;
+      font-size: 1rem;
+    }
+    .illust-search-bar .search-text {
+      color: #777;
+      font-size: 0.85rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .illust-results {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .illust-result-line {
+      height: 10px;
+      background: #e74c3c;
+      border-radius: 5px;
+      animation: result-fade 3s ease-in-out infinite;
+    }
+    .illust-result-line:nth-child(1) { width: 85%; animation-delay: 0s; }
+    .illust-result-line:nth-child(2) { width: 70%; animation-delay: 0.15s; }
+    .illust-result-line:nth-child(3) { width: 60%; animation-delay: 0.3s; }
+    .illust-result-line:nth-child(4) { width: 40%; animation-delay: 0.45s; }
+    @keyframes result-fade {
+      0%, 20% { opacity: 0.7; background: #e74c3c; }
+      50% { opacity: 0.15; background: #333; }
+      80%, 100% { opacity: 0; background: #333; width: 0; }
+    }
+    .illust-blocked-msg {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: #28c840;
+      font-weight: 600;
+      opacity: 0;
+      animation: blocked-appear 3s ease-in-out infinite;
+    }
+    @keyframes blocked-appear {
+      0%, 40% { opacity: 0; }
+      60%, 90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @media (max-width: 700px) {
+      .story-section, .story-section:nth-child(even) {
+        flex-direction: column;
+        gap: 2rem;
+        padding: 4rem 1.5rem;
+        text-align: center;
+      }
+      .story-text h2, .story-text p {
+        text-align: center;
+      }
+    }
+  </style>
+  <!-- Google tag (gtag.js) — Google Ads + GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17897044845"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-17897044845');
+    gtag('config', 'G-0TPCRYPNQT');
+  </script>
+  <!-- Hotjar Tracking Code for nogoon -->
+  <script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:6709227,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+  </script>
+</head>
+<body>
+
+  <!-- Unicorn Studio background -->
+  <div class="cyber-bg" data-us-project="nqjFCHlAg41OBQKXsVqT" style="width:100%; height:100%"></div>
+
+  <!-- Header -->
+  <header>
+    <a href="/">
+      <svg class="header-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path fill="#fff" d="M3.4,10.9h0.9v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8H5v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H3.4V10.9z"/><path fill="#fff" d="M9.2,12.1c0-0.9,0.4-1.4,1.1-1.4c0.3,0,0.5,0.1,0.6,0.3v-0.2h0.9v2.7c0,0.7-0.5,1.1-1.3,1.1c-0.7,0-1.2-0.3-1.3-1h0.9c0,0.2,0.2,0.3,0.4,0.3c0.2,0,0.3-0.1,0.3-0.4v-0.4c-0.2,0.2-0.4,0.3-0.6,0.3C9.6,13.5,9.2,13,9.2,12.1z M10.9,12.1c0-0.4-0.1-0.6-0.4-0.6c-0.2,0-0.4,0.2-0.4,0.6s0.1,0.6,0.4,0.6C10.8,12.7,10.9,12.5,10.9,12.1z"/><path fill="#fff" d="M12.1,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C12.7,13.6,12.1,13.1,12.1,12.2z M13.9,12.2c0-0.4-0.1-0.7-0.4-0.7s-0.4,0.2-0.4,0.7c0,0.4,0.1,0.7,0.4,0.7S13.9,12.6,13.9,12.2z"/><path fill="#fff" d="M15,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C15.6,13.6,15,13.1,15,12.2z M16.8,12.2c0-0.4-0.1-0.7-0.4-0.7S16,11.8,16,12.2c0,0.4,0.1,0.7,0.4,0.7S16.8,12.6,16.8,12.2z"/><path fill="#fff" d="M18,10.9H19v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8h-0.9v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H18V10.9z"/><image style="overflow:visible;" width="512" height="512" href="/shield.png" transform="matrix(5.965982e-03 0 0 5.965982e-03 6.0347 10.6575)"/></svg>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/blog">Blog</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>
+      Remove porn from your PC<br>
+      <span class="highlight">FOREVER</span>
+    </h1>
+
+    <p class="subtitle">
+      One terminal command wipes adult sites off your computer at the system level. Enjoy a goon-free life.
+    </p>
+
+    
+
+    <div class="terminal" id="hero-terminal">
+      <button class="copy-btn" id="heroCopyBtn" onclick="copyHeroCommand()">Copy</button>
+      <div class="terminal-bar" id="terminal-bar">
+        <div class="terminal-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="terminal-title">Terminal</span>
+      </div>
+      <div class="os-tabs">
+        <button class="os-tab active" data-os="mac"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> macOS</button>
+        <button class="os-tab" data-os="win"><svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg> Windows</button>
+      </div>
+      <code id="hero-command">curl -sL https://nogoon.io/setup.sh | sudo bash</code>
+      <div style="border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #A1EAFB; font-weight: 600; text-align: center; background: rgba(0, 85, 90, 0.1); margin: 1rem -1.5rem -1.25rem; padding: 0.75rem 1.5rem; border-radius: 0 0 12px 12px;">Try for free for 72 hours, re-run it as much as you want</div>
+    </div>
+
+    <div class="cta-row">
+      <a href="#" class="cta-secondary" id="askGptBtn"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" fill="currentColor"/></svg> Ask ChatGPT if it's safe</a>
+      <a href="#" class="cta stripe-buy">Get lifetime access</a>
+    </div>
+    <span class="cta-sub">One-time payment. No subscription. No account.</span>
+  </div>
+
+  <!-- Story sections -->
+  <div class="story-sections">
+
+    <!-- Section 1: Willpower already lost -->
+    <div class="story-section">
+      <div class="story-text">
+        <h2>Willpower already lost the fight</h2>
+        <p>One tab, two letters, an adult site loads — and you wake up empty, foggy, ashamed.</p>
+        <p style="margin-top: 0.8rem; color: #fff; font-weight: 600;">You're not weak. The trigger just lives 2 keystrokes away. Make it unreachable.</p>
+      </div>
+      <div class="story-illustration">
+        <div class="illust-browser">
+          <div class="illust-browser-bar">
+            <div class="illust-browser-dots"><span></span><span></span><span></span></div>
+            <div class="illust-url-bar"><span class="typed-text" id="typedUrl"></span></div>
+          </div>
+          <div class="illust-browser-body">
+            <span class="shame-text">...you wake up after the act</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Apps don't work for gooners -->
+    <div class="story-section">
+      <div class="story-text">
+        <h2>Blocker apps are made to be uninstalled</h2>
+        <p>Cold Turkey, BlockSite, Covenant Eyes — every app has an off button. Your urge brain knows them all.</p>
+        <p style="margin-top: 0.8rem; color: #fff; font-weight: 600;">A terminal command isn't an app. Nothing to open, nothing to uninstall, nothing to fight.</p>
+      </div>
+      <div class="story-illustration">
+        <div class="illust-app-stack">
+          <div class="illust-app-icon blocker">🛡️</div>
+          <div class="illust-trash">🗑️</div>
+          <div class="illust-app-back">
+            <div style="width: 80px; height: 80px; border-radius: 18px; background: linear-gradient(135deg, #e74c3c, #c0392b); display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 8px 30px rgba(0,0,0,0.3);">🛡️</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Dopamine reset -->
+    <div class="story-section">
+      <div class="story-text">
+        <h2>Your dopamine resets in days, not years</h2>
+        <p>Type the initials, the page doesn't load, no payoff. The craving stops being automatic.</p>
+        <p style="margin-top: 0.8rem; color: #fff; font-weight: 600;">No streak counter, no shame spiral. Just a flat line where the spike used to be.</p>
+      </div>
+      <div class="story-illustration">
+        <div class="illust-rewire">
+          <div class="illust-search-bar">
+            <span class="search-icon">🔍</span>
+            <span class="search-text">p o r ...</span>
+          </div>
+          <div class="illust-results">
+            <div class="illust-result-line"></div>
+            <div class="illust-result-line"></div>
+            <div class="illust-result-line"></div>
+            <div class="illust-result-line"></div>
+          </div>
+          <div class="illust-blocked-msg">✓ Blocked — nothing here</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Mid-page CTA -->
+  <div class="mid-cta" style="text-align: center; padding: 4rem 1.5rem 5rem; position: relative; z-index: 1;">
+    <h2 style="margin-bottom: 1rem;">Try 72 hours goon-free</h2>
+    <div style="font-size: 2rem; color: var(--muted); margin-bottom: 1.5rem; animation: bounce 2s infinite;">↓</div>
+    <div class="terminal" id="mid-terminal" style="margin: 0 auto 2rem;">
+      <button class="copy-btn" id="midCopyBtn" onclick="copyMidCommand()">Copy</button>
+      <div class="terminal-bar" id="mid-terminal-bar">
+        <div class="terminal-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="terminal-title">Terminal</span>
+      </div>
+      <div class="os-tabs">
+        <button class="os-tab active" data-os="mac" data-target="mid"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> macOS</button>
+        <button class="os-tab" data-os="win" data-target="mid"><svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg> Windows</button>
+      </div>
+      <code id="mid-command">curl -sL https://nogoon.io/setup.sh | sudo bash</code>
+      <div style="border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #A1EAFB; font-weight: 600; text-align: center; background: rgba(0, 85, 90, 0.1); margin: 1rem -1.5rem -1.25rem; padding: 0.75rem 1.5rem; border-radius: 0 0 12px 12px;">Try it for free during 72 hours, re-run it as much as you want</div>
+    </div>
+
+    <div style="color: var(--muted); font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem;">or</div>
+
+    <a href="#" class="cta stripe-buy" style="font-size: 1.1rem; padding: 1rem 2.5rem;">Get lifetime access — $9</a>
+    <span class="cta-sub">One-time payment. No subscription. No account.</span>
+  </div>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <h2>FAQ</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">I've tried nofap, blockers, accountability apps. Why would this work?</div>
+        <div class="faq-a">
+          <p>Because every other method asks you to win a willpower fight in the exact moment your prefrontal cortex is hijacked. This doesn't. You make one sober decision, run one command, and the trigger is gone for the next thousand urges. You never have to win the fight again because the fight never starts.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if I relapse and try to undo it at 3am?</div>
+        <div class="faq-a">
+          <p>The free trial reverts automatically after 72 hours. The paid version is locked at the OS level — DNS + hosts file + SafeSearch enforcement. You'd need to know your way around a terminal sober to undo it. The average urge lasts about 15 minutes. By the time you'd figure it out, the wave is gone and you're back to yourself.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Will I lose my morning wood / will my libido come back?</div>
+        <div class="faq-a">
+          <p>The opposite. Most people report morning erections returning within 1–3 weeks, sharper focus, more energy, and real attraction to real people. That's what happens when you stop dumping a fire-hose of synthetic dopamine on your reward system every day.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What about Reddit, Twitter, Telegram — my real goon caves?</div>
+        <div class="faq-a">
+          <p>The paid version lets you also block Reddit, Twitter/X, and Tumblr — the platforms most gooners actually live in. You decide what gets killed when you run the command.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Does it slow down my computer or break Netflix / YouTube / games?</div>
+        <div class="faq-a">
+          <p>No. There's no app, no background process, no VPN. It edits system DNS and a hosts file. YouTube, Netflix, Twitch, Steam, work — everything you actually need keeps working. Zero performance impact.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What about my phone?</div>
+        <div class="faq-a">
+          <p>This blocks your computer — usually 90% of the gooning surface. For your phone, pair it with iOS Screen Time (Restrictions → Web Content → Limit Adult Sites) or Android's Digital Wellbeing. Two minutes of setup, same idea: kill the trigger.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is this safe? What does the script actually do?</div>
+        <div class="faq-a">
+          <p>Three things: (1) sets your DNS to CleanBrowsing's adult content filter, (2) adds adult sites to your system hosts blocklist, (3) forces SafeSearch on Google/Bing. Nothing is installed. No data leaves your machine. You can read every line of the script before running it — the link is in the hero. Or paste it into ChatGPT and ask.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <div class="final-cta" id="buy">
+    <h2>Done gooning?</h2>
+    <p>Free for 72 hours so you can feel what a clean week is like.<br>$9 one time when you're ready to make it stick. No app. No subscription. No willpower required.</p>
+    <a href="#" class="cta stripe-buy" id="buy-cta">
+      End the loop — $9
+    </a>
+    <span class="cta-sub">One-time payment • Instant access • macOS & Windows</span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="width: 80px; height: auto; margin-bottom: 0.75rem; opacity: 0.5;"><path fill="#fff" d="M3.4,10.9h0.9v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8H5v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H3.4V10.9z"/><path fill="#fff" d="M9.2,12.1c0-0.9,0.4-1.4,1.1-1.4c0.3,0,0.5,0.1,0.6,0.3v-0.2h0.9v2.7c0,0.7-0.5,1.1-1.3,1.1c-0.7,0-1.2-0.3-1.3-1h0.9c0,0.2,0.2,0.3,0.4,0.3c0.2,0,0.3-0.1,0.3-0.4v-0.4c-0.2,0.2-0.4,0.3-0.6,0.3C9.6,13.5,9.2,13,9.2,12.1z M10.9,12.1c0-0.4-0.1-0.6-0.4-0.6c-0.2,0-0.4,0.2-0.4,0.6s0.1,0.6,0.4,0.6C10.8,12.7,10.9,12.5,10.9,12.1z"/><path fill="#fff" d="M12.1,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C12.7,13.6,12.1,13.1,12.1,12.2z M13.9,12.2c0-0.4-0.1-0.7-0.4-0.7s-0.4,0.2-0.4,0.7c0,0.4,0.1,0.7,0.4,0.7S13.9,12.6,13.9,12.2z"/><path fill="#fff" d="M15,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C15.6,13.6,15,13.1,15,12.2z M16.8,12.2c0-0.4-0.1-0.7-0.4-0.7S16,11.8,16,12.2c0,0.4,0.1,0.7,0.4,0.7S16.8,12.6,16.8,12.2z"/><path fill="#fff" d="M18,10.9H19v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8h-0.9v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H18V10.9z"/><image style="overflow:visible;" width="512" height="512" href="/shield.png" transform="matrix(5.965982e-03 0 0 5.965982e-03 6.0347 10.6575)"/></svg>
+    <p>Built by someone who needed this too.</p>
+    <p style="margin-top: 1rem; font-size: 0.75rem;"><a href="/privacy.html" style="color: #94a3b8; text-decoration: none;">Privacy Policy</a> &nbsp;·&nbsp; <a href="/terms.html" style="color: #94a3b8; text-decoration: none;">Terms of Service</a></p>
+  </footer>
+
+  <script>
+    // FAQ accordion
+    document.querySelectorAll('.faq-q').forEach(q => {
+      q.addEventListener('click', () => {
+        const wasOpen = q.parentElement.classList.contains('open');
+        q.parentElement.classList.toggle('open');
+        if (!wasOpen) track('faq_open', { question: q.textContent.trim().slice(0, 50) });
+      });
+    });
+
+    // OS tab switching
+    const macBar = `<div class="terminal-dots"><span></span><span></span><span></span></div><span class="terminal-title">Terminal</span>`;
+    const winBar = `<div class="terminal-win-bar">
+      <svg class="win-icon" viewBox="0 0 24 24" fill="#555"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg>
+      <span class="win-title">Windows PowerShell (Admin)</span>
+      <span class="win-controls">— ☐ ✕</span>
+    </div>`;
+
+    const host = window.location.origin;
+    const commands = {
+      mac: `curl -sL ${host}/setup.sh | sudo bash`,
+      win: `irm ${host}/setup.ps1 | iex`
+    };
+
+    function switchOS(os, scope) {
+      // scope: 'hero' or 'mid'
+      const container = scope === 'hero' ? document.getElementById('hero-terminal') : document.getElementById('mid-terminal');
+      container.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
+      container.querySelector(`.os-tab[data-os="${os}"]`).classList.add('active');
+      const barId = scope === 'hero' ? 'terminal-bar' : 'mid-terminal-bar';
+      document.getElementById(barId).innerHTML = os === 'mac' ? macBar : winBar;
+      const cmdId = scope === 'hero' ? 'hero-command' : 'mid-command';
+      document.getElementById(cmdId).textContent = commands[os];
+      // Reset copy button
+      const btnId = scope === 'hero' ? 'heroCopyBtn' : 'midCopyBtn';
+      const btn = document.getElementById(btnId);
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }
+
+    // Hero OS tabs
+    document.querySelectorAll('#hero-terminal .os-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchOS(tab.dataset.os, 'hero'));
+    });
+
+    // Mid-page OS tabs
+    document.querySelectorAll('#mid-terminal .os-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchOS(tab.dataset.os, 'mid'));
+    });
+
+    // Analytics helper
+    function track(name, data) {
+      if (window.va) window.va('event', { name, data });
+      if (typeof gtag === 'function') gtag('event', name, data || {});
+    }
+
+    // Copy hero command
+    function copyHeroCommand() {
+      const activeOS = document.querySelector('#hero-terminal .os-tab.active').dataset.os;
+      track('copy_command', { location: 'hero', os: activeOS });
+      navigator.clipboard.writeText(commands[activeOS]).then(() => {
+        const btn = document.getElementById('heroCopyBtn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // Copy mid command
+    function copyMidCommand() {
+      const activeOS = document.querySelector('#mid-terminal .os-tab.active').dataset.os;
+      track('copy_command', { location: 'mid', os: activeOS });
+      navigator.clipboard.writeText(commands[activeOS]).then(() => {
+        const btn = document.getElementById('midCopyBtn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // Auto-detect OS
+    if (navigator.userAgent.includes('Windows')) {
+      switchOS('win', 'hero');
+      switchOS('win', 'mid');
+    } else {
+      switchOS('mac', 'hero');
+      switchOS('mac', 'mid');
+    }
+
+    // Stripe checkout — creates a session and redirects
+    document.querySelectorAll('.stripe-buy').forEach((btn, i) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const loc = i === 0 ? 'hero' : i === 1 ? 'mid' : 'footer';
+        track('click_buy', { location: loc });
+        if (typeof gtag === 'function') {
+          gtag('event', 'begin_checkout', { value: 9.0, currency: 'USD', location: loc });
+        }
+        window.location.href = '/api/checkout';
+      });
+    });
+
+    // Ask GPT if it's safe
+    document.getElementById('askGptBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      track('click_ask_gpt');
+      const activeOS = document.querySelector('#hero-terminal .os-tab.active').dataset.os;
+      const cmd = commands[activeOS];
+      const file = activeOS === 'mac' ? 'setup.sh' : 'setup.ps1';
+      const src = `https://github.com/nukkeninprod/nogoon/blob/main/public/${file}`;
+      const prompt = `I'm about to run this command:\n\n${cmd}\n\nHere is the full source code: ${src}\n\nBased solely on reviewing the code, does this script contain any malicious behavior (such as backdoors, credential harvesting, remote code execution, hidden downloads, or data exfiltration), or does it strictly perform the DNS and hosts-file modifications expected from a porn blocker? Answer briefly.`;
+      window.open('https://chatgpt.com/?q=' + encodeURIComponent(prompt), '_blank');
+    });
+
+    // Scroll reveal for story sections
+    const storyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          storyObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.story-section').forEach(s => storyObserver.observe(s));
+
+    // Scroll depth tracking
+    const depths = [25, 50, 75, 100];
+    const firedDepths = new Set();
+    window.addEventListener('scroll', () => {
+      const pct = Math.round((window.scrollY + window.innerHeight) / document.body.scrollHeight * 100);
+      depths.forEach(d => { if (pct >= d && !firedDepths.has(d)) { firedDepths.add(d); track('scroll_depth', { percent: d }); } });
+    }, { passive: true });
+
+    // Typing animation for browser illustration
+    (function typeLoop() {
+      const el = document.getElementById('typedUrl');
+      if (!el) return;
+      const text = 'por';
+      let i = 0;
+      function typeChar() {
+        if (i <= text.length) {
+          el.textContent = text.slice(0, i);
+          i++;
+          setTimeout(typeChar, 400 + Math.random() * 200);
+        } else {
+          setTimeout(() => {
+            el.textContent = '';
+            i = 0;
+            setTimeout(typeChar, 1500);
+          }, 2500);
+        }
+      }
+      typeChar();
+    })();
+
+  </script>
+
+  <!-- Vercel Analytics -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+  <!-- Chat Widget -->
+  <div id="chat-bubble" onclick="window.__toggleChat()" title="Chat with us">
+    <svg id="chat-icon" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+    <svg id="chat-x-icon" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2" style="display:none"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    <span id="chat-notif"></span>
+  </div>
+
+  <div id="chat-panel">
+    <div class="ch-hdr">
+      <img class="ch-hdr-av" src="/slack-bruce-profile-photo.png" alt="Bruce">
+      <div class="ch-hdr-info">
+        <div class="ch-hdr-nm">Bruce</div>
+        <div class="ch-hdr-st"><span class="ch-dot"></span> Online — replies in minutes</div>
+      </div>
+      <button class="ch-hdr-close" onclick="window.__toggleChat()" aria-label="Close">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="ch-msgs"></div>
+    <div id="ch-bar">
+      <form id="ch-form" onsubmit="return window.__sendMsg(event)">
+        <input type="text" id="ch-in" placeholder="Type a message…" autocomplete="off">
+        <button type="submit" id="ch-btn" aria-label="Send">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    /* ── Chat Bubble ── */
+    #chat-bubble {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--accent); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(0,85,90,0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #chat-bubble:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,85,90,0.7); }
+    #chat-notif {
+      display: none; position: absolute; top: -2px; right: -2px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #ef4444; border: 2px solid var(--bg);
+    }
+    #chat-notif.show { display: block; animation: notifPulse 1.5s infinite; }
+    @keyframes notifPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+
+    /* ── Panel ── */
+    #chat-panel {
+      position: fixed; bottom: 92px; right: 24px; z-index: 9999;
+      width: 380px; max-width: calc(100vw - 48px); height: 500px; max-height: calc(100vh - 140px);
+      background: var(--bg); border: 1px solid var(--border); border-radius: 16px;
+      display: none; flex-direction: column;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6); overflow: hidden;
+    }
+    #chat-panel.open { display: flex; }
+
+    /* ── Header ── */
+    .ch-hdr {
+      padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+      background: var(--card); border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .ch-hdr-av {
+      width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+      background: var(--accent); flex-shrink: 0;
+    }
+    .ch-hdr-info { flex: 1; min-width: 0; }
+    .ch-hdr-nm { font-weight: 700; font-size: 14px; color: var(--text); font-family: 'Inter', sans-serif; }
+    .ch-hdr-st { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+    .ch-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; display: inline-block; }
+    .ch-hdr-close {
+      background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px;
+      border-radius: 6px; transition: color 0.15s;
+    }
+    .ch-hdr-close:hover { color: var(--text); }
+
+    /* ── Messages ── */
+    #ch-msgs {
+      flex: 1; overflow-y: auto; padding: 16px 14px 8px;
+      display: flex; flex-direction: column; gap: 6px;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    }
+    #ch-msgs::-webkit-scrollbar { width: 4px; }
+    #ch-msgs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .m-row { display: flex; gap: 8px; animation: mFadeIn 0.25s ease; }
+    .m-row.agent { align-self: flex-start; }
+    .m-row.visitor { align-self: flex-end; flex-direction: row-reverse; }
+    @keyframes mFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .m-av { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; margin-top: 2px; }
+    .m-av-spacer { width: 28px; flex-shrink: 0; }
+    .m-row.visitor .m-av { display: none; }
+
+    .m-body { max-width: 78%; }
+    .m-name { font-size: 11px; font-weight: 600; color: var(--blue); margin-bottom: 2px; font-family: 'Inter', sans-serif; }
+    .m-row.visitor .m-name { display: none; }
+
+    .m-bubble {
+      padding: 10px 14px; border-radius: 14px;
+      font-size: 13.5px; line-height: 1.5; font-family: 'Inter', sans-serif;
+      word-break: break-word;
+    }
+    .m-row.agent .m-bubble { background: var(--card); color: var(--text); border-bottom-left-radius: 4px; }
+    .m-row.visitor .m-bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+
+    .m-time { font-size: 10px; color: var(--muted); margin-top: 3px; opacity: 0.7; }
+    .m-row.visitor .m-time { text-align: right; }
+
+    /* Typing dots */
+    .typing-dots { display: flex; gap: 4px; padding: 10px 14px; background: var(--card); border-radius: 14px; border-bottom-left-radius: 4px; }
+    .typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: tBounce 1.2s infinite; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes tBounce { 0%,60%,100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+    /* ── Input bar ── */
+    #ch-bar { padding: 10px 14px; border-top: 1px solid var(--border); background: var(--card); flex-shrink: 0; }
+    #ch-form { display: flex; gap: 8px; }
+    #ch-in {
+      flex: 1; padding: 9px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg);
+      color: var(--text); font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+    }
+    #ch-in:focus { border-color: var(--accent); }
+    #ch-btn {
+      width: 38px; height: 38px; border-radius: 8px; border: none;
+      background: var(--accent); cursor: pointer; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0; transition: opacity 0.2s;
+    }
+    #ch-btn:hover { opacity: 0.88; }
+    #ch-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    @media (max-width: 480px) {
+      #chat-panel { right: 0; bottom: 0; left: 0; width: 100%; max-width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; }
+      #chat-bubble { right: 16px; bottom: 16px; }
+    }
+  </style>
+
+  <script>
+  (function() {
+    var AGENT = { name: 'Bruce', av: '/slack-bruce-profile-photo.png' };
+    var chatId = localStorage.getItem('nogoon_cid');
+    if (!chatId) {
+      chatId = 'c_' + Date.now().toString(36) + Math.random().toString(36).substr(2,5);
+      localStorage.setItem('nogoon_cid', chatId);
+    }
+
+    var isOpen = false, pollTimer = null, bgTimer = null;
+    var lastTs = parseInt(localStorage.getItem('nogoon_lts') || '0');
+    var loaded = false;
+    var hasUserMsg = false;
+
+    function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function fmtTime(ts) {
+      var d = ts ? new Date(ts) : new Date();
+      return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+    }
+
+    var lastSender = '';
+
+    function agentBubble(text, ts) {
+      var c = document.getElementById('ch-msgs');
+      var row = document.createElement('div');
+      row.className = 'm-row agent';
+      var showName = (lastSender !== 'agent');
+      row.innerHTML = (showName ? '<img class="m-av" src="' + AGENT.av + '" alt="' + AGENT.name + '">' : '<div class="m-av-spacer"></div>')
+        + '<div class="m-body">' + (showName ? '<div class="m-name">' + AGENT.name + '</div>' : '')
+        + '<div class="m-bubble">' + esc(text) + '</div>'
+        + '<div class="m-time">' + fmtTime(ts) + '</div></div>';
+      c.appendChild(row);
+      c.scrollTop = c.scrollHeight;
+      lastSender = 'agent';
+    }
+
+    function userBubble(text, ts) {
+      var c = document.getElementById('ch-msgs');
+      var row = document.createElement('div');
+      row.className = 'm-row visitor';
+      row.innerHTML = '<div class="m-body">'
+        + '<div class="m-bubble">' + esc(text) + '</div>'
+        + '<div class="m-time">' + fmtTime(ts) + '</div></div>';
+      c.appendChild(row);
+      c.scrollTop = c.scrollHeight;
+      lastSender = 'user';
+    }
+
+    function typingEl() {
+      var c = document.getElementById('ch-msgs');
+      var row = document.createElement('div');
+      row.className = 'm-row agent';
+      row.innerHTML = '<img class="m-av" src="' + AGENT.av + '" alt="' + AGENT.name + '">'
+        + '<div class="m-body"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+      c.appendChild(row);
+      c.scrollTop = c.scrollHeight;
+      return row;
+    }
+    function rmEl(el) { if (el && el.parentNode) el.parentNode.removeChild(el); }
+
+    /* ── Load history from Redis ── */
+    async function loadHistory() {
+      try {
+        var res = await fetch('/api/chat-poll?id=' + chatId);
+        if (!res.ok) throw 0;
+        var data = await res.json();
+        var msgs = data.messages || [];
+        if (msgs.length === 0) {
+          agentBubble("Hey! \uD83D\uDC4B I'm " + AGENT.name + ". How can I help you?");
+        } else {
+          msgs.forEach(function(m) {
+            if (m.from === 'agent') { agentBubble(m.text, m.ts); }
+            else { userBubble(m.text, m.ts); hasUserMsg = true; }
+            lastTs = Math.max(lastTs, m.ts || 0);
+          });
+          localStorage.setItem('nogoon_lts', String(lastTs));
+        }
+      } catch(e) {
+        agentBubble("Hey! \uD83D\uDC4B I'm " + AGENT.name + ". How can I help you?");
+      }
+    }
+
+    /* ── Toggle ── */
+    window.__toggleChat = function() {
+      var panel = document.getElementById('chat-panel');
+      var ico = document.getElementById('chat-icon');
+      var xco = document.getElementById('chat-x-icon');
+      isOpen = !isOpen;
+      if (isOpen) {
+        panel.classList.add('open');
+        ico.style.display = 'none'; xco.style.display = 'block';
+        document.getElementById('chat-notif').classList.remove('show');
+        if (!loaded) { loaded = true; loadHistory(); }
+        startPoll(); stopBg();
+        setTimeout(function() { document.getElementById('ch-in').focus(); }, 120);
+      } else {
+        panel.classList.remove('open');
+        ico.style.display = 'block'; xco.style.display = 'none';
+        stopPoll(); startBg();
+      }
+    };
+
+    /* ── Send message ── */
+    window.__sendMsg = async function(e) {
+      e.preventDefault();
+      var input = document.getElementById('ch-in');
+      var msg = input.value.trim();
+      if (!msg) return false;
+
+      userBubble(msg);
+      input.value = '';
+      hasUserMsg = true;
+
+      try {
+        var res = await fetch('/api/support', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chatId: chatId, message: msg })
+        });
+        if (!res.ok) throw 0;
+        if (typeof window.va === 'function') window.va('event', { name: 'support_message' });
+      } catch(err) {
+        agentBubble("Something went wrong. Please try again.");
+      }
+      input.focus();
+      return false;
+    };
+
+    /* ── Polling ── */
+    function startPoll() { if (pollTimer) return; pollTimer = setInterval(poll, 3000); }
+    function stopPoll()  { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+    function startBg()   { if (bgTimer) return; bgTimer = setInterval(bgPoll, 12000); }
+    function stopBg()    { if (bgTimer) { clearInterval(bgTimer); bgTimer = null; } }
+
+    async function poll() {
+      try {
+        var res = await fetch('/api/chat-poll?id=' + chatId + '&after=' + lastTs + '&from=agent');
+        if (!res.ok) return;
+        var data = await res.json();
+        (data.messages || []).forEach(function(m) {
+          if (m.ts > lastTs) {
+            agentBubble(m.text, m.ts);
+            lastTs = m.ts;
+            localStorage.setItem('nogoon_lts', String(lastTs));
+          }
+        });
+      } catch(e) {}
+    }
+
+    async function bgPoll() {
+      try {
+        var res = await fetch('/api/chat-poll?id=' + chatId + '&after=' + lastTs + '&from=agent');
+        if (!res.ok) return;
+        var data = await res.json();
+        if (data.messages && data.messages.length > 0) {
+          document.getElementById('chat-notif').classList.add('show');
+        }
+      } catch(e) {}
+    }
+
+    // Start background polling
+    startBg();
+  })();
+  </script>
+
+  <!-- Unicorn Studio WebGL background -->
+  <script type="text/javascript">!function(){var u=window.UnicornStudio;if(u&&u.init){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){u.init()})}else{u.init()}}else{window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.0.5/dist/unicornStudio.umd.js",i.onload=function(){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){UnicornStudio.init()})}else{UnicornStudio.init()}},(document.head||document.body).appendChild(i)}}();</script>
+
+</body>
+</html>
