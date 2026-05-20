@@ -1221,10 +1221,25 @@
       if (typeof gtag === 'function') gtag('event', name, data || {});
     }
 
+    // Google Ads conversion: Copy command (dedup once per session)
+    function reportCopyConversion(source) {
+      if (sessionStorage.getItem('copy_conversion_fired')) return;
+      sessionStorage.setItem('copy_conversion_fired', '1');
+      if (typeof gtag === 'function') {
+        gtag('event', 'conversion', {
+          send_to: 'AW-17897044845/qoAwCIiBv7AcEO32_NVC',
+          value: 1.0,
+          currency: 'USD'
+        });
+      }
+      track('ads_conversion_copy', { source: source });
+    }
+
     // Copy hero command
     function copyHeroCommand() {
       const activeOS = document.querySelector('#hero-terminal .os-tab.active').dataset.os;
       track('copy_command', { location: 'hero', os: activeOS });
+      reportCopyConversion('hero_copy');
       navigator.clipboard.writeText(commands[activeOS]).then(() => {
         const btn = document.getElementById('heroCopyBtn');
         btn.textContent = 'Copied!';
@@ -1237,6 +1252,7 @@
     function copyMidCommand() {
       const activeOS = document.querySelector('#mid-terminal .os-tab.active').dataset.os;
       track('copy_command', { location: 'mid', os: activeOS });
+      reportCopyConversion('mid_copy');
       navigator.clipboard.writeText(commands[activeOS]).then(() => {
         const btn = document.getElementById('midCopyBtn');
         btn.textContent = 'Copied!';
@@ -1248,6 +1264,18 @@
     // Click on the command itself to copy
     document.getElementById('hero-command').addEventListener('click', copyHeroCommand);
     document.getElementById('mid-command').addEventListener('click', copyMidCommand);
+
+    // Selection of the command counts as conversion intent
+    ['hero-command', 'mid-command'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('mouseup', () => {
+        const sel = window.getSelection && window.getSelection().toString();
+        if (sel && sel.trim().length > 5) {
+          reportCopyConversion('select_' + id);
+        }
+      });
+    });
 
     // Auto-detect OS
     if (navigator.userAgent.includes('Windows')) {
