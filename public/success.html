@@ -335,9 +335,10 @@
     gtag('config', 'AW-17897044845');
     gtag('config', 'G-0TPCRYPNQT');
 
-    // Google Ads purchase conversion — fires once per success page view.
+    // Google Ads purchase conversion — Achat PermaBlock
+    // Dedup via transaction_id (Stripe checkout session_id is unique).
     gtag('event', 'conversion', {
-      'send_to': 'AW-17897044845/gbxJCPOo3uobEO32_NVC',
+      'send_to': 'AW-17897044845/ABmjCLap3LAcEO32_NVC',
       'value': 9.0,
       'currency': 'USD',
       'transaction_id': new URLSearchParams(window.location.search).get('session_id') || ''
