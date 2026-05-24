@@ -2459,35 +2459,6 @@
       });
     }
 
-    // Copy mid command
-    function copyMidCommand() {
-      const activeOS = document.querySelector('#mid-terminal .os-tab.active').dataset.os;
-      track('copy_command', { location: 'mid', os: activeOS });
-      reportCopyConversion('mid_copy');
-      navigator.clipboard.writeText(commands[activeOS]).then(() => {
-        const btn = document.getElementById('midCopyBtn');
-        btn.textContent = 'Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-      });
-    }
-
-    // Click on the command itself to copy
-    document.getElementById('hero-command').addEventListener('click', copyHeroCommand);
-    document.getElementById('mid-command').addEventListener('click', copyMidCommand);
-
-    // Selection of the command counts as conversion intent
-    ['hero-command', 'mid-command'].forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('mouseup', () => {
-        const sel = window.getSelection && window.getSelection().toString();
-        if (sel && sel.trim().length > 5) {
-          reportCopyConversion('select_' + id);
-        }
-      });
-    });
-
     // Auto-detect OS
     if (navigator.userAgent.includes('Windows')) {
       switchOS('win', 'hero');
