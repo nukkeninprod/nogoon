@@ -27,7 +27,7 @@ export default async function handler(req, res) {
         },
       ],
       success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/#buy`,
+      cancel_url: `${baseUrl}/`,
     };
 
     // Omit payment_method_types so Stripe Checkout uses the payment methods
