@@ -7,6 +7,8 @@ export default async function handler(req, res) {
     const proto = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host;
     const baseUrl = `${proto}://${host}`;
+    const requestUrl = new URL(req.url || '', baseUrl);
+    const wantsJson = req.query?.json === '1' || requestUrl.searchParams.get('json') === '1';
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -16,8 +18,9 @@ export default async function handler(req, res) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'nogoon.io — Permanent porn block',
-              description: 'One-time setup. macOS & Windows. No subscription.',
+              name: 'Permanent Blocker Script',
+              description: 'One-time setup. Block it permanently on macOS & Windows. No subscription. No app to manage. Just execute a script and it\'s done.',
+              images: ['https://nogoon.io/page-success.png'],
             },
             unit_amount: 900, // $9.00
           },
@@ -27,6 +30,11 @@ export default async function handler(req, res) {
       success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/#buy`,
     });
+
+    if (wantsJson) {
+      res.status(200).json({ url: session.url });
+      return;
+    }
 
     res.redirect(303, session.url);
   } catch (err) {
