@@ -30,16 +30,15 @@ export default async function handler(req, res) {
       cancel_url: `${baseUrl}/#buy`,
     };
 
-    let paymentMethodsMode = 'automatic';
+    // Omit payment_method_types so Stripe Checkout uses the payment methods
+    // configured in the Dashboard. Fall back to card-only if Stripe rejects it.
+    let paymentMethodsMode = 'dashboard';
     let session;
     try {
-      session = await stripe.checkout.sessions.create({
-        ...checkoutParams,
-        automatic_payment_methods: { enabled: true },
-      });
-    } catch (automaticErr) {
+      session = await stripe.checkout.sessions.create(checkoutParams);
+    } catch (dashboardErr) {
       paymentMethodsMode = 'card_fallback';
-      console.warn('Automatic payment methods failed; falling back to card:', automaticErr.message);
+      console.warn('Dashboard payment methods failed; falling back to card:', dashboardErr.message);
       session = await stripe.checkout.sessions.create({
         ...checkoutParams,
         payment_method_types: ['card'],
