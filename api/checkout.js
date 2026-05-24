@@ -10,9 +10,8 @@ export default async function handler(req, res) {
     const requestUrl = new URL(req.url || '', baseUrl);
     const wantsJson = req.query?.json === '1' || requestUrl.searchParams.get('json') === '1';
 
-    const session = await stripe.checkout.sessions.create({
+    const checkoutParams = {
       mode: 'payment',
-      payment_method_types: ['card'],
       line_items: [
         {
           price_data: {
@@ -29,10 +28,26 @@ export default async function handler(req, res) {
       ],
       success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/#buy`,
-    });
+    };
+
+    let paymentMethodsMode = 'automatic';
+    let session;
+    try {
+      session = await stripe.checkout.sessions.create({
+        ...checkoutParams,
+        automatic_payment_methods: { enabled: true },
+      });
+    } catch (automaticErr) {
+      paymentMethodsMode = 'card_fallback';
+      console.warn('Automatic payment methods failed; falling back to card:', automaticErr.message);
+      session = await stripe.checkout.sessions.create({
+        ...checkoutParams,
+        payment_method_types: ['card'],
+      });
+    }
 
     if (wantsJson) {
-      res.status(200).json({ url: session.url });
+      res.status(200).json({ url: session.url, paymentMethodsMode });
       return;
     }
 
