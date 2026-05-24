@@ -352,6 +352,19 @@
       'items': [{ 'item_id': 'nogoon_permanent', 'item_name': 'nogoon permanent block', 'price': 9.0, 'quantity': 1 }]
     });
   </script>
+  <!-- Reddit Pixel -->
+  <script>
+    !function(w,d){if(!w.rdt){var p=w.rdt=function(){p.sendEvent?p.sendEvent.apply(p,arguments):p.callQueue.push(arguments)};p.callQueue=[];var t=d.createElement("script");t.src="https://www.redditstatic.com/ads/pixel.js",t.async=!0;var s=d.getElementsByTagName("script")[0];s.parentNode.insertBefore(t,s)}}(window,document);
+    rdt('init','a2_j0oae916y0oa');
+    rdt('track', 'PageVisit');
+    // Reddit Purchase conversion — dedup via transactionId (Stripe session_id)
+    rdt('track', 'Purchase', {
+      value: 9.0,
+      currency: 'USD',
+      transactionId: new URLSearchParams(window.location.search).get('session_id') || '',
+      itemCount: 1
+    });
+  </script>
   <!-- Hotjar Tracking Code for nogoon -->
   <script>
     (function(h,o,t,j,a,r){
