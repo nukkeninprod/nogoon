@@ -2587,6 +2587,9 @@
           if (typeof gtag === 'function') {
             gtag('event', 'begin_checkout', { value: 9.0, currency: 'USD', location: loc });
           }
+          if (typeof rdt === 'function') {
+            rdt('track', 'AddToCart', { value: 9.0, currency: 'USD', itemCount: 1 });
+          }
           redirectToCheckout();
         });
       });
