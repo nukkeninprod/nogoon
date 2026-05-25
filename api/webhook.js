@@ -354,6 +354,94 @@ async function sendPurchaseEmail(toEmail, sessionId) {
   return res.json();
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Google Ads — Offline Conversion Upload (ClickConversion via gclid)
+// Docs: https://developers.google.com/google-ads/api/docs/conversions/upload-clicks
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function getGoogleAccessToken() {
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: process.env.GOOGLE_ADS_CLIENT_ID,
+      client_secret: process.env.GOOGLE_ADS_CLIENT_SECRET,
+      refresh_token: process.env.GOOGLE_ADS_REFRESH_TOKEN,
+      grant_type: 'refresh_token',
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`OAuth token exchange failed ${res.status}: ${await res.text()}`);
+  }
+  const data = await res.json();
+  return data.access_token;
+}
+
+async function uploadGoogleAdsConversion(session) {
+  const gclid = session.metadata?.gclid;
+  if (!gclid) {
+    console.log('[google-ads] no gclid in session metadata, skipping');
+    return;
+  }
+
+  const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID;       // 10-digit, no dashes
+  const conversionActionId = process.env.GOOGLE_ADS_CONVERSION_ACTION_ID;
+  const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
+  const loginCustomerId = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID; // MCC id, optional
+
+  if (!customerId || !conversionActionId || !developerToken) {
+    console.warn('[google-ads] missing env vars, skipping conversion upload');
+    return;
+  }
+
+  const accessToken = await getGoogleAccessToken();
+
+  // Stripe session.amount_total is in the smallest unit (cents).
+  const value = (session.amount_total || 0) / 100;
+  const currency = (session.currency || 'usd').toUpperCase();
+
+  // conversionDateTime format: 'yyyy-MM-dd HH:mm:ss+|-HH:MM'
+  const d = new Date((session.created || Date.now() / 1000) * 1000);
+  const pad = (n) => String(n).padStart(2, '0');
+  const conversionDateTime =
+    `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ` +
+    `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}+00:00`;
+
+  const payload = {
+    conversions: [{
+      gclid,
+      conversionAction: `customers/${customerId}/conversionActions/${conversionActionId}`,
+      conversionDateTime,
+      conversionValue: value,
+      currencyCode: currency,
+      orderId: session.id,
+    }],
+    partialFailure: true,
+    validateOnly: false,
+  };
+
+  const headers = {
+    'Authorization': `Bearer ${accessToken}`,
+    'developer-token': developerToken,
+    'Content-Type': 'application/json',
+  };
+  if (loginCustomerId) headers['login-customer-id'] = loginCustomerId;
+
+  const url = `https://googleads.googleapis.com/v18/customers/${customerId}:uploadClickConversions`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  const body = await res.text();
+  if (!res.ok) {
+    throw new Error(`Google Ads upload failed ${res.status}: ${body}`);
+  }
+  console.log(`[google-ads] conversion uploaded: gclid=${gclid} value=${value} ${currency} order=${session.id}`);
+  console.log(`[google-ads] response: ${body}`);
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -391,6 +479,14 @@ export default async function handler(req, res) {
       // Log but don't fail — Stripe will retry if we return 5xx
       console.error('Failed to send purchase email:', err.message);
       return res.status(500).json({ error: 'Email send failed' });
+    }
+
+    // Fire Google Ads conversion upload (uses gclid stored in session.metadata)
+    try {
+      await uploadGoogleAdsConversion(session);
+    } catch (err) {
+      console.error('Google Ads conversion upload failed:', err.message);
+      // don't fail the webhook — Stripe shouldn't retry for this
     }
   }
 
