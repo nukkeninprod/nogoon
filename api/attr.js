@@ -71,23 +71,14 @@ export default async function handler(req, res) {
   attr._ts = new Date().toISOString();
 
   let stored = false;
-  let storeError = null;
   if (redis && ip && ip !== 'unknown') {
     try {
       await redis.set(`nogoon:attr:ip:${ip}`, JSON.stringify(attr), { ex: TTL_SECONDS });
       stored = true;
     } catch (e) {
-      storeError = e.message;
       console.error('[attr] Redis error:', e.message);
     }
   }
 
-  res.status(200).json({
-    ok: true,
-    stored,
-    ip,
-    redis_available: !!redis,
-    error: storeError,
-    debug_key: `nogoon:attr:ip:${ip}`,
-  });
+  res.status(200).json({ ok: true, stored });
 }
