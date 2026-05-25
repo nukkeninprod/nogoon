@@ -2463,6 +2463,47 @@
       if (typeof gtag === 'function') gtag('event', name, data || {});
     }
 
+    // ── Attribution capture ────────────────────────────────────────────────
+    // Fires once per session: posts UTMs / click-ids / referrer to /api/attr,
+    // which keys the attribution by client IP for 30 min. When the user later
+    // runs `curl -sL nogoon.io/setup.sh | sudo bash`, /api/setup-sh resolves
+    // their IP back to this attribution and bakes it into the script so that
+    // /api/track records the source (google/reddit/tiktok/direct/etc).
+    (function captureAttribution() {
+      try {
+        if (sessionStorage.getItem('nogoon_attr_sent')) return;
+        const qs = new URLSearchParams(window.location.search);
+        const payload = {
+          utm_source:   qs.get('utm_source')   || '',
+          utm_medium:   qs.get('utm_medium')   || '',
+          utm_campaign: qs.get('utm_campaign') || '',
+          utm_content:  qs.get('utm_content')  || '',
+          utm_term:     qs.get('utm_term')     || '',
+          gclid:        qs.get('gclid')        || '',
+          fbclid:       qs.get('fbclid')       || '',
+          rdt_cid:      qs.get('rdt_cid')      || '',
+          ttclid:       qs.get('ttclid')       || '',
+          referrer:     document.referrer      || '',
+          landing_path: window.location.pathname || '/',
+        };
+        // Skip the call if there's literally nothing useful (no utm, no click-id, no referrer)
+        const hasSignal = payload.utm_source || payload.gclid || payload.fbclid ||
+                          payload.rdt_cid || payload.ttclid || payload.referrer;
+        if (!hasSignal) {
+          sessionStorage.setItem('nogoon_attr_sent', '1');
+          return;
+        }
+        fetch('/api/attr', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        }).then(() => {
+          sessionStorage.setItem('nogoon_attr_sent', '1');
+        }).catch(() => { /* silent — attribution is best-effort */ });
+      } catch (e) { /* ignore */ }
+    })();
+
     // Google Ads conversion: Copy command (dedup once per session)
     function reportCopyConversion(source) {
       if (sessionStorage.getItem('copy_conversion_fired')) return;

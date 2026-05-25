@@ -14,7 +14,10 @@
 $ErrorActionPreference = "Stop"
 
 # -- Track execution (silent) -------------------------------------------------
-try { Invoke-WebRequest -Uri "https://nogoon.io/api/track?t=free&os=win" -UseBasicParsing -TimeoutSec 3 | Out-Null } catch {}
+# $NOGOON_ATTR is injected by /api/setup-ps1 when the user landed via an ad/UTM.
+# Stays empty for direct fetches of /setup.ps1 (organic / direct traffic).
+$NOGOON_ATTR = ""
+try { Invoke-WebRequest -Uri "https://nogoon.io/api/track?t=free&os=win&$NOGOON_ATTR" -UseBasicParsing -TimeoutSec 3 | Out-Null } catch {}
 
 # -- Trial config -------------------------------------------------------------
 $TRIAL_SECONDS = 259200  # 72 hours

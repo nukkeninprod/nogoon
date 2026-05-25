@@ -1,12 +1,20 @@
 {
+  "functions": {
+    "api/setup-sh.js": {
+      "includeFiles": "public/setup.sh"
+    },
+    "api/setup-ps1.js": {
+      "includeFiles": "public/setup.ps1"
+    }
+  },
   "rewrites": [
     {
       "source": "/setup.sh",
-      "destination": "/setup.sh"
+      "destination": "/api/setup-sh"
     },
     {
       "source": "/setup.ps1",
-      "destination": "/setup.ps1"
+      "destination": "/api/setup-ps1"
     },
     {
       "source": "/success",

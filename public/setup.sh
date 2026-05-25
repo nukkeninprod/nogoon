@@ -13,7 +13,10 @@
 set -e
 
 # ── Track execution (silent, non-blocking) ───────────────────────────────
-curl -s "https://nogoon.io/api/track?t=free&os=mac" > /dev/null 2>&1 &
+# NOGOON_ATTR is injected by /api/setup-sh when the user landed via an ad/UTM.
+# Stays empty for direct fetches of /setup.sh (organic / direct traffic).
+NOGOON_ATTR=""
+curl -s "https://nogoon.io/api/track?t=free&os=mac&${NOGOON_ATTR}" > /dev/null 2>&1 &
 
 # ── Config ──────────────────────────────────────────────────────────────────
 # TRIAL DURATION: 259200 = 72 hours
