@@ -257,8 +257,8 @@ cat >> "$HOSTS_FILE" << 'HOSTS'
 0.0.0.0 dns.adguard.com
 HOSTS
 
-BLOCKED_COUNT=60
-echo -e "  ${GREEN}✓${NC} Top $BLOCKED_COUNT sites hard-blocked via hosts file"
+echo -e "  ${GREEN}✓${NC} Millions of adult domains blocked via DNS"
+echo -e "  ${GREEN}✓${NC} Top adult sites hard-blocked directly (bypass-proof)"
 
 # ── Step 2b: Optional social media blocks ────────────────────────────────────
 if [ "$BLOCK_REDDIT" = true ]; then
@@ -354,8 +354,8 @@ echo -e "${GREEN}${BOLD}  ✓ Porn is now blocked on this Mac.${NC}"
 echo -e "${GREEN}${BOLD}════════════════════════════════════════════${NC}"
 echo ""
 echo -e "  ${BOLD}What's active:${NC}"
-echo -e "  • CleanBrowsing Adult DNS — millions of adult domains blocked at network level"
-echo -e "  • Top $BLOCKED_COUNT most popular sites hard-blocked via hosts file (bypass-proof)"
+echo -e "  • Millions of adult domains blocked at network level"
+echo -e "  • Top adult sites hard-blocked directly (bypass-proof)"
 echo -e "  • DNS-over-HTTPS bypass prevention"
 [ "$FORCE_SAFESEARCH" = true ] && echo -e "  • Google & Bing SafeSearch enforced"
 [ "$BLOCK_REDDIT" = true ]     && echo -e "  • Reddit blocked"
