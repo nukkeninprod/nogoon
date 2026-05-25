@@ -55,23 +55,35 @@ export default async function handler(req, res) {
   }
 
   let attrQuery = '';
+  let dbgRedisGet = 'skipped';
+  let dbgRawType = 'none';
   const ip = getClientIp(req);
 
   if (redis && ip && ip !== 'unknown') {
     try {
       const raw = await redis.get(`nogoon:attr:ip:${ip}`);
+      dbgRawType = typeof raw;
+      dbgRedisGet = raw ? 'hit' : 'miss';
       if (raw) {
         const attr = typeof raw === 'string' ? JSON.parse(raw) : raw;
         attrQuery = buildAttrQuery(attr);
       }
     } catch (e) {
+      dbgRedisGet = 'error:' + e.message;
       console.error('[setup-sh] Redis lookup error:', e.message);
     }
+  } else {
+    dbgRedisGet = `skipped(redis=${!!redis},ip=${ip})`;
   }
+
+  res.setHeader('X-Nogoon-Ip', ip);
+  res.setHeader('X-Nogoon-Redis', dbgRedisGet);
+  res.setHeader('X-Nogoon-Raw-Type', dbgRawType);
+  res.setHeader('X-Nogoon-Attr-Query', attrQuery || '(empty)');
+  res.setHeader('X-Nogoon-Replaced', attrQuery && SCRIPT_BODY.includes('NOGOON_ATTR=""') ? 'yes' : 'no');
 
   // Inject attribution. The source script must contain: NOGOON_ATTR=""
   // We replace the empty value with the URL-encoded query string.
-  // Bash-safe: no double quotes or backticks in attrQuery (encodeURIComponent handles it).
   const body = attrQuery
     ? SCRIPT_BODY.replace('NOGOON_ATTR=""', `NOGOON_ATTR="${attrQuery}"`)
     : SCRIPT_BODY;
