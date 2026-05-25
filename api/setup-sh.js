@@ -84,9 +84,13 @@ export default async function handler(req, res) {
 
   // Inject attribution. The source script must contain: NOGOON_ATTR=""
   // We replace the empty value with the URL-encoded query string.
-  const body = attrQuery
+  let body = attrQuery
     ? SCRIPT_BODY.replace('NOGOON_ATTR=""', `NOGOON_ATTR="${attrQuery}"`)
     : SCRIPT_BODY;
+
+  // TEMP DEBUG — prepend a comment with lookup state so we can diagnose
+  const dbgHeader = `# NOGOON_DEBUG ip=${ip} redis=${dbgRedisGet} rawType=${dbgRawType} attrQuery=${attrQuery || '(empty)'} replaced=${attrQuery && SCRIPT_BODY.includes('NOGOON_ATTR=""') ? 'yes' : 'no'}\n`;
+  body = dbgHeader + body;
 
   res.status(200).send(body);
 }
