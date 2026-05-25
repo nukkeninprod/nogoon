@@ -54,6 +54,7 @@ export default async function handler(req, res) {
           redeemed,
           email: s.customer_details?.email || null,
           created: new Date(s.created * 1000).toISOString(),
+          attr: s.metadata || {},
         });
       }
       hasMore = batch.has_more;

@@ -1,6 +1,48 @@
 import Stripe from 'stripe';
+import { Redis } from '@upstash/redis';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+let redis;
+try {
+  redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+} catch (e) {
+  redis = null;
+}
+
+const ATTR_FIELDS = [
+  'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+  'gclid', 'fbclid', 'rdt_cid', 'ttclid', 'referrer', 'landing_path',
+];
+
+function getClientIp(req) {
+  return (
+    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
+    req.socket?.remoteAddress ||
+    'unknown'
+  );
+}
+
+async function loadAttrByIp(ip) {
+  if (!redis || !ip || ip === 'unknown') return {};
+  try {
+    const raw = await redis.get(`nogoon:attr:ip:${ip}`);
+    if (!raw) return {};
+    const obj = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    const out = {};
+    for (const f of ATTR_FIELDS) {
+      if (obj[f]) out[f] = String(obj[f]).slice(0, 450); // Stripe metadata value max 500 chars
+    }
+    return out;
+  } catch (e) {
+    console.error('[checkout] attr lookup error:', e.message);
+    return {};
+  }
+}
 
 export default async function handler(req, res) {
   try {
@@ -9,6 +51,10 @@ export default async function handler(req, res) {
     const baseUrl = `${proto}://${host}`;
     const requestUrl = new URL(req.url || '', baseUrl);
     const wantsJson = req.query?.json === '1' || requestUrl.searchParams.get('json') === '1';
+
+    const ip = getClientIp(req);
+    const attr = await loadAttrByIp(ip);
+    const metadata = { ...attr, attr_ip: ip };
 
     const checkoutParams = {
       mode: 'payment',
@@ -28,6 +74,8 @@ export default async function handler(req, res) {
       ],
       success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/`,
+      metadata,
+      payment_intent_data: { metadata },
     };
 
     // Omit payment_method_types so Stripe Checkout uses the payment methods
