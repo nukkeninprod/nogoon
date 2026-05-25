@@ -1690,6 +1690,19 @@
       padding: 0.75rem 1.5rem;
       border-radius: 0 0 12px 12px;
     }
+    .mdl-buy-form { display: inline; margin: 0; padding: 0; }
+    .mdl-buy-inline {
+      display: inline;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: #A1EAFB;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .mdl-buy-inline:hover { color: #d4f5fd; }
     .mdl-actions {
       display: flex;
       gap: 0.6rem;
@@ -2552,37 +2565,47 @@
 
     function checkoutLocation(btn, index) {
       if (btn.id === 'buy-cta') return 'final_cta';
+      if (btn.closest('.install-modal')) return 'modal';
       if (btn.classList.contains('pm-buy-link')) return 'premium_mid';
       if (btn.closest('#install')) return 'install';
       if (btn.closest('footer')) return 'footer';
       return index === 0 ? 'hero' : 'buy';
     }
 
-    const stripeBuyButtons = document.querySelectorAll('.stripe-buy');
-    stripeBuyButtons.forEach((btn, i) => {
-      ['mouseenter', 'focus', 'touchstart'].forEach((eventName) => {
-        btn.addEventListener(eventName, () => { prepareCheckoutUrl().catch(() => {}); }, { passive: true });
+    function wireStripeBuyButtons() {
+      const stripeBuyButtons = document.querySelectorAll('.stripe-buy');
+      stripeBuyButtons.forEach((btn, i) => {
+        if (btn.dataset.buyWired === '1') return;
+        btn.dataset.buyWired = '1';
+        ['mouseenter', 'focus', 'touchstart'].forEach((eventName) => {
+          btn.addEventListener(eventName, () => { prepareCheckoutUrl().catch(() => {}); }, { passive: true });
+        });
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const loc = checkoutLocation(btn, i);
+          track('click_buy', { location: loc });
+          if (typeof gtag === 'function') {
+            gtag('event', 'begin_checkout', { value: 9.0, currency: 'USD', location: loc });
+          }
+          redirectToCheckout();
+        });
       });
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        const loc = checkoutLocation(btn, i);
-        track('click_buy', { location: loc });
-        if (typeof gtag === 'function') {
-          gtag('event', 'begin_checkout', { value: 9.0, currency: 'USD', location: loc });
-        }
-        redirectToCheckout();
-      });
-    });
 
-    const buyIntentTarget = document.getElementById('buy-cta') || stripeBuyButtons[0];
-    if ('IntersectionObserver' in window && buyIntentTarget) {
-      const checkoutObserver = new IntersectionObserver((entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          prepareCheckoutUrl().catch(() => {});
-          checkoutObserver.disconnect();
-        }
-      }, { rootMargin: '300px 0px' });
-      checkoutObserver.observe(buyIntentTarget);
+      const buyIntentTarget = document.getElementById('buy-cta') || stripeBuyButtons[0];
+      if ('IntersectionObserver' in window && buyIntentTarget) {
+        const checkoutObserver = new IntersectionObserver((entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            prepareCheckoutUrl().catch(() => {});
+            checkoutObserver.disconnect();
+          }
+        }, { rootMargin: '300px 0px' });
+        checkoutObserver.observe(buyIntentTarget);
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', wireStripeBuyButtons);
+    } else {
+      wireStripeBuyButtons();
     }
 
     // Ask GPT if it's safe
@@ -2991,7 +3014,7 @@
           </ol>
         </div>
 
-        <p class="mdl-footer-note"><strong>72-hour free trial.</strong> Auto-reverts after 72h. Want it forever? <a href="#install">Buy permanent block — $9</a>.</p>
+        <p class="mdl-footer-note"><strong>72-hour free trial.</strong> Auto-reverts after 72h. Want it forever? <a href="/api/checkout" class="stripe-buy mdl-buy-inline">Buy permanent block — $9</a>.</p>
       </div>
     </div>
   </div>
