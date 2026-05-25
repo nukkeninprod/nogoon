@@ -2498,18 +2498,32 @@
       heroCode.addEventListener('click', copyHeroCommand);
     })();
 
-    // Selection of the command counts as conversion intent
-    ['hero-command', 'pm-code-snippet'].forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener('mouseup', () => {
-        const sel = window.getSelection && window.getSelection().toString();
-        if (sel && sel.trim().length > 5) {
-          const source = id === 'pm-code-snippet' ? 'select_mid-command' : 'select_' + id;
-          reportCopyConversion(source);
-        }
+    // Selection of the command counts as conversion intent (any snippet on the page)
+    const SELECT_TARGETS = {
+      'hero-command':    { location: 'hero',   source: 'select_hero-command' },
+      'pm-code-snippet': { location: 'mid',    source: 'select_mid-command'  },
+      'mdl-code-snippet':{ location: 'modal',  source: 'select_modal-command'}
+    };
+    function wireSelectionTracking() {
+      Object.keys(SELECT_TARGETS).forEach(id => {
+        const el = document.getElementById(id);
+        if (!el || el.dataset.selTracked === '1') return;
+        el.dataset.selTracked = '1';
+        el.addEventListener('mouseup', () => {
+          const sel = window.getSelection && window.getSelection().toString();
+          if (sel && sel.trim().length > 5) {
+            const meta = SELECT_TARGETS[id];
+            if (typeof track === 'function') track('copy_command', { location: meta.location, via: 'select' });
+            reportCopyConversion(meta.source);
+          }
+        });
       });
-    });
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', wireSelectionTracking);
+    } else {
+      wireSelectionTracking();
+    }
 
     // Stripe checkout — prewarms a hosted Checkout session, then redirects
     let checkoutUrlPromise = null;
