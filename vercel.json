@@ -1,10 +1,10 @@
 {
   "functions": {
     "api/setup-sh.js": {
-      "includeFiles": "public/setup.sh"
+      "includeFiles": "scripts/setup.sh"
     },
     "api/setup-ps1.js": {
-      "includeFiles": "public/setup.ps1"
+      "includeFiles": "scripts/setup.ps1"
     }
   },
   "rewrites": [

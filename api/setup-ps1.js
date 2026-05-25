@@ -17,9 +17,9 @@ try {
 
 let SCRIPT_BODY = '';
 try {
-  SCRIPT_BODY = readFileSync(join(process.cwd(), 'public', 'setup.ps1'), 'utf8');
+  SCRIPT_BODY = readFileSync(join(process.cwd(), 'scripts', 'setup.ps1'), 'utf8');
 } catch (e) {
-  console.error('[setup-ps1] cannot read public/setup.ps1:', e.message);
+  console.error('[setup-ps1] cannot read scripts/setup.ps1:', e.message);
 }
 
 const ATTR_FIELDS = [

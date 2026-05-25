@@ -20,9 +20,9 @@ try {
 // Load script once at cold start
 let SCRIPT_BODY = '';
 try {
-  SCRIPT_BODY = readFileSync(join(process.cwd(), 'public', 'setup.sh'), 'utf8');
+  SCRIPT_BODY = readFileSync(join(process.cwd(), 'scripts', 'setup.sh'), 'utf8');
 } catch (e) {
-  console.error('[setup-sh] cannot read public/setup.sh:', e.message);
+  console.error('[setup-sh] cannot read scripts/setup.sh:', e.message);
 }
 
 const ATTR_FIELDS = [
@@ -55,42 +55,25 @@ export default async function handler(req, res) {
   }
 
   let attrQuery = '';
-  let dbgRedisGet = 'skipped';
-  let dbgRawType = 'none';
   const ip = getClientIp(req);
 
   if (redis && ip && ip !== 'unknown') {
     try {
       const raw = await redis.get(`nogoon:attr:ip:${ip}`);
-      dbgRawType = typeof raw;
-      dbgRedisGet = raw ? 'hit' : 'miss';
       if (raw) {
         const attr = typeof raw === 'string' ? JSON.parse(raw) : raw;
         attrQuery = buildAttrQuery(attr);
       }
     } catch (e) {
-      dbgRedisGet = 'error:' + e.message;
       console.error('[setup-sh] Redis lookup error:', e.message);
     }
-  } else {
-    dbgRedisGet = `skipped(redis=${!!redis},ip=${ip})`;
   }
-
-  res.setHeader('X-Nogoon-Ip', ip);
-  res.setHeader('X-Nogoon-Redis', dbgRedisGet);
-  res.setHeader('X-Nogoon-Raw-Type', dbgRawType);
-  res.setHeader('X-Nogoon-Attr-Query', attrQuery || '(empty)');
-  res.setHeader('X-Nogoon-Replaced', attrQuery && SCRIPT_BODY.includes('NOGOON_ATTR=""') ? 'yes' : 'no');
 
   // Inject attribution. The source script must contain: NOGOON_ATTR=""
   // We replace the empty value with the URL-encoded query string.
-  let body = attrQuery
+  const body = attrQuery
     ? SCRIPT_BODY.replace('NOGOON_ATTR=""', `NOGOON_ATTR="${attrQuery}"`)
     : SCRIPT_BODY;
-
-  // TEMP DEBUG — prepend a comment with lookup state so we can diagnose
-  const dbgHeader = `# NOGOON_DEBUG ip=${ip} redis=${dbgRedisGet} rawType=${dbgRawType} attrQuery=${attrQuery || '(empty)'} replaced=${attrQuery && SCRIPT_BODY.includes('NOGOON_ATTR=""') ? 'yes' : 'no'}\n`;
-  body = dbgHeader + body;
 
   res.status(200).send(body);
 }
