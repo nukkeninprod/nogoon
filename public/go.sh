@@ -91,6 +91,8 @@ echo ""
 # ── Step 1: Set CleanBrowsing Adult DNS on all interfaces ──────────────────
 # Using Adult filter (not Family) — blocks porn without restricting YouTube/Reddit/X
 echo -e "${BLUE}[1/5]${NC} Setting up DNS filtering..."
+echo -e "  Routing all DNS through CleanBrowsing Adult Filter"
+echo -e "  (covers millions of adult domains at the network level)"
 
 DNS1="185.228.168.10"
 DNS2="185.228.169.11"
@@ -256,7 +258,7 @@ cat >> "$HOSTS_FILE" << 'HOSTS'
 HOSTS
 
 BLOCKED_COUNT=60
-echo -e "  ${GREEN}✓${NC} $BLOCKED_COUNT adult sites blocked"
+echo -e "  ${GREEN}✓${NC} Top $BLOCKED_COUNT sites hard-blocked via hosts file"
 
 # ── Step 2b: Optional social media blocks ────────────────────────────────────
 if [ "$BLOCK_REDDIT" = true ]; then
@@ -352,8 +354,8 @@ echo -e "${GREEN}${BOLD}  ✓ Porn is now blocked on this Mac.${NC}"
 echo -e "${GREEN}${BOLD}════════════════════════════════════════════${NC}"
 echo ""
 echo -e "  ${BOLD}What's active:${NC}"
-echo -e "  • CleanBrowsing Adult DNS on all network interfaces"
-echo -e "  • $BLOCKED_COUNT+ adult sites blocked via hosts file"
+echo -e "  • CleanBrowsing Adult DNS — millions of adult domains blocked at network level"
+echo -e "  • Top $BLOCKED_COUNT most popular sites hard-blocked via hosts file (bypass-proof)"
 echo -e "  • DNS-over-HTTPS bypass prevention"
 [ "$FORCE_SAFESEARCH" = true ] && echo -e "  • Google & Bing SafeSearch enforced"
 [ "$BLOCK_REDDIT" = true ]     && echo -e "  • Reddit blocked"
