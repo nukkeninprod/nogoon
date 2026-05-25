@@ -20,73 +20,287 @@ function getRawBody(req) {
 async function sendPurchaseEmail(toEmail, sessionId) {
   const macCmd = `curl -sL "https://nogoon.io/api/go?s=${sessionId}&os=mac" | sudo bash`;
   const winCmd = `irm "https://nogoon.io/api/go?s=${sessionId}&os=win" | iex`;
+  const orderId = sessionId.slice(-8).toUpperCase();
+  const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const html = `<!DOCTYPE html>
-<html lang="en">
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Your nogoon install command</title>
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Your Nogoon Order Receipt</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Inter:wght@400;500;600;700&display=swap');
+    table, td, div, h1, h2, h3, p, span, a, strong, li, code {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body { margin: 0; padding: 0; width: 100%; word-break: break-word; -webkit-font-smoothing: antialiased; background-color: #F9FAFB; }
+    .email-container { width: 100%; max-width: 600px; margin: 0 auto; }
+    @media screen and (max-width: 600px) {
+      .content-wrapper { padding: 30px 20px !important; }
+      .col-header { font-size: 11px !important; }
+      .item-name { font-size: 13px !important; }
+      .instruction-col { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+      .instruction-col-spacer { display: block !important; height: 24px !important; }
+    }
+    <!--[if mso]>
+    <style>table, td {border-collapse: collapse;} body, table, td, h1, h2, h3, p, span, a, strong, li, code {font-family: Arial, sans-serif !important;}</style>
+    <![endif]-->
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#0B1120;font-family:'Inter',-apple-system,sans-serif;color:#fafafa;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0B1120;padding:40px 0;">
-    <tr><td align="center">
-      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+<body style="margin: 0; padding: 0; background-color: #F9FAFB; color: #F3F4F6;">
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #F9FAFB; width: 100%;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
 
-        <!-- Brand -->
-        <tr><td align="center" style="padding-bottom:28px;">
-          <a href="https://nogoon.io" style="text-decoration:none;display:inline-flex;align-items:baseline;gap:2px;">
-            <span style="font-family:Arial,Helvetica,sans-serif;font-weight:900;font-size:22px;color:#fff;">no</span><span style="font-family:Arial,Helvetica,sans-serif;font-weight:900;font-size:22px;background:#A1EAFB;color:#000;padding:2px 4px;border-radius:6px;">goon</span>
-          </a>
-        </td></tr>
+        <!-- Logo -->
+        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; margin-bottom: 24px;">
+          <tr>
+            <td align="center">
+              <a href="https://nogoon.io" style="text-decoration: none; display: inline-block;">
+                <table cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;"><tr>
+                  <td style="font-family: Arial, Helvetica, sans-serif; font-size: 22px; font-weight: 900; color: #111827; vertical-align: middle; letter-spacing: -0.02em; padding: 0; line-height: 1;">n</td>
+                  <td style="vertical-align: middle; padding: 0; line-height: 0;"><img src="https://nogoon.io/shield.png" width="22" height="22" alt="o" style="display: block;"></td>
+                  <td style="font-family: Arial, Helvetica, sans-serif; font-size: 22px; font-weight: 900; color: #111827; vertical-align: middle; letter-spacing: -0.02em; padding: 0; line-height: 1;">goon</td>
+                </tr></table>
+              </a>
+            </td>
+          </tr>
+        </table>
 
         <!-- Card -->
-        <tr><td style="background:#111827;border:1px solid rgba(161,234,251,0.15);border-radius:16px;padding:36px 32px;">
+        <table role="presentation" class="email-container" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #111827; border: 1px solid rgba(161, 234, 251, 0.15); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+          <tr>
+            <td class="content-wrapper" style="padding: 40px 40px;">
 
-          <!-- Check icon -->
-          <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding-bottom:20px;">
-            <div style="width:52px;height:52px;border-radius:50%;border:2px solid #A1EAFB;background:rgba(161,234,251,0.1);display:inline-flex;align-items:center;justify-content:center;font-size:22px;line-height:52px;text-align:center;">✓</div>
-          </td></tr></table>
+              <!-- Header -->
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
+                <tr>
+                  <td>
+                    <p style="margin: 0; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #A1EAFB;">Payment Receipt</p>
+                    <h1 style="margin: 4px 0 0 0; font-size: 22px; font-weight: 800; color: #FFFFFF;">Thank you for your purchase!</h1>
+                  </td>
+                </tr>
+              </table>
 
-          <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;text-align:center;">Payment confirmed.</h1>
-          <p style="margin:0 0 28px;color:#94a3b8;font-size:14px;text-align:center;">Paste one of these commands in your terminal. Porn is blocked permanently.</p>
+              <!-- Order info -->
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 32px; background-color: #0B1120; border-radius: 10px; border: 1px solid rgba(161, 234, 251, 0.08);">
+                <tr>
+                  <td style="padding: 16px 20px;">
+                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td width="50%" style="padding-bottom: 8px;">
+                          <span style="font-size: 11px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Order</span>
+                          <strong style="font-size: 13px; color: #FFFFFF; font-weight: 600;">#${orderId}</strong>
+                        </td>
+                        <td width="50%" align="right" style="padding-bottom: 8px;">
+                          <span style="font-size: 11px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Date</span>
+                          <strong style="font-size: 13px; color: #FFFFFF; font-weight: 600;">${date}</strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="50%" style="padding-top: 8px; border-top: 1px solid rgba(161, 234, 251, 0.05);">
+                          <span style="font-size: 11px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Payment method</span>
+                          <strong style="font-size: 13px; color: #FFFFFF; font-weight: 600;">Credit card (Stripe)</strong>
+                        </td>
+                        <td width="50%" align="right" style="padding-top: 8px; border-top: 1px solid rgba(161, 234, 251, 0.05);">
+                          <span style="font-size: 11px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Status</span>
+                          <span style="display: inline-block; font-size: 11px; font-weight: 700; color: #2DD4BF; background-color: rgba(45, 212, 191, 0.1); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(45, 212, 191, 0.2);">Paid</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
 
-          <!-- macOS -->
-          <p style="margin:0 0 8px;font-size:12px;font-weight:700;color:#A1EAFB;letter-spacing:0.08em;text-transform:uppercase;">macOS</p>
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr><td style="background:#0B1120;border:1px solid rgba(161,234,251,0.15);border-radius:10px;padding:14px 16px;">
-            <p style="margin:0 0 4px;font-size:11px;color:#94a3b8;">Open Terminal (⌘ Space → "Terminal"), paste &amp; press Enter:</p>
-            <code style="font-family:'JetBrains Mono','Courier New',monospace;font-size:12px;color:#A1EAFB;word-break:break-all;">${macCmd}</code>
-          </td></tr></table>
-          <p style="margin:0 0 24px;font-size:12px;color:#94a3b8;">Type your password when prompted (invisible — that's normal) then Enter.</p>
+              <!-- Items table -->
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 30px;">
+                <thead>
+                  <tr>
+                    <th class="col-header" align="left" style="padding-bottom: 8px; border-bottom: 1px solid rgba(161, 234, 251, 0.15); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #9CA3AF;">Description</th>
+                    <th class="col-header" align="center" style="padding-bottom: 8px; border-bottom: 1px solid rgba(161, 234, 251, 0.15); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #9CA3AF; width: 60px;">Qty</th>
+                    <th class="col-header" align="right" style="padding-bottom: 8px; border-bottom: 1px solid rgba(161, 234, 251, 0.15); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #9CA3AF; width: 80px;">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="item-name" style="padding: 16px 0; border-bottom: 1px solid rgba(161, 234, 251, 0.05); font-size: 14px; color: #FFFFFF; font-weight: 500;">
+                      Nogoon — Permanent porn blocking script<br>
+                      <span style="font-size: 12px; color: #9CA3AF; font-weight: 400;">Lifetime license (single device)</span>
+                    </td>
+                    <td align="center" style="padding: 16px 0; border-bottom: 1px solid rgba(161, 234, 251, 0.05); font-size: 14px; color: #9CA3AF;">1</td>
+                    <td align="right" style="padding: 16px 0; border-bottom: 1px solid rgba(161, 234, 251, 0.05); font-size: 14px; color: #FFFFFF; font-weight: 600;">9,00 $</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="right" style="padding: 16px 0 8px 0; font-size: 13px; color: #9CA3AF;">Subtotal</td>
+                    <td align="right" style="padding: 16px 0 8px 0; font-size: 13px; color: #FFFFFF;">$9.00</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="right" style="padding: 0 0 12px 0; font-size: 13px; color: #9CA3AF;">Tax (VAT)</td>
+                    <td align="right" style="padding: 0 0 12px 0; font-size: 13px; color: #FFFFFF;">$0.00</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" align="right" style="padding: 12px 0 0 0; border-top: 1px solid rgba(161, 234, 251, 0.15); font-size: 14px; font-weight: 700; color: #FFFFFF;">Total paid</td>
+                    <td align="right" style="padding: 12px 0 0 0; border-top: 1px solid rgba(161, 234, 251, 0.15); font-size: 16px; font-weight: 800; color: #A1EAFB;">$9.00 USD</td>
+                  </tr>
+                </tbody>
+              </table>
 
-          <!-- Windows -->
-          <p style="margin:0 0 8px;font-size:12px;font-weight:700;color:#A1EAFB;letter-spacing:0.08em;text-transform:uppercase;">Windows</p>
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:8px;"><tr><td style="background:#0B1120;border:1px solid rgba(161,234,251,0.15);border-radius:10px;padding:14px 16px;">
-            <p style="margin:0 0 4px;font-size:11px;color:#94a3b8;">Right-click Start → Terminal (Admin), paste &amp; press Enter:</p>
-            <code style="font-family:'JetBrains Mono','Courier New',monospace;font-size:12px;color:#A1EAFB;word-break:break-all;">${winCmd}</code>
-          </td></tr></table>
-          <p style="margin:0 0 28px;font-size:12px;color:#94a3b8;">Type Y if asked and wait for the green "Done" message.</p>
+              <!-- Divider -->
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
+                <tr><td style="border-top: 1px solid rgba(161, 234, 251, 0.15);"></td></tr>
+              </table>
 
-          <!-- Warning -->
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;"><tr><td style="background:rgba(161,234,251,0.05);border:1px solid rgba(161,234,251,0.15);border-radius:10px;padding:14px 16px;">
-            <p style="margin:0;font-size:13px;color:#fafafa;">⚠&nbsp; <strong>One-time link.</strong> Each command works once. Save this email before running it.</p>
-          </td></tr></table>
+              <!-- Terminal scripts -->
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 30px; text-align: left;">
+                <tr>
+                  <td>
+                    <h2 style="margin: 0 0 4px 0; font-size: 15px; font-weight: 700; color: #FFFFFF;">Your install scripts</h2>
+                    <p style="margin: 0 0 20px 0; font-size: 13px; color: #9CA3AF; line-height: 1.5;">Copy the command for your OS and paste it in a terminal.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <!-- macOS terminal -->
+                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 16px; background-color: #0A0E17; border: 1px solid rgba(161, 234, 251, 0.15); border-radius: 10px;">
+                      <tr>
+                        <td style="padding: 16px;">
+                          <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 10px;">
+                            <tr>
+                              <td align="left" style="width: 50px;">
+                                <span style="display: inline-block; width: 8px; height: 8px; background-color: #FF5F56; border-radius: 50%; margin-right: 4px;"></span>
+                                <span style="display: inline-block; width: 8px; height: 8px; background-color: #FFBD2E; border-radius: 50%; margin-right: 4px;"></span>
+                                <span style="display: inline-block; width: 8px; height: 8px; background-color: #27C93F; border-radius: 50%;"></span>
+                              </td>
+                              <td align="right">
+                                <span style="font-size: 11px; font-weight: 600; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em;">macOS</span>
+                              </td>
+                            </tr>
+                          </table>
+                          <code style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #A1EAFB; line-height: 1.6; word-break: break-all;">${macCmd}</code>
+                        </td>
+                      </tr>
+                    </table>
 
-          <!-- Divider -->
-          <hr style="border:none;border-top:1px solid rgba(161,234,251,0.1);margin:0 0 24px;">
+                    <!-- Windows terminal -->
+                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0A0E17; border: 1px solid rgba(161, 234, 251, 0.15); border-radius: 10px;">
+                      <tr>
+                        <td style="padding: 16px;">
+                          <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 10px;">
+                            <tr>
+                              <td align="left" style="width: 50px;">
+                                <span style="display: inline-block; width: 8px; height: 8px; background-color: #FF5F56; border-radius: 50%; margin-right: 4px;"></span>
+                                <span style="display: inline-block; width: 8px; height: 8px; background-color: #FFBD2E; border-radius: 50%; margin-right: 4px;"></span>
+                                <span style="display: inline-block; width: 8px; height: 8px; background-color: #27C93F; border-radius: 50%;"></span>
+                              </td>
+                              <td align="right">
+                                <span style="font-size: 11px; font-weight: 600; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em;">Windows</span>
+                              </td>
+                            </tr>
+                          </table>
+                          <code style="display: block; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #A1EAFB; line-height: 1.6; word-break: break-all;">${winCmd}</code>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
 
-          <!-- Support -->
-          <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center;">Questions? Reply to this email or reach us at <a href="mailto:support@nogoon.io" style="color:#A1EAFB;text-decoration:none;">support@nogoon.io</a></p>
+              <!-- How to run it -->
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 24px; text-align: left;">
+                <tr>
+                  <td>
+                    <h2 style="margin: 0 0 20px 0; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #9CA3AF;">How to run it</h2>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <!-- macOS steps -->
+                        <td class="instruction-col" valign="top" width="48%" style="padding-right: 12px;">
+                          <h3 style="margin: 0 0 12px 0; font-size: 13px; font-weight: 700; color: #A1EAFB;">On macOS:</h3>
+                          <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td valign="top" style="width: 20px; font-size: 13px; font-weight: bold; color: #A1EAFB; line-height: 20px; padding-bottom: 12px;">1.</td>
+                              <td valign="top" style="font-size: 13px; color: #9CA3AF; line-height: 20px; padding-bottom: 12px;">Open <strong>Terminal</strong><br><span style="font-size: 11px; color: #6B7280;">(&#8984; + Space → type "Terminal")</span></td>
+                            </tr>
+                            <tr>
+                              <td valign="top" style="width: 20px; font-size: 13px; font-weight: bold; color: #A1EAFB; line-height: 20px; padding-bottom: 12px;">2.</td>
+                              <td valign="top" style="font-size: 13px; color: #9CA3AF; line-height: 20px; padding-bottom: 12px;"><strong>Paste</strong> (&#8984; + V) and press <strong>Enter</strong></td>
+                            </tr>
+                            <tr>
+                              <td valign="top" style="width: 20px; font-size: 13px; font-weight: bold; color: #A1EAFB; line-height: 20px;">3.</td>
+                              <td valign="top" style="font-size: 13px; color: #9CA3AF; line-height: 20px;">Type your <strong>password</strong> (invisible — normal) → <strong>Enter</strong></td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td class="instruction-col-spacer" width="4%" style="font-size: 0; line-height: 0;"></td>
+                        <!-- Windows steps -->
+                        <td class="instruction-col" valign="top" width="48%" style="padding-left: 12px; border-left: 1px solid rgba(161, 234, 251, 0.08);">
+                          <h3 style="margin: 0 0 12px 0; font-size: 13px; font-weight: 700; color: #2DD4BF;">On Windows:</h3>
+                          <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td valign="top" style="width: 20px; font-size: 13px; font-weight: bold; color: #2DD4BF; line-height: 20px; padding-bottom: 12px;">1.</td>
+                              <td valign="top" style="font-size: 13px; color: #9CA3AF; line-height: 20px; padding-bottom: 12px;">Right-click Start → <strong>Terminal (Admin)</strong></td>
+                            </tr>
+                            <tr>
+                              <td valign="top" style="width: 20px; font-size: 13px; font-weight: bold; color: #2DD4BF; line-height: 20px; padding-bottom: 12px;">2.</td>
+                              <td valign="top" style="font-size: 13px; color: #9CA3AF; line-height: 20px; padding-bottom: 12px;"><strong>Paste</strong> (Ctrl + V) and press <strong>Enter</strong></td>
+                            </tr>
+                            <tr>
+                              <td valign="top" style="width: 20px; font-size: 13px; font-weight: bold; color: #2DD4BF; line-height: 20px;">3.</td>
+                              <td valign="top" style="font-size: 13px; color: #9CA3AF; line-height: 20px;">Type <strong>Y</strong> if prompted → wait for the green "Done" message</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
 
-        </td></tr>
+              <!-- One-time note -->
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 24px; border-top: 1px solid rgba(161, 234, 251, 0.05); padding-top: 16px;">
+                <tr>
+                  <td>
+                    <p style="margin: 0; font-size: 12px; line-height: 18px; color: #6B7280;">
+                      <strong style="color: #A1EAFB;">One-time link.</strong> This script only works once. You can copy the command from this email at any time if you need to reinstall.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Support -->
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 20px;">
+                <tr>
+                  <td>
+                    <p style="margin: 0; font-size: 12px; line-height: 18px; color: #6B7280;">
+                      Need help? Just reply to this email or reach us at <a href="mailto:support@nogoon.io" style="color: #A1EAFB; text-decoration: none;">support@nogoon.io</a>.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+        </table>
 
         <!-- Footer -->
-        <tr><td align="center" style="padding-top:24px;">
-          <p style="margin:0;font-size:12px;color:#475569;">nogoon.io &mdash; Permanent Porn Blocker</p>
-        </td></tr>
+        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; margin-top: 24px;">
+          <tr>
+            <td align="center" style="font-size: 11px; line-height: 16px; color: #6B7280; text-align: center;">
+              You received this email because you made a purchase on nogoon.io.<br>
+              &copy; 2026 nogoon.io. All rights reserved.
+            </td>
+          </tr>
+        </table>
 
-      </table>
-    </td></tr>
+      </td>
+    </tr>
   </table>
 </body>
 </html>`;
