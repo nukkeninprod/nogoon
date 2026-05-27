@@ -77,27 +77,33 @@ export default async function handler(req, res) {
   const source = deriveSource(attr) || 'direct';
   const entry = { type, os, ts, source, ...attr };
 
-  // For free trials, classify as first install vs reinstall by client IP.
-  // IPs on US/UK/AU residential desktop ISPs are stable for weeks/months,
-  // which is plenty to distinguish a reinstall after the 72h trial expires.
-  let reinstall = false;
+  // For free trials, classify as first install vs reinstall by client IP and
+  // count how many times this IP has hit /api/track?t=free. IPs on US/UK/AU
+  // residential desktop ISPs are stable for weeks/months, which is plenty to
+  // distinguish a reinstall after the 72h trial expires.
   if (type === 'free' && redis) {
     try {
       const ip = getClientIp(req);
       if (ip && ip !== 'unknown') {
-        const seenKey = `nogoon:seen:free:ip:${ip}`;
-        // SET key with NX (only if not exists), 90 day TTL.
-        // Returns null when the key already exists -> reinstall.
-        const setResult = await redis.set(seenKey, ts, { nx: true, ex: 60 * 60 * 24 * 90 });
-        reinstall = setResult === null;
-        entry.event = reinstall ? 'free_reinstall' : 'free_first';
+        const countKey = `nogoon:free:ip:${ip}:count`;
+        const total = await redis.incr(countKey);
+        // Refresh TTL to 90 days on every call (active users stay tracked)
+        await redis.expire(countKey, 60 * 60 * 24 * 90);
+        const reinstallCount = total - 1; // 0 on first install
+        entry.event = total === 1 ? 'free_first' : 'free_reinstall';
+        entry.reinstall_count = reinstallCount;
+        // Maintain a sorted set of per-IP reinstall counts for distribution.
+        // Score = number of reinstalls (>=1). First installs are not added.
+        if (total > 1) {
+          await redis.zadd('nogoon:free:reinstall_zset', { score: reinstallCount, member: ip });
+        }
       }
     } catch (e) {
       console.error('[track] reinstall check error:', e.message);
     }
   }
 
-  console.log(`[track] ${type}${entry.event ? ':' + entry.event : ''} ${os} src=${source} @ ${ts}`);
+  console.log(`[track] ${type}${entry.event ? ':' + entry.event : ''}${entry.reinstall_count != null ? ' (#' + entry.reinstall_count + ')' : ''} ${os} src=${source} @ ${ts}`);
 
   if (redis) {
     try {

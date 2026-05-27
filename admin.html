@@ -158,6 +158,14 @@
       </div>
     </div>
 
+    <h2>Reinstall Distribution</h2>
+    <p class="status" style="margin-top: -0.5rem; margin-bottom: 0.75rem;">
+      Unique IPs (US/UK/AU residential ≈ 1 IP per household) grouped by number of free-trial reinstalls.
+    </p>
+    <div id="reinstall-dist" style="padding: 0.75rem; background: rgba(161, 234, 251, 0.04); border-radius: 8px; margin-bottom: 1.5rem;">
+      <span class="status">No data yet</span>
+    </div>
+
     <h2>Purchases</h2>
     <table>
       <thead>
@@ -227,6 +235,27 @@
         });
       }
 
+      // Reinstall distribution
+      const distDiv = document.getElementById('reinstall-dist');
+      if (s.reinstall_distribution && distDiv) {
+        const d = s.reinstall_distribution;
+        const b = d.buckets || {};
+        distDiv.innerHTML = `
+          <div style="margin-bottom: 0.5rem;">
+            <strong style="color:#fbbf24">${d.unique_reinstallers}</strong>
+            <span style="color:#94a3b8">unique IPs reinstalled at least once</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:1rem;color:#94a3b8;">
+            <span><strong style="color:#86efac">${b['1'] || 0}</strong> reinstalled 1×</span>
+            <span><strong style="color:#fbbf24">${b['2'] || 0}</strong> reinstalled 2×</span>
+            <span><strong style="color:#f97316">${b['3'] || 0}</strong> reinstalled 3×</span>
+            <span><strong style="color:#f87171">${b['4+'] || 0}</strong> reinstalled 4+ times</span>
+          </div>
+        `;
+      } else if (distDiv) {
+        distDiv.innerHTML = '<span class="status">No data yet</span>';
+      }
+
       // Purchases table
       const tbody = document.getElementById('purchases-body');
       tbody.innerHTML = '';
@@ -258,7 +287,7 @@
           const campaign = entry.utm_campaign ? ` / ${entry.utm_campaign}` : '';
           const medium   = entry.utm_medium   ? ` (${entry.utm_medium})` : '';
           const eventTag = entry.event
-            ? ` <span style="color:${entry.event === 'free_reinstall' ? '#f87171' : '#86efac'};font-weight:600">[${entry.event === 'free_reinstall' ? 'reinstall' : 'first'}]</span>`
+            ? ` <span style="color:${entry.event === 'free_reinstall' ? '#f87171' : '#86efac'};font-weight:600">[${entry.event === 'free_reinstall' ? 'reinstall #' + (entry.reinstall_count ?? '?') : 'first'}]</span>`
             : '';
           const div = document.createElement('div');
           div.className = 'log-entry';

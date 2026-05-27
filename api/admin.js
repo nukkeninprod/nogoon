@@ -66,6 +66,7 @@ export default async function handler(req, res) {
     // ── Redis counters ──
     let counters = null;
     let recentLogs = [];
+    let reinstallDistribution = null;
     if (redis) {
       try {
         const [
@@ -92,6 +93,24 @@ export default async function handler(req, res) {
           free_reinstall_win: parseInt(freeReinstallWin) || 0,
         };
         recentLogs = await redis.lrange('nogoon:log', 0, 49);
+
+        // Distribution of reinstalls per IP (1, 2, 3, 4+ reinstalls)
+        const [b1, b2, b3, b4plus, totalReinstallers] = await Promise.all([
+          redis.zcount('nogoon:free:reinstall_zset', 1, 1),
+          redis.zcount('nogoon:free:reinstall_zset', 2, 2),
+          redis.zcount('nogoon:free:reinstall_zset', 3, 3),
+          redis.zcount('nogoon:free:reinstall_zset', 4, '+inf'),
+          redis.zcard('nogoon:free:reinstall_zset'),
+        ]);
+        reinstallDistribution = {
+          unique_reinstallers: parseInt(totalReinstallers) || 0,
+          buckets: {
+            '1': parseInt(b1) || 0,
+            '2': parseInt(b2) || 0,
+            '3': parseInt(b3) || 0,
+            '4+': parseInt(b4plus) || 0,
+          },
+        };
       } catch (e) {
         console.error('[admin] Redis error:', e.message);
       }
@@ -106,6 +125,7 @@ export default async function handler(req, res) {
         redeemed: paid.filter(s => s.redeemed).length,
         not_redeemed: paid.filter(s => !s.redeemed).length,
         executions: counters || 'Redis not configured — check Vercel function logs',
+        reinstall_distribution: reinstallDistribution,
       },
       purchases: paid,
       recent_executions: recentLogs,
