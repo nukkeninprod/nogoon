@@ -257,9 +257,12 @@
           srcAgg[src] = (srcAgg[src] || 0) + 1;
           const campaign = entry.utm_campaign ? ` / ${entry.utm_campaign}` : '';
           const medium   = entry.utm_medium   ? ` (${entry.utm_medium})` : '';
+          const eventTag = entry.event
+            ? ` <span style="color:${entry.event === 'free_reinstall' ? '#f87171' : '#86efac'};font-weight:600">[${entry.event === 'free_reinstall' ? 'reinstall' : 'first'}]</span>`
+            : '';
           const div = document.createElement('div');
           div.className = 'log-entry';
-          div.innerHTML = `<span class="type">${entry.type}</span> · <span class="os">${entry.os}</span> · <span style="color:#fbbf24">${src}${medium}${campaign}</span> · ${new Date(entry.ts).toLocaleString()}`;
+          div.innerHTML = `<span class="type">${entry.type}</span>${eventTag} · <span class="os">${entry.os}</span> · <span style="color:#fbbf24">${src}${medium}${campaign}</span> · ${new Date(entry.ts).toLocaleString()}`;
           logsDiv.appendChild(div);
         }
         // Render source breakdown above the log list
