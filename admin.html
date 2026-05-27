@@ -137,10 +137,16 @@
       <div class="card">
         <div class="label">Free Mac</div>
         <div class="value blue" id="s-freemac">-</div>
+        <div class="label" style="margin-top: 0.25rem; font-size: 0.75rem;">
+          <span id="s-freefirstmac">-</span> first · <span id="s-freereinstallmac">-</span> reinstall
+        </div>
       </div>
       <div class="card">
         <div class="label">Free Win</div>
         <div class="value blue" id="s-freewin">-</div>
+        <div class="label" style="margin-top: 0.25rem; font-size: 0.75rem;">
+          <span id="s-freefirstwin">-</span> first · <span id="s-freereinstallwin">-</span> reinstall
+        </div>
       </div>
       <div class="card">
         <div class="label">Paid Exec Mac</div>
@@ -210,8 +216,13 @@
         document.getElementById('s-freewin').textContent = s.executions.free_win;
         document.getElementById('s-paidmac').textContent = s.executions.paid_mac;
         document.getElementById('s-paidwin').textContent = s.executions.paid_win;
+        document.getElementById('s-freefirstmac').textContent = s.executions.free_first_mac ?? '—';
+        document.getElementById('s-freereinstallmac').textContent = s.executions.free_reinstall_mac ?? '—';
+        document.getElementById('s-freefirstwin').textContent = s.executions.free_first_win ?? '—';
+        document.getElementById('s-freereinstallwin').textContent = s.executions.free_reinstall_win ?? '—';
       } else {
-        ['s-freemac', 's-freewin', 's-paidmac', 's-paidwin'].forEach(id => {
+        ['s-freemac', 's-freewin', 's-paidmac', 's-paidwin',
+         's-freefirstmac', 's-freereinstallmac', 's-freefirstwin', 's-freereinstallwin'].forEach(id => {
           document.getElementById(id).textContent = '—';
         });
       }

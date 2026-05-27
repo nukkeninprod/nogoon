@@ -68,17 +68,28 @@ export default async function handler(req, res) {
     let recentLogs = [];
     if (redis) {
       try {
-        const [freeMac, freeWin, paidMac, paidWin] = await Promise.all([
+        const [
+          freeMac, freeWin, paidMac, paidWin,
+          freeFirstMac, freeFirstWin, freeReinstallMac, freeReinstallWin,
+        ] = await Promise.all([
           redis.get('nogoon:free:mac'),
           redis.get('nogoon:free:win'),
           redis.get('nogoon:paid:mac'),
           redis.get('nogoon:paid:win'),
+          redis.get('nogoon:free_first:mac'),
+          redis.get('nogoon:free_first:win'),
+          redis.get('nogoon:free_reinstall:mac'),
+          redis.get('nogoon:free_reinstall:win'),
         ]);
         counters = {
           free_mac: parseInt(freeMac) || 0,
           free_win: parseInt(freeWin) || 0,
           paid_mac: parseInt(paidMac) || 0,
           paid_win: parseInt(paidWin) || 0,
+          free_first_mac: parseInt(freeFirstMac) || 0,
+          free_first_win: parseInt(freeFirstWin) || 0,
+          free_reinstall_mac: parseInt(freeReinstallMac) || 0,
+          free_reinstall_win: parseInt(freeReinstallWin) || 0,
         };
         recentLogs = await redis.lrange('nogoon:log', 0, 49);
       } catch (e) {
