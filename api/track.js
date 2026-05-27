@@ -77,13 +77,38 @@ export default async function handler(req, res) {
   const source = deriveSource(attr) || 'direct';
   const entry = { type, os, ts, source, ...attr };
 
-  console.log(`[track] ${type} ${os} src=${source} @ ${ts}`);
+  // For free trials, classify as first install vs reinstall by client IP.
+  // IPs on US/UK/AU residential desktop ISPs are stable for weeks/months,
+  // which is plenty to distinguish a reinstall after the 72h trial expires.
+  let reinstall = false;
+  if (type === 'free' && redis) {
+    try {
+      const ip = getClientIp(req);
+      if (ip && ip !== 'unknown') {
+        const seenKey = `nogoon:seen:free:ip:${ip}`;
+        // SET key with NX (only if not exists), 90 day TTL.
+        // Returns null when the key already exists -> reinstall.
+        const setResult = await redis.set(seenKey, ts, { nx: true, ex: 60 * 60 * 24 * 90 });
+        reinstall = setResult === null;
+        entry.event = reinstall ? 'free_reinstall' : 'free_first';
+      }
+    } catch (e) {
+      console.error('[track] reinstall check error:', e.message);
+    }
+  }
+
+  console.log(`[track] ${type}${entry.event ? ':' + entry.event : ''} ${os} src=${source} @ ${ts}`);
 
   if (redis) {
     try {
       await redis.incr(key);
       // Per-source counter for fast aggregation in admin
       await redis.incr(`nogoon:${type}:${os}:src:${source}`);
+      // First-install vs reinstall counters for free trials
+      if (type === 'free' && entry.event) {
+        await redis.incr(`nogoon:${entry.event}:${os}`);
+        await redis.incr(`nogoon:${entry.event}:${os}:src:${source}`);
+      }
       await redis.lpush('nogoon:log', JSON.stringify(entry));
       await redis.ltrim('nogoon:log', 0, 499);
     } catch (e) {
