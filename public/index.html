@@ -255,7 +255,7 @@
       display: block;
       margin-top: -6px;
       margin-bottom: -6px;
-      transform: scale(2.0);
+      transform: scale(4.0);
       transform-origin: center center;
     }
 
@@ -449,26 +449,62 @@
     }
 
     /* ── Terminal preview ── */
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    @keyframes border-beam {
+      0% { --angle: 65deg; animation-timing-function: cubic-bezier(0.5, 0.15, 0.5, 0.85); }
+      50% { --angle: 245deg; animation-timing-function: cubic-bezier(0.5, 0.15, 0.5, 0.85); }
+      100% { --angle: 425deg; }
+    }
+
+    .animate-border-beam {
+      animation: border-beam 3.2s linear infinite;
+    }
+
+    /* Outer wrapper — no background, just sets stacking context & size */
+    .terminal-wrapper {
+      --terminal-teal: #38bdf8;
+      --inset: -1.5px;
+      position: relative;
+      border-radius: 14px;
+      max-width: 550px;
+      width: 100%;
+      margin-bottom: 2.5rem;
+    }
+
+    /* The two beam layers (sharp + glow) */
+    .terminal-beam {
+      position: absolute;
+      inset: var(--inset);
+      border-radius: inherit;
+      pointer-events: none;
+      background: conic-gradient(from var(--angle), transparent 45%, var(--terminal-teal) 65%, color-mix(in oklch, var(--terminal-teal), white 70%) 78%, white 83%, transparent 88%);
+    }
+
+    .terminal-beam.glow {
+      filter: blur(12px);
+      opacity: 0.7;
+    }
+
+    /* Inner content — overflow:hidden clips beam interior, revealing only the border ring */
     .terminal {
-      --card: #111827; /* Always dark */
+      --card: #111827;
       --text: #fafafa;
       --muted: #94a3b8;
       background: var(--card);
       color: var(--text);
-      border: 1px solid rgba(0, 85, 90, 0.4);
       border-radius: 12px;
       padding: 1.25rem 1.5rem;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.85rem;
       text-align: left;
-      max-width: 550px;
       width: 100%;
-      margin-bottom: 2.5rem;
       position: relative;
-      box-shadow:
-        0 0 20px rgba(161, 234, 251, 0.08),
-        0 0 60px rgba(161, 234, 251, 0.05),
-        0 4px 40px rgba(0, 85, 90, 0.15);
+      overflow: hidden;
     }
 
     .terminal .copy-btn {
@@ -1457,15 +1493,17 @@
     .premium-mid #pm-code-snippet:hover { color: #fff; }
 
     /* Install terminal — mirror the hero terminal look */
-    .premium-mid #install .terminal {
-      max-width: 550px;
+    .hero .terminal-wrapper {
+      filter: drop-shadow(0 0 40px rgba(56, 189, 248, 0.32)) drop-shadow(0 0 120px rgba(56, 189, 248, 0.18));
+    }
+
+    /* Install terminal — mirror the hero terminal look */
+    .premium-mid #install .terminal-wrapper {
+      filter: drop-shadow(0 0 40px rgba(56, 189, 248, 0.32)) drop-shadow(0 0 120px rgba(56, 189, 248, 0.18));
       margin: 0 auto 2.5rem;
+    }
+    .premium-mid #install .terminal {
       --border: rgba(161, 234, 251, 0.15);
-      box-shadow:
-        0 0 40px rgba(161, 234, 251, 0.35),
-        0 0 120px rgba(56, 189, 248, 0.28),
-        0 0 200px rgba(0, 120, 200, 0.18),
-        0 4px 40px rgba(0, 85, 90, 0.15);
     }
     .premium-mid #install .terminal code {
       display: block;
@@ -1666,9 +1704,12 @@
       background: rgba(0, 85, 90, 0.25);
     }
     /* Hero-style terminal inside the modal */
+    .install-modal .terminal-wrapper {
+      margin: 0 auto 1.25rem;
+      filter: drop-shadow(0 0 40px rgba(56, 189, 248, 0.32)) drop-shadow(0 0 120px rgba(56, 189, 248, 0.18));
+    }
     .install-modal .terminal {
       max-width: 100%;
-      margin: 0 auto 1.25rem;
     }
     #mdl-code-snippet {
       display: block;
@@ -1900,8 +1941,14 @@
 
     
 
-    <div class="terminal" id="hero-terminal">
-      <button class="copy-btn" id="heroCopyBtn" onclick="copyHeroCommand()">Copy</button>
+    <div class="terminal-wrapper">
+      <!-- Glow aura -->
+      <div aria-hidden="true" class="terminal-beam glow animate-border-beam"></div>
+      <!-- Sharp beam -->
+      <div aria-hidden="true" class="terminal-beam animate-border-beam"></div>
+
+      <div class="terminal" id="hero-terminal">
+        <button class="copy-btn" id="heroCopyBtn" onclick="copyHeroCommand()">Copy</button>
       <div class="terminal-bar" id="terminal-bar">
         <div class="terminal-dots">
           <span></span><span></span><span></span>
@@ -1914,7 +1961,8 @@
       </div>
       <code id="hero-command" title="Click to copy"></code>
       <div style="border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #A1EAFB; font-weight: 600; text-align: center; background: rgba(0, 85, 90, 0.1); margin: 1rem -1.5rem -1.25rem; padding: 0.75rem 1.5rem; border-radius: 0 0 12px 12px;">Try it for free during 72 hours, re-run it as much as you want</div>
-    </div>
+      </div>
+    </div><!-- /.terminal-wrapper -->
 
     <div class="cta-row">
       <a href="#" class="cta-secondary" id="askGptBtn"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" fill="currentColor"/></svg> Ask ChatGPT if it's safe</a>
@@ -2252,18 +2300,23 @@
           </svg>
         </div>
 
-        <div class="terminal pm-terminal" id="pm-terminal">
-          <button class="copy-btn" id="pm-copy-btn" onclick="pmCopyCode()">Copy</button>
-          <div class="terminal-bar">
-            <div class="terminal-dots"><span></span><span></span><span></span></div>
-            <span class="terminal-title">Terminal</span>
+        <div class="terminal-wrapper pm-terminal" id="pm-terminal-wrapper">
+          <div aria-hidden="true" class="terminal-beam glow animate-border-beam"></div>
+          <div aria-hidden="true" class="terminal-beam animate-border-beam"></div>
+          
+          <div class="terminal pm-terminal-inner" id="pm-terminal">
+            <button class="copy-btn" id="pm-copy-btn" onclick="pmCopyCode()">Copy</button>
+            <div class="terminal-bar">
+              <div class="terminal-dots"><span></span><span></span><span></span></div>
+              <span class="terminal-title">Terminal</span>
+            </div>
+            <div class="os-tabs">
+              <button class="os-tab active" id="pm-btn-mac" onclick="pmSetOS('mac')"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> macOS</button>
+              <button class="os-tab" id="pm-btn-win" onclick="pmSetOS('win')"><svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg> Windows</button>
+            </div>
+            <code id="pm-code-snippet"></code>
+            <div class="pm-terminal-footer">Try it for free during 72 hours, re-run it as much as you want</div>
           </div>
-          <div class="os-tabs">
-            <button class="os-tab active" id="pm-btn-mac" onclick="pmSetOS('mac')"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> macOS</button>
-            <button class="os-tab" id="pm-btn-win" onclick="pmSetOS('win')"><svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg> Windows</button>
-          </div>
-          <code id="pm-code-snippet"></code>
-          <div class="pm-terminal-footer">Try it for free during 72 hours, re-run it as much as you want</div>
         </div>
 
         <div class="text-slate-500 font-bold text-xl mb-10">or</div>
@@ -3024,18 +3077,23 @@
         <h1 id="install-modal-title" class="mdl-h1">Your free trial command</h1>
         <p class="mdl-sub">Paste this in your terminal. Porn is blocked for 72 hours.</p>
 
-        <div class="terminal mdl-hero-terminal" id="mdl-terminal">
-          <button class="copy-btn" id="mdl-copy-btn" type="button" onclick="mdlCopyCode()">Copy</button>
-          <div class="terminal-bar">
-            <div class="terminal-dots"><span></span><span></span><span></span></div>
-            <span class="terminal-title">Terminal</span>
+        <div class="terminal-wrapper pm-terminal" id="mdl-terminal-wrapper">
+          <div aria-hidden="true" class="terminal-beam glow animate-border-beam"></div>
+          <div aria-hidden="true" class="terminal-beam animate-border-beam"></div>
+
+          <div class="terminal mdl-hero-terminal pm-terminal-inner" id="mdl-terminal">
+            <button class="copy-btn" id="mdl-copy-btn" type="button" onclick="mdlCopyCode()">Copy</button>
+            <div class="terminal-bar">
+              <div class="terminal-dots"><span></span><span></span><span></span></div>
+              <span class="terminal-title">Terminal</span>
+            </div>
+            <div class="os-tabs">
+              <button class="os-tab active" id="mdl-btn-mac" type="button" onclick="mdlSetOS('mac')"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> macOS</button>
+              <button class="os-tab" id="mdl-btn-win" type="button" onclick="mdlSetOS('win')"><svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg> Windows</button>
+            </div>
+            <code id="mdl-code-snippet"></code>
+            <div class="mdl-terminal-foot">Try it for free during 72 hours, re-run it as much as you want</div>
           </div>
-          <div class="os-tabs">
-            <button class="os-tab active" id="mdl-btn-mac" type="button" onclick="mdlSetOS('mac')"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> macOS</button>
-            <button class="os-tab" id="mdl-btn-win" type="button" onclick="mdlSetOS('win')"><svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg> Windows</button>
-          </div>
-          <code id="mdl-code-snippet"></code>
-          <div class="mdl-terminal-foot">Try it for free during 72 hours, re-run it as much as you want</div>
         </div>
 
         <div class="mdl-divider"></div>
