@@ -22,8 +22,8 @@ function getClientIp(req) {
 }
 
 function deriveSource(attr) {
+  if (attr.gclid) return 'google_ads';  // gclid = Google Ads click ID — always paid
   if (attr.utm_source) return attr.utm_source;
-  if (attr.gclid) return 'google';
   if (attr.fbclid) return 'facebook';
   if (attr.rdt_cid) return 'reddit';
   if (attr.ttclid) return 'tiktok';
