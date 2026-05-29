@@ -507,6 +507,31 @@
       overflow: hidden;
     }
 
+    .terminal .watch-btn {
+      position: absolute;
+      top: 1rem;
+      right: 6rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.5);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+    .terminal .watch-btn:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.8);
+    }
+
     .terminal .copy-btn {
       position: absolute;
       top: 1rem;
@@ -1963,6 +1988,7 @@
       <div aria-hidden="true" class="terminal-beam animate-border-beam"></div>
 
       <div class="terminal" id="hero-terminal">
+        <a class="watch-btn" id="heroWatchBtn" href="#"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Watch Tutorial</a>
         <button class="copy-btn" id="heroCopyBtn" onclick="copyHeroCommand()">Copy</button>
       <div class="terminal-bar" id="terminal-bar">
         <div class="terminal-dots">
