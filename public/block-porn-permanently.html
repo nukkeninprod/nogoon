@@ -505,6 +505,8 @@
       width: 100%;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .terminal .watch-btn {
@@ -625,7 +627,9 @@
       word-break: break-all;
       line-height: 1.6;
       cursor: pointer;
-      display: block;
+      display: flex;
+      align-items: center;
+      flex: 1;
       padding: 0.25rem 0.4rem;
       margin: -0.25rem -0.4rem;
       border-radius: 6px;
