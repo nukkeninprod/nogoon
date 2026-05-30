@@ -427,7 +427,7 @@ async function uploadGoogleAdsConversion(session) {
   };
   if (loginCustomerId) headers['login-customer-id'] = loginCustomerId;
 
-  const url = `https://googleads.googleapis.com/v18/customers/${customerId}:uploadClickConversions`;
+  const url = `https://googleads.googleapis.com/v20/customers/${customerId}:uploadClickConversions`;
   const res = await fetch(url, {
     method: 'POST',
     headers,
@@ -478,7 +478,6 @@ export default async function handler(req, res) {
     } catch (err) {
       // Log but don't fail — Stripe will retry if we return 5xx
       console.error('Failed to send purchase email:', err.message);
-      return res.status(500).json({ error: 'Email send failed' });
     }
 
     // Fire Google Ads conversion upload (uses gclid stored in session.metadata)
