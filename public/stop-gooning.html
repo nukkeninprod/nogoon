@@ -1184,7 +1184,7 @@
     const host = window.location.origin;
     const commands = {
       mac: `curl -sL ${host}/setup.sh | sudo bash`,
-      win: `irm ${host}/setup.ps1 | iex`
+      win: `powershell -Command "irm https://nogoon.io/setup.ps1 | iex"`
     };
 
     function switchOS(os, scope) {

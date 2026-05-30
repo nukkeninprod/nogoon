@@ -243,6 +243,8 @@ cat >> "$HOSTS_FILE" << 'HOSTS'
 0.0.0.0 www.keezmovies.com
 0.0.0.0 pornmd.com
 0.0.0.0 www.pornmd.com
+0.0.0.0 camhub.cc
+0.0.0.0 www.camhub.cc
 
 # ── DNS-over-HTTPS bypass prevention ──
 0.0.0.0 dns.google
