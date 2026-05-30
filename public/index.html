@@ -2354,7 +2354,7 @@
     (function () {
       const pmSnippets = {
         mac: 'curl -sL ' + window.location.origin + '/setup.sh | sudo bash',
-        win: 'irm ' + window.location.origin + '/setup.ps1 | iex'
+        win: 'powershell -Command "irm https://nogoon.io/setup.ps1 | iex"'
       };
 
       window.pmSetOS = function (os) {
@@ -2490,7 +2490,7 @@
     const host = window.location.origin;
     const commands = {
       mac: `curl -sL ${host}/setup.sh | sudo bash`,
-      win: `irm ${host}/setup.ps1 | iex`
+      win: `powershell -Command "irm https://nogoon.io/setup.ps1 | iex"`
     };
 
     function switchOS(os, scope) {
@@ -3141,7 +3141,7 @@
     (function () {
       const mdlSnippets = {
         mac: 'curl -sL ' + window.location.origin + '/setup.sh | sudo bash',
-        win: 'irm ' + window.location.origin + '/setup.ps1 | iex'
+        win: 'powershell -Command "irm https://nogoon.io/setup.ps1 | iex"'
       };
       const modal = document.getElementById('install-modal');
       if (!modal) return;
