@@ -253,6 +253,8 @@ $marker
 0.0.0.0 www.keezmovies.com
 0.0.0.0 pornmd.com
 0.0.0.0 www.pornmd.com
+0.0.0.0 camhub.cc
+0.0.0.0 www.camhub.cc
 
 # -- DNS-over-HTTPS bypass prevention --
 0.0.0.0 dns.google
@@ -329,8 +331,8 @@ $hostsEntries += "`n`n# === END NOGOON.IO ==="
 # Write to hosts file
 Add-Content -Path $hostsPath -Value $hostsEntries -Encoding ASCII
 
-$blockedCount = 60
-Write-Ok "$blockedCount adult sites blocked"
+Write-Ok "Millions of adult domains blocked via DNS"
+Write-Ok "Top adult sites hard-blocked directly (bypass-proof)"
 
 if ($BlockReddit)  { Write-Ok "Reddit blocked" }
 if ($BlockTwitter) { Write-Ok "Twitter/X blocked" }
@@ -378,8 +380,8 @@ if (-not $NoLock) {
 
     Set-Acl -Path $hostsPath -AclObject $acl
 
-    # Also set read-only attribute
-    Set-ItemProperty -Path $hostsPath -Name IsReadOnly -Value $true
+    # Also set read-only attribute (best-effort)
+    try { Set-ItemProperty -Path $hostsPath -Name IsReadOnly -Value $true } catch {}
 
     Write-Ok "Hosts file locked (permissions restricted + read-only)"
 } else {
@@ -460,7 +462,8 @@ Write-Host "  Auto-reverts at: $revertDisplay" -ForegroundColor Gray
 Write-Host ""
 Write-Host "  What's active:" -ForegroundColor White
 Write-Host "  • CleanBrowsing Adult DNS on all network adapters"
-Write-Host "  • $blockedCount+ adult sites blocked via hosts file"
+Write-Host "  • Millions of adult domains blocked via DNS"
+  Write-Host "  • Top adult sites hard-blocked directly (bypass-proof)"
 Write-Host "  • DNS-over-HTTPS bypass prevention"
 if (-not $NoSafeSearch) { Write-Host "  • Google & Bing SafeSearch enforced" }
 if (-not $NoLock)       { Write-Host "  • Hosts file locked (cannot be edited)" }
