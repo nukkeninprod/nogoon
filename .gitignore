@@ -1,2 +1,9 @@
 node_modules/
 .vercel
+permablock-me.sh
+
+# Local dev / secrets
+get-refresh-token.mjs
+test-google-ads.mjs
+google-ads-api-design.*
+.wrangler/
