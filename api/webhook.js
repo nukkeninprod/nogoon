@@ -19,7 +19,7 @@ function getRawBody(req) {
 /** Send a post-purchase email via Resend. */
 async function sendPurchaseEmail(toEmail, sessionId) {
   const macCmd = `curl -sL "https://nogoon.io/api/go?s=${sessionId}&os=mac" | sudo bash`;
-  const winCmd = `irm "https://nogoon.io/api/go?s=${sessionId}&os=win" | iex`;
+  const winCmd = `powershell -Command "irm 'https://nogoon.io/api/go?s=${sessionId}&os=win' | iex"`;
   const orderId = sessionId.slice(-8).toUpperCase();
   const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
