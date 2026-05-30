@@ -465,7 +465,7 @@
       const host = window.location.origin;
       return os === 'mac'
         ? `curl -sL "${host}/api/go?s=${sessionId}&os=mac" | sudo bash`
-        : `irm "${host}/api/go?s=${sessionId}&os=win" | iex`;
+        : `powershell -Command "irm \"${host}/api/go?s=${sessionId}&os=win\" | iex"`;  
     }
 
     function switchOS(os) {
