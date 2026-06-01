@@ -1,7 +1,12 @@
 import Stripe from 'stripe';
 import { Redis } from '@upstash/redis';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripeLive = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripeTest = new Stripe(process.env.STRIPE_TEST_SECRET_KEY || process.env.STRIPE_SECRET_KEY);
+
+function getStripe(sessionId) {
+  return sessionId.startsWith('cs_test_') ? stripeTest : stripeLive;
+}
 
 let redis;
 try {
@@ -27,7 +32,7 @@ export default async function handler(req, res) {
     }
 
     // Fallback: ask Stripe directly (handles webhook delay)
-    const stripeSession = await stripe.checkout.sessions.retrieve(session);
+    const stripeSession = await getStripe(session).checkout.sessions.retrieve(session);
     const paid = stripeSession.payment_status === 'paid';
 
     // Cache in Redis so future polls are fast

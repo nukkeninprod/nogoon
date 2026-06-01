@@ -51,6 +51,12 @@ export default async function handler(req, res) {
     const baseUrl = `${proto}://${host}`;
     const requestUrl = new URL(req.url || '', baseUrl);
     const wantsJson = req.query?.json === '1' || requestUrl.searchParams.get('json') === '1';
+    const isTest = req.query?.test === '1' || requestUrl.searchParams.get('test') === '1';
+
+    // Use test key in test mode
+    const stripeClient = isTest
+      ? new Stripe(process.env.STRIPE_TEST_SECRET_KEY)
+      : stripe;
 
     const ip = getClientIp(req);
     const attr = await loadAttrByIp(ip);
@@ -63,11 +69,11 @@ export default async function handler(req, res) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'Permanent Blocker Script',
+              name: isTest ? '[TEST] Permanent Blocker Script' : 'Permanent Blocker Script',
               description: 'One-time setup. Block it permanently on macOS & Windows. No subscription. No app to manage. Just execute a script and it\'s done.',
               images: ['https://nogoon.io/page-success.png'],
             },
-            unit_amount: 900, // $9.00
+            unit_amount: isTest ? 100 : 900, // $1.00 in test, $9.00 in prod
           },
           quantity: 1,
         },
@@ -83,11 +89,11 @@ export default async function handler(req, res) {
     let paymentMethodsMode = 'dashboard';
     let session;
     try {
-      session = await stripe.checkout.sessions.create(checkoutParams);
+      session = await stripeClient.checkout.sessions.create(checkoutParams);
     } catch (dashboardErr) {
       paymentMethodsMode = 'card_fallback';
       console.warn('Dashboard payment methods failed; falling back to card:', dashboardErr.message);
-      session = await stripe.checkout.sessions.create({
+      session = await stripeClient.checkout.sessions.create({
         ...checkoutParams,
         payment_method_types: ['card'],
       });
