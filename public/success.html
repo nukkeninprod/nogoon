@@ -48,6 +48,30 @@
     .af-item:nth-child(4) { animation-delay:.75s }
     .af-item:nth-child(5) { animation-delay:.85s }
 
+    /* ── Card beam ── */
+    @property --beam-angle {
+      syntax: '<angle>';
+      initial-value: 65deg;
+      inherits: false;
+    }
+    @keyframes card-beam {
+      0%   { --beam-angle: 65deg;  animation-timing-function: cubic-bezier(0.5,0.15,0.5,0.85); }
+      50%  { --beam-angle: 245deg; animation-timing-function: cubic-bezier(0.5,0.15,0.5,0.85); }
+      100% { --beam-angle: 425deg; }
+    }
+    .card-beam {
+      position: absolute;
+      inset: -1.5px;
+      border-radius: 25px;
+      pointer-events: none;
+      background: conic-gradient(from var(--beam-angle), transparent 45%, #A1EAFB 65%, color-mix(in oklch, #A1EAFB, white 60%) 78%, white 83%, transparent 88%);
+      animation: card-beam 4s linear infinite;
+    }
+    .card-beam.glow {
+      filter: blur(14px);
+      opacity: 0.45;
+    }
+
     body {
       font-family: 'Inter', -apple-system, sans-serif;
       background: var(--bg);
@@ -421,7 +445,9 @@
   <div class="container">
 
     <!-- ── APP FLOW CARD (shown when source=app) ── -->
-    <div id="app-card" style="display:none; width:100%; max-width:600px; margin:0 auto;">
+    <div id="app-card" style="display:none; width:100%; max-width:600px; margin:0 auto; position:relative;">
+      <div aria-hidden="true" class="card-beam glow"></div>
+      <div aria-hidden="true" class="card-beam"></div>
       <div class="af-card" style="position:relative; background:#090E17; border:1px solid rgba(255,255,255,0.07); border-radius:24px; overflow:hidden; box-shadow:0 30px 60px -15px rgba(0,0,0,0.8), 0 0 40px -10px rgba(161,234,251,0.07);">
         <!-- Top highlight -->
         <div style="position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);pointer-events:none;"></div>
