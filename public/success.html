@@ -402,9 +402,23 @@
 
       <!-- App flow: just return to app -->
       <div id="app-flow" style="display:none;">
-        <p class="sub" style="margin-bottom: 1.5rem;">Return to the Nogoon app — it's finishing the install for you.</p>
+        <p class="sub" style="margin-bottom: 1.25rem;">Return to the Nogoon app and enter your Mac password in the popup that just appeared.</p>
+
+        <details style="text-align:left; margin-bottom: 1.5rem;">
+          <summary style="cursor:pointer; font-size:0.8rem; color: var(--muted); font-weight:600; list-style:none; display:flex; align-items:center; gap:0.4rem; user-select:none;">
+            <svg id="details-chevron" style="width:12px;height:12px;transition:transform 0.2s;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            What will this do to my computer?
+          </summary>
+          <ul style="margin-top:0.75rem; padding-left:1.1rem; display:flex; flex-direction:column; gap:0.4rem;">
+            <li style="font-size:0.8rem; color:var(--muted); line-height:1.5;">Adds a list of adult domains to <strong style="color:var(--text)">/etc/hosts</strong> — the same file your Mac uses for all network requests</li>
+            <li style="font-size:0.8rem; color:var(--muted); line-height:1.5;">No app runs in the background. No extension. No account needed.</li>
+            <li style="font-size:0.8rem; color:var(--muted); line-height:1.5;">The block works at the OS level — bypassing it requires removing the entries manually, which takes deliberate effort</li>
+            <li style="font-size:0.8rem; color:var(--muted); line-height:1.5;">Nothing else is installed or changed on your system</li>
+          </ul>
+        </details>
+
         <div class="divider"></div>
-        <p class="footer-note" style="margin-top: 0;">You can close this tab.</p>
+        <p class="footer-note" style="margin-top:0;">You can close this tab once your password is entered.</p>
       </div>
 
       <!-- Web flow: paste command in terminal -->
@@ -467,6 +481,11 @@
     if (isAppFlow) {
       document.getElementById('app-flow').style.display = '';
       document.getElementById('web-flow').style.display = 'none';
+      // Rotate chevron when details opens/closes
+      const det = document.querySelector('#app-flow details');
+      if (det) det.addEventListener('toggle', () => {
+        document.getElementById('details-chevron').style.transform = det.open ? 'rotate(180deg)' : '';
+      });
     }
 
     if (!sessionId) {
