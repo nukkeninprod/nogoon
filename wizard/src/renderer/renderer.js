@@ -83,6 +83,9 @@ async function runPermanentInstall(key) {
   } else {
     $('error-msg').textContent = res.error || 'Unknown error';
     show('error');
+    // Reset button so user can retry if they navigate back to payment screen
+    $('btn-activate').disabled = false;
+    $('btn-activate').textContent = 'Activate';
   }
 }
 
@@ -113,14 +116,24 @@ async function activateLicenseKey() {
   $('btn-activate').textContent = 'Activating…';
   $('license-error').classList.add('hidden');
 
-  const res = await window.nogoon.activateLicense(key, true);
-  if (res.ok) {
-    await runPermanentInstall(key);
-  } else {
-    $('license-error').textContent = res.error || 'Activation failed.';
+  let installed = false;
+  try {
+    const res = await window.nogoon.activateLicense(key, true);
+    if (res.ok) {
+      installed = true;
+      await runPermanentInstall(key);
+    } else {
+      $('license-error').textContent = res.error || 'Activation failed.';
+      $('license-error').classList.remove('hidden');
+    }
+  } catch (e) {
+    $('license-error').textContent = 'Network error. Please try again.';
     $('license-error').classList.remove('hidden');
-    $('btn-activate').disabled = false;
-    $('btn-activate').textContent = 'Activate';
+  } finally {
+    if (!installed) {
+      $('btn-activate').disabled = false;
+      $('btn-activate').textContent = 'Activate';
+    }
   }
 }
 
