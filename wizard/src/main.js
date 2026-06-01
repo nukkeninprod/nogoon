@@ -8,6 +8,7 @@ const sudo = require('sudo-prompt');
 // ── GA4 Measurement Protocol tracking ──────────────────────────────────────
 const GA_MEASUREMENT_ID = 'G-0TPCRYPNQT';
 const GA_API_SECRET = 'L3ASD8VAQCakMROIphrdJg';
+const SESSION_ID = Date.now(); // unique per app launch
 
 function getClientId() {
   const dir = app.getPath('userData');
@@ -21,8 +22,23 @@ function getClientId() {
   } catch { return 'unknown'; }
 }
 
+function getSessionNumber() {
+  const dir = app.getPath('userData');
+  const file = path.join(dir, 'nogoon-session-count');
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    const n = fs.existsSync(file) ? (parseInt(fs.readFileSync(file, 'utf8').trim(), 10) || 0) + 1 : 1;
+    fs.writeFileSync(file, String(n));
+    return n;
+  } catch { return 1; }
+}
+
+// Initialised once on first call to track() (after app is ready)
+let _sessionNumber = null;
+
 async function track(eventName, params = {}) {
   try {
+    if (_sessionNumber === null) _sessionNumber = getSessionNumber();
     const clientId = getClientId();
     await fetch(
       `https://www.google-analytics.com/mp/collect?measurement_id=${GA_MEASUREMENT_ID}&api_secret=${GA_API_SECRET}`,
@@ -31,7 +47,15 @@ async function track(eventName, params = {}) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           client_id: clientId,
-          events: [{ name: eventName, params: { engagement_time_msec: 1, ...params } }],
+          events: [{
+            name: eventName,
+            params: {
+              session_id: String(SESSION_ID),
+              session_number: _sessionNumber,
+              engagement_time_msec: 1,
+              ...params,
+            },
+          }],
         }),
       }
     );
