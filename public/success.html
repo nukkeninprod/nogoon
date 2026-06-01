@@ -475,21 +475,31 @@
               <button id="copy-license-btn" onclick="copyLicenseKey()" style="flex-shrink:0;padding:0.4rem 0.9rem;border-radius:7px;border:1px solid rgba(161,234,251,0.25);background:rgba(161,234,251,0.08);color:#A1EAFB;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;transition:background 0.15s;">Copy</button>
             </div>
           </div>
-          <p id="license-key-status" style="font-size:0.75rem;color:#64748b;margin:0 0 0.75rem;">Loading your key…</p>
+          <p id="license-key-status" style="font-size:0.75rem;color:#64748b;margin:0 0 1.5rem;">Loading your key…</p>
 
-          <!-- Actions: Save .txt -->
-          <button id="save-license-btn" onclick="saveLicenseTxt()" style="display:none;padding:0.45rem 1.05rem;border-radius:8px;border:1px solid rgba(161,234,251,0.18);background:rgba(161,234,251,0.06);color:#94a3b8;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:background 0.15s;margin-bottom:1.25rem;">
-            ↓ Save as .txt
-          </button>
-
-          <!-- Send by email -->
-          <div id="email-send-wrap" style="display:none;width:100%;margin-bottom:0.25rem;">
-            <p style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#64748b;margin:0 0 0.5rem;text-align:left;">Send key to my email</p>
-            <div style="display:flex;gap:0.5rem;">
-              <input id="license-email-input" type="email" placeholder="you@example.com" style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(161,234,251,0.18);border-radius:8px;padding:0.5rem 0.75rem;color:#e2e8f0;font-family:'Inter',sans-serif;font-size:0.82rem;outline:none;" />
-              <button id="send-license-email-btn" onclick="sendLicenseEmail()" style="flex-shrink:0;padding:0.5rem 1rem;border-radius:8px;border:1px solid rgba(161,234,251,0.25);background:rgba(161,234,251,0.08);color:#A1EAFB;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:background 0.15s;white-space:nowrap;">Send</button>
+          <!-- Action buttons — shown once key loads -->
+          <div id="license-actions" style="display:none;width:100%;">
+            <!-- Two CTA buttons -->
+            <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem;">
+              <button onclick="saveLicenseTxt()" style="display:inline-flex;align-items:center;gap:0.55rem;background:#ffffff;color:#000000;font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:700;padding:0.75rem 1.6rem;border-radius:10px;border:none;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 12px rgba(0,0,0,0.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(0,0,0,0.25)'">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Save as .txt
+              </button>
+              <button id="btn-show-email" onclick="toggleEmailForm()" style="display:inline-flex;align-items:center;gap:0.55rem;background:transparent;border:1px solid rgba(161,234,251,0.35);color:rgba(161,234,251,0.9);font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;padding:0.75rem 1.6rem;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(161,234,251,0.06)';this.style.borderColor='rgba(161,234,251,0.6)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(161,234,251,0.35)';this.style.transform=''">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Send by email
+              </button>
             </div>
-            <p id="email-send-status" style="font-size:0.72rem;color:#64748b;margin:0.35rem 0 0;min-height:1em;"></p>
+
+            <!-- Email form — toggled -->
+            <div id="email-send-wrap" style="display:none;width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(161,234,251,0.12);border-radius:12px;padding:1rem 1.1rem;">
+              <p style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#64748b;margin:0 0 0.6rem;text-align:left;">Send to email</p>
+              <div style="display:flex;gap:0.5rem;">
+                <input id="license-email-input" type="email" placeholder="you@example.com" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(161,234,251,0.2);border-radius:8px;padding:0.55rem 0.85rem;color:#e2e8f0;font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;min-width:0;" onfocus="this.style.borderColor='rgba(161,234,251,0.45)'" onblur="this.style.borderColor='rgba(161,234,251,0.2)'" />
+                <button id="send-license-email-btn" onclick="sendLicenseEmail()" style="flex-shrink:0;display:inline-flex;align-items:center;gap:0.4rem;background:#ffffff;color:#000;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:700;padding:0.55rem 1.1rem;border-radius:8px;border:none;cursor:pointer;transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">Send</button>
+              </div>
+              <p id="email-send-status" style="font-size:0.72rem;color:#64748b;margin:0.4rem 0 0;min-height:1em;text-align:left;"></p>
+            </div>
           </div>
         </div>
 
@@ -639,8 +649,7 @@
                 statusEl.textContent = 'Enter this key in the Nogoon app.';
                 statusEl.style.color = '#22c55e';
                 copyBtn.style.display = '';
-                document.getElementById('save-license-btn').style.display = '';
-                document.getElementById('email-send-wrap').style.display = '';
+                document.getElementById('license-actions').style.display = '';
                 return;
               }
             } catch (e) {}
@@ -673,6 +682,16 @@
       return os === 'mac'
         ? `curl -sL "${host}/api/go?s=${sessionId}&os=mac" | sudo bash`
         : `powershell -Command "irm \"${host}/api/go?s=${sessionId}&os=win\" | iex"`;  
+    }
+
+    function toggleEmailForm() {
+      const wrap = document.getElementById('email-send-wrap');
+      const btn = document.getElementById('btn-show-email');
+      const visible = wrap.style.display !== 'none';
+      wrap.style.display = visible ? 'none' : '';
+      btn.style.background = visible ? 'transparent' : 'rgba(161,234,251,0.06)';
+      btn.style.borderColor = visible ? 'rgba(161,234,251,0.35)' : 'rgba(161,234,251,0.6)';
+      if (!visible) document.getElementById('license-email-input').focus();
     }
 
     function saveLicenseTxt() {
