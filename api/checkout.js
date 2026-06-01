@@ -94,7 +94,7 @@ export default async function handler(req, res) {
     }
 
     if (wantsJson) {
-      res.status(200).json({ url: session.url, paymentMethodsMode });
+      res.status(200).json({ url: session.url, sessionId: session.id, paymentMethodsMode });
       return;
     }
 

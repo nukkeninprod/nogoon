@@ -1,10 +1,21 @@
 import Stripe from 'stripe';
+import { Redis } from '@upstash/redis';
 
 // Vercel: disable automatic body parsing so we can read the raw body
 // needed for Stripe signature verification.
 export const config = { api: { bodyParser: false } };
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+let redis;
+try {
+  redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+} catch (e) {
+  redis = null;
+}
 
 /** Read the raw request body as a Buffer. */
 function getRawBody(req) {
@@ -466,6 +477,15 @@ export default async function handler(req, res) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const email = session.customer_details?.email;
+
+    // Mark session as paid in Redis so desktop app can poll for it
+    if (redis) {
+      try {
+        await redis.set(`nogoon:paid:${session.id}`, '1', { ex: 86400 });
+      } catch (e) {
+        console.error('Redis paid mark failed:', e.message);
+      }
+    }
 
     if (!email) {
       console.warn('checkout.session.completed: no customer email, skipping email send');
