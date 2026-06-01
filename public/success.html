@@ -402,23 +402,33 @@
 
       <!-- App flow: just return to app -->
       <div id="app-flow" style="display:none;">
-        <p class="sub" style="margin-bottom: 1.25rem;">Return to the Nogoon app and enter your Mac password in the popup that just appeared.</p>
 
-        <details style="text-align:left; margin-bottom: 1.5rem;">
-          <summary style="cursor:pointer; font-size:0.8rem; color: var(--muted); font-weight:600; list-style:none; display:flex; align-items:center; gap:0.4rem; user-select:none;">
-            <svg id="details-chevron" style="width:12px;height:12px;transition:transform 0.2s;flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-            What will this do to my computer?
-          </summary>
-          <ul style="margin-top:0.75rem; padding-left:1.1rem; display:flex; flex-direction:column; gap:0.4rem;">
-            <li style="font-size:0.8rem; color:var(--muted); line-height:1.5;">Adds a list of adult domains to <strong style="color:var(--text)">/etc/hosts</strong> — the same file your Mac uses for all network requests</li>
-            <li style="font-size:0.8rem; color:var(--muted); line-height:1.5;">No app runs in the background. No extension. No account needed.</li>
-            <li style="font-size:0.8rem; color:var(--muted); line-height:1.5;">The block works at the OS level — bypassing it requires removing the entries manually, which takes deliberate effort</li>
-            <li style="font-size:0.8rem; color:var(--muted); line-height:1.5;">Nothing else is installed or changed on your system</li>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:0.25rem; margin-bottom:1.75rem;">
+          <p style="font-size:0.95rem; color:var(--text); font-weight:600; line-height:1.5;">Return to the Nogoon app.</p>
+          <p style="font-size:0.875rem; color:var(--muted); line-height:1.5;">Enter your Mac password in the popup<br>that just appeared — then you're done.</p>
+        </div>
+
+        <div style="background:rgba(161,234,251,0.05); border:1px solid rgba(161,234,251,0.12); border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.5rem; text-align:left;">
+          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+            <svg style="width:14px;height:14px;color:var(--blue);flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+            <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted);">What happens next</span>
+          </div>
+          <ul style="padding-left:1rem; display:flex; flex-direction:column; gap:0.5rem; list-style:none; padding:0;">
+            <li style="display:flex; gap:0.6rem; align-items:flex-start;">
+              <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">01</span>
+              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;">Adult domains are added to <code style="background:#1a2332; border:1px solid #253040; border-radius:4px; padding:0.05rem 0.35rem; font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--text);">/etc/hosts</code> — your Mac's built-in network filter</li>
+            <li style="display:flex; gap:0.6rem; align-items:flex-start;">
+              <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">02</span>
+              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;">No background app, no extension, no account. The block works at OS level.</span>
+            </li>
+            <li style="display:flex; gap:0.6rem; align-items:flex-start;">
+              <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">03</span>
+              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;">Nothing else is installed or changed on your system.</span>
+            </li>
           </ul>
-        </details>
+        </div>
 
-        <div class="divider"></div>
-        <p class="footer-note" style="margin-top:0;">You can close this tab once your password is entered.</p>
+        <p style="font-size:0.75rem; color:#444; text-align:center;">You can close this tab once your password is entered.</p>
       </div>
 
       <!-- Web flow: paste command in terminal -->
@@ -481,11 +491,6 @@
     if (isAppFlow) {
       document.getElementById('app-flow').style.display = '';
       document.getElementById('web-flow').style.display = 'none';
-      // Rotate chevron when details opens/closes
-      const det = document.querySelector('#app-flow details');
-      if (det) det.addEventListener('toggle', () => {
-        document.getElementById('details-chevron').style.transform = det.open ? 'rotate(180deg)' : '';
-      });
     }
 
     if (!sessionId) {
