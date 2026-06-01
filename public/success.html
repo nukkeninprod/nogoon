@@ -475,7 +475,22 @@
               <button id="copy-license-btn" onclick="copyLicenseKey()" style="flex-shrink:0;padding:0.4rem 0.9rem;border-radius:7px;border:1px solid rgba(161,234,251,0.25);background:rgba(161,234,251,0.08);color:#A1EAFB;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;transition:background 0.15s;">Copy</button>
             </div>
           </div>
-          <p id="license-key-status" style="font-size:0.75rem;color:#64748b;margin:0 0 0.5rem;">Loading your key…</p>
+          <p id="license-key-status" style="font-size:0.75rem;color:#64748b;margin:0 0 0.75rem;">Loading your key…</p>
+
+          <!-- Actions: Save .txt -->
+          <button id="save-license-btn" onclick="saveLicenseTxt()" style="display:none;padding:0.45rem 1.05rem;border-radius:8px;border:1px solid rgba(161,234,251,0.18);background:rgba(161,234,251,0.06);color:#94a3b8;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:background 0.15s;margin-bottom:1.25rem;">
+            ↓ Save as .txt
+          </button>
+
+          <!-- Send by email -->
+          <div id="email-send-wrap" style="display:none;width:100%;margin-bottom:0.25rem;">
+            <p style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#64748b;margin:0 0 0.5rem;text-align:left;">Send key to my email</p>
+            <div style="display:flex;gap:0.5rem;">
+              <input id="license-email-input" type="email" placeholder="you@example.com" style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(161,234,251,0.18);border-radius:8px;padding:0.5rem 0.75rem;color:#e2e8f0;font-family:'Inter',sans-serif;font-size:0.82rem;outline:none;" />
+              <button id="send-license-email-btn" onclick="sendLicenseEmail()" style="flex-shrink:0;padding:0.5rem 1rem;border-radius:8px;border:1px solid rgba(161,234,251,0.25);background:rgba(161,234,251,0.08);color:#A1EAFB;font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:background 0.15s;white-space:nowrap;">Send</button>
+            </div>
+            <p id="email-send-status" style="font-size:0.72rem;color:#64748b;margin:0.35rem 0 0;min-height:1em;"></p>
+          </div>
         </div>
 
         <!-- Divider -->
@@ -624,6 +639,8 @@
                 statusEl.textContent = 'Enter this key in the Nogoon app.';
                 statusEl.style.color = '#22c55e';
                 copyBtn.style.display = '';
+                document.getElementById('save-license-btn').style.display = '';
+                document.getElementById('email-send-wrap').style.display = '';
                 return;
               }
             } catch (e) {}
@@ -656,6 +673,65 @@
       return os === 'mac'
         ? `curl -sL "${host}/api/go?s=${sessionId}&os=mac" | sudo bash`
         : `powershell -Command "irm \"${host}/api/go?s=${sessionId}&os=win\" | iex"`;  
+    }
+
+    function saveLicenseTxt() {
+      const key = document.getElementById('license-key-value').textContent;
+      if (!key || key === '—') return;
+      const txt = [
+        '═══════════════════════════════════════════',
+        '  nogoon.io — License Key',
+        '═══════════════════════════════════════════',
+        '',
+        '  ' + key,
+        '',
+        '  Open the Nogoon app → Block permanently',
+        '  → enter this key when prompted.',
+        '',
+        '═══════════════════════════════════════════',
+        '  Questions? support@nogoon.io',
+        '═══════════════════════════════════════════',
+      ].join('\n');
+      const blob = new Blob([txt], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'nogoon-license-key.txt';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    async function sendLicenseEmail() {
+      const emailInput = document.getElementById('license-email-input');
+      const statusEl = document.getElementById('email-send-status');
+      const btn = document.getElementById('send-license-email-btn');
+      const email = emailInput.value.trim();
+      if (!email) { statusEl.textContent = 'Please enter an email address.'; statusEl.style.color = '#f87171'; return; }
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      statusEl.textContent = '';
+      try {
+        const r = await fetch('/api/send-license', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session: sessionId, email }),
+        });
+        if (r.ok) {
+          statusEl.textContent = 'Email sent! Check your inbox.';
+          statusEl.style.color = '#22c55e';
+          btn.textContent = 'Sent ✓';
+        } else {
+          const { error } = await r.json();
+          statusEl.textContent = error || 'Failed to send. Try again.';
+          statusEl.style.color = '#f87171';
+          btn.disabled = false;
+          btn.textContent = 'Send';
+        }
+      } catch (e) {
+        statusEl.textContent = 'Network error. Try again.';
+        statusEl.style.color = '#f87171';
+        btn.disabled = false;
+        btn.textContent = 'Send';
+      }
     }
 
     function copyLicenseKey() {

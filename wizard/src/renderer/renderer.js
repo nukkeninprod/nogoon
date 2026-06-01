@@ -118,16 +118,11 @@ async function activateLicenseKey() {
   }
 }
 
-// Auto-format license key input as user types: NGON-XXXX-XXXX-XXXX
+// Normalize license key input: uppercase only
 $('license-key-input').addEventListener('input', (e) => {
-  let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-  // Keep only first 16 chars (4 segments of 4)
-  val = val.slice(0, 16);
-  const parts = [];
-  for (let i = 0; i < val.length; i += 4) parts.push(val.slice(i, i + 4));
-  const formatted = 'NGON-' + parts.join('-');
-  // Don't re-set if already clean to avoid cursor jump
-  e.target.value = formatted.replace(/-$/, '');
+  const pos = e.target.selectionStart;
+  e.target.value = e.target.value.toUpperCase();
+  e.target.setSelectionRange(pos, pos);
 });
 
 $('license-key-input').addEventListener('keydown', (e) => {
