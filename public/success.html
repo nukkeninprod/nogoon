@@ -480,12 +480,12 @@
           <!-- Action buttons — shown once key loads -->
           <div id="license-actions" style="display:none;width:100%;">
             <!-- Two CTA buttons -->
-            <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem;">
-              <button onclick="saveLicenseTxt()" style="display:inline-flex;align-items:center;gap:0.55rem;background:#ffffff;color:#000000;font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:700;padding:0.75rem 1.6rem;border-radius:10px;border:none;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 12px rgba(0,0,0,0.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(0,0,0,0.25)'">
+            <div style="display:flex;gap:0.75rem;width:100%;margin-bottom:1.5rem;">
+              <button onclick="saveLicenseTxt()" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:0.55rem;background:#ffffff;color:#000000;font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:700;padding:0.75rem 1rem;border-radius:10px;border:none;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 12px rgba(0,0,0,0.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,0,0,0.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(0,0,0,0.25)'">
                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Save as .txt
               </button>
-              <button id="btn-show-email" onclick="toggleEmailForm()" style="display:inline-flex;align-items:center;gap:0.55rem;background:transparent;border:1px solid rgba(161,234,251,0.35);color:rgba(161,234,251,0.9);font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;padding:0.75rem 1.6rem;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(161,234,251,0.06)';this.style.borderColor='rgba(161,234,251,0.6)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(161,234,251,0.35)';this.style.transform=''">
+              <button id="btn-show-email" onclick="toggleEmailForm()" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:0.55rem;background:transparent;border:1px solid rgba(161,234,251,0.35);color:rgba(161,234,251,0.9);font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;padding:0.75rem 1rem;border-radius:10px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(161,234,251,0.06)';this.style.borderColor='rgba(161,234,251,0.6)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='transparent';this.style.borderColor='rgba(161,234,251,0.35)';this.style.transform=''">
                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                 Send by email
               </button>
@@ -646,8 +646,7 @@
               if (r.ok) {
                 const { key } = await r.json();
                 valueEl.textContent = key;
-                statusEl.textContent = 'Enter this key in the Nogoon app.';
-                statusEl.style.color = '#22c55e';
+                statusEl.textContent = '';
                 copyBtn.style.display = '';
                 document.getElementById('license-actions').style.display = '';
                 return;
