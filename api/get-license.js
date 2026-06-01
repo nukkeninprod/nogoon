@@ -29,11 +29,11 @@ export default async function handler(req, res) {
   if (!redis) return res.status(500).json({ error: 'Server error' });
 
   try {
-    // 1. Fast path: key already stored
-    let key = await redis.get(`nogoon:session-license:${session}`);
-    if (key) return res.status(200).json({ key: String(key) });
+    // Fast path: key already stored
+    const existing = await redis.get(`nogoon:session-license:${session}`);
+    if (existing) return res.status(200).json({ key: String(existing) });
 
-    // 2. Verify payment via Stripe (handles expired Redis cache)
+    // Verify payment via Stripe (handles expired Redis cache or pre-feature sessions)
     const isTest = session.startsWith('cs_test_');
     const stripeKey = isTest
       ? process.env.STRIPE_TEST_SECRET_KEY
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
       return res.status(402).json({ error: 'Payment not completed' });
     }
 
-    // 3. Generate and store (NX to avoid race conditions)
+    // Generate and store atomically (NX to avoid race conditions)
     const newKey = generateLicenseKey();
     const stored = await redis.set(
       `nogoon:session-license:${session}`,
@@ -67,73 +67,9 @@ export default async function handler(req, res) {
       );
       return res.status(200).json({ key: newKey });
     }
-    // Race condition: another request won — fetch its result
-    const existing = await redis.get(`nogoon:session-license:${session}`);
-    if (existing) return res.status(200).json({ key: String(existing) });
-
-    return res.status(500).json({ error: 'Server error' });
-  } catch (e) {
-    console.error('[get-license] error:', e.message);
-    return res.status(500).json({ error: 'Server error' });
-  }
-}
-
-let redis;
-try {
-  redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-  });
-} catch (e) {
-  redis = null;
-}
-
-function generateLicenseKey() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const segment = () => Array.from({ length: 4 }, () => chars[crypto.randomInt(chars.length)]).join('');
-  return `NGON-${segment()}-${segment()}-${segment()}`;
-}
-
-export default async function handler(req, res) {
-  const { session } = req.query;
-  if (!session || typeof session !== 'string') {
-    return res.status(400).json({ error: 'Missing session' });
-  }
-  // Only accept valid Stripe session ID format
-  if (!/^cs_(live|test)_[A-Za-z0-9]+$/.test(session)) {
-    return res.status(400).json({ error: 'Invalid session' });
-  }
-  if (!redis) return res.status(500).json({ error: 'Server error' });
-
-  try {
-    // Try direct lookup first
-    let key = await redis.get(`nogoon:session-license:${session}`);
-    if (key) return res.status(200).json({ key: String(key) });
-
-    // Lazy generation: if webhook already marked this session as paid but no key yet
-    const paid = await redis.get(`nogoon:paid:${session}`);
-    if (!paid) return res.status(404).json({ error: 'Not found' });
-
-    // Generate and store atomically (NX = only if not exists, to avoid race condition)
-    const newKey = generateLicenseKey();
-    const stored = await redis.set(
-      `nogoon:session-license:${session}`,
-      newKey,
-      { ex: 86400 * 365, nx: true }
-    );
-    if (stored) {
-      // Also store the full license record
-      await redis.set(
-        `nogoon:license:${newKey}`,
-        JSON.stringify({ sessionId: session, used: false, createdAt: Date.now(), lazy: true }),
-        { ex: 86400 * 365 }
-      );
-      return res.status(200).json({ key: newKey });
-    }
-    // Another request generated the key concurrently — fetch the winner
-    const existing = await redis.get(`nogoon:session-license:${session}`);
-    if (existing) return res.status(200).json({ key: String(existing) });
-
+    // Race: another request won — fetch its result
+    const winner = await redis.get(`nogoon:session-license:${session}`);
+    if (winner) return res.status(200).json({ key: String(winner) });
     return res.status(500).json({ error: 'Server error' });
   } catch (e) {
     console.error('[get-license] error:', e.message);
