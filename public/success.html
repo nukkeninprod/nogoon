@@ -411,19 +411,28 @@
         <div style="background:rgba(161,234,251,0.05); border:1px solid rgba(161,234,251,0.12); border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.5rem; text-align:left;">
           <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
             <svg style="width:14px;height:14px;color:var(--blue);flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
-            <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted);">What happens next</span>
+            <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted);">What your password authorizes</span>
           </div>
-          <ul style="padding-left:1rem; display:flex; flex-direction:column; gap:0.5rem; list-style:none; padding:0;">
+          <ul style="display:flex; flex-direction:column; gap:0.65rem; list-style:none; padding:0;">
             <li style="display:flex; gap:0.6rem; align-items:flex-start;">
               <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">01</span>
-              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;">Adult domains are added to <code style="background:#1a2332; border:1px solid #253040; border-radius:4px; padding:0.05rem 0.35rem; font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--text);">/etc/hosts</code> — your Mac's built-in network filter</li>
+              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;"><strong style="color:var(--text);">Your DNS is switched</strong> to CleanBrowsing Adult — a free public DNS that blocks adult content at the network level, before your browser even loads anything.</span>
+            </li>
             <li style="display:flex; gap:0.6rem; align-items:flex-start;">
               <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">02</span>
-              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;">No background app, no extension, no account. The block works at OS level.</span>
+              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;"><strong style="color:var(--text);">60+ sites are added to <code style="background:#1a2332;border:1px solid #253040;border-radius:4px;padding:0.05rem 0.3rem;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text);">/etc/hosts</code></strong> — a file built into every Mac that points those domains to nowhere. DNS bypass tricks (Google DoH, Cloudflare, etc.) are blocked too.</span>
             </li>
             <li style="display:flex; gap:0.6rem; align-items:flex-start;">
               <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">03</span>
-              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;">Nothing else is installed or changed on your system.</span>
+              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;"><strong style="color:var(--text);">Google & Bing SafeSearch are enforced</strong> — explicit results are filtered even in search, at the DNS level.</span>
+            </li>
+            <li style="display:flex; gap:0.6rem; align-items:flex-start;">
+              <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">04</span>
+              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;"><strong style="color:var(--text);">The hosts file is locked</strong> so it can't be edited without running another admin command. Not impossible to undo — but it takes real, deliberate effort.</span>
+            </li>
+            <li style="display:flex; gap:0.6rem; align-items:flex-start;">
+              <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">05</span>
+              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;"><strong style="color:var(--text);">Nothing else is installed.</strong> No background process, no extension, no account. One anonymous ping is sent to nogoon.io to confirm the install — that's it.</span>
             </li>
           </ul>
         </div>
