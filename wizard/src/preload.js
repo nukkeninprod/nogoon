@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('nogoon', {
   createCheckout: () => ipcRenderer.invoke('checkout:create'),
   checkPayment: (sessionId) => ipcRenderer.invoke('checkout:check', sessionId),
   activateLicense: (key, checkOnly = false) => ipcRenderer.invoke('license:activate', key, checkOnly),
+  trackEvent: (eventName, params = {}) => ipcRenderer.invoke('track:event', eventName, params),
   closeWindow: () => ipcRenderer.send('window:close'),
   minimizeWindow: () => ipcRenderer.send('window:minimize')
 });

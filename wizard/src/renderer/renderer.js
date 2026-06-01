@@ -120,6 +120,7 @@ async function activateLicenseKey() {
   try {
     const res = await window.nogoon.activateLicense(key, true);
     if (res.ok) {
+      window.nogoon.trackEvent('license_submitted');
       installed = true;
       await runPermanentInstall(key);
     } else {
@@ -155,8 +156,14 @@ $('btn-cancel-payment').addEventListener('click', () => {
   show('home');
 });
 
-$('btn-free').addEventListener('click', runFreeInstall);
-$('btn-permanent').addEventListener('click', startStripeCheckout);
+$('btn-free').addEventListener('click', () => {
+  window.nogoon.trackEvent('cta_clicked', { type: '72h' });
+  runFreeInstall();
+});
+$('btn-permanent').addEventListener('click', () => {
+  window.nogoon.trackEvent('cta_clicked', { type: 'permanent' });
+  startStripeCheckout();
+});
 $('btn-retry').addEventListener('click', runFreeInstall);
 $('btn-unblock').addEventListener('click', async () => {
   const res = await window.nogoon.unblock();
@@ -168,7 +175,10 @@ $('btn-unblock').addEventListener('click', async () => {
     alert('Error: ' + res.error);
   }
 });
-$('btn-permanent-2').addEventListener('click', startStripeCheckout);
+$('btn-permanent-2').addEventListener('click', () => {
+  window.nogoon.trackEvent('cta_clicked', { type: 'permanent' });
+  startStripeCheckout();
+});
 
 $('btn-back-home').addEventListener('click', () => show('home'));
 

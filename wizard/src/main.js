@@ -2,7 +2,42 @@ const { app, BrowserWindow, ipcMain, shell, globalShortcut } = require('electron
 const path = require('node:path');
 const fs = require('node:fs');
 const { execSync } = require('node:child_process');
+const crypto = require('node:crypto');
 const sudo = require('sudo-prompt');
+
+// ── GA4 Measurement Protocol tracking ──────────────────────────────────────
+const GA_MEASUREMENT_ID = 'G-0TPCRYPNQT';
+const GA_API_SECRET = 'L3ASD8VAQCakMROIphrdJg';
+
+function getClientId() {
+  const dir = app.getPath('userData');
+  const file = path.join(dir, 'nogoon-analytics-id');
+  try {
+    if (fs.existsSync(file)) return fs.readFileSync(file, 'utf8').trim();
+    const id = crypto.randomUUID();
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(file, id);
+    return id;
+  } catch { return 'unknown'; }
+}
+
+async function track(eventName, params = {}) {
+  try {
+    const clientId = getClientId();
+    await fetch(
+      `https://www.google-analytics.com/mp/collect?measurement_id=${GA_MEASUREMENT_ID}&api_secret=${GA_API_SECRET}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          client_id: clientId,
+          events: [{ name: eventName, params: { engagement_time_msec: 1, ...params } }],
+        }),
+      }
+    );
+  } catch { /* analytics failure is non-fatal */ }
+}
+// ───────────────────────────────────────────────────────────────────────────
 
 // Auto-move to /Applications if running from a DMG volume
 function autoMoveToApplications() {
@@ -55,6 +90,7 @@ function createWindow() {
 app.whenReady().then(() => {
   if (autoMoveToApplications()) return;
   createWindow();
+  track('app_open');
   // Dev shortcut: Cmd+Shift+T → back to home screen
   globalShortcut.register('CommandOrControl+Shift+T', () => {
     win?.webContents.executeJavaScript("typeof show === 'function' && show('home')");
@@ -100,6 +136,7 @@ ipcMain.handle('install:free', async () => {
       if (err) {
         resolve({ ok: false, error: err.message, stderr: String(stderr || '') });
       } else {
+        track('install_success', { type: 'free' });
         resolve({ ok: true, stdout: String(stdout || '') });
       }
     });
@@ -130,7 +167,7 @@ ipcMain.handle('install:permanent', async () => {
   return new Promise((resolve) => {
     sudo.exec(cmd, { name: 'Nogoon' }, (err, stdout, stderr) => {
       if (err) resolve({ ok: false, error: err.message, stderr: String(stderr || '') });
-      else resolve({ ok: true, stdout: String(stdout || '') });
+      else { track('install_success', { type: 'permanent' }); resolve({ ok: true, stdout: String(stdout || '') }); }
     });
   });
 });
@@ -175,6 +212,9 @@ ipcMain.handle('check:state', () => {
 ipcMain.on('window:close', () => win?.close());
 ipcMain.on('window:minimize', () => win?.minimize());
 
+// Renderer-side analytics events
+ipcMain.handle('track:event', (_e, eventName, params = {}) => track(eventName, params));
+
 // Stripe checkout: create session and open browser
 ipcMain.handle('checkout:create', async () => {
   try {
@@ -185,6 +225,7 @@ ipcMain.handle('checkout:create', async () => {
     // sessionId from response body, or parse from URL (cs_live_... / cs_test_...)
     const sessionId = data.sessionId || (data.url.match(/\/(cs_(?:live|test)_[^#?/]+)/) || [])[1];
     if (!sessionId) return { ok: false, error: 'Could not get session ID' };
+    track('checkout_opened');
     await shell.openExternal(data.url);
     return { ok: true, sessionId };
   } catch (e) {
@@ -219,6 +260,7 @@ ipcMain.handle('license:activate', async (_e, key, checkOnly = false) => {
       });
     }
     const data = await res.json();
+    if (data.ok && !checkOnly) track('license_validated');
     return data;
   } catch (e) {
     return { ok: false, error: e.message };
