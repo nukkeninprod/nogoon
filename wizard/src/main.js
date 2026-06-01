@@ -204,13 +204,20 @@ ipcMain.handle('checkout:check', async (_e, sessionId) => {
 });
 
 // License key activation
-ipcMain.handle('license:activate', async (_e, key) => {
+// checkOnly=true: validates the key exists and is unused without consuming it (GET)
+// checkOnly=false (default): marks the key as used (POST)
+ipcMain.handle('license:activate', async (_e, key, checkOnly = false) => {
   try {
-    const res = await fetch('https://nogoon.io/api/activate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key }),
-    });
+    let res;
+    if (checkOnly) {
+      res = await fetch(`https://nogoon.io/api/activate?key=${encodeURIComponent(key)}`, { method: 'GET' });
+    } else {
+      res = await fetch('https://nogoon.io/api/activate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key }),
+      });
+    }
     const data = await res.json();
     return data;
   } catch (e) {

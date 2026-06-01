@@ -72,12 +72,18 @@ async function runFreeInstall() {
   else { $('error-msg').textContent = res.error || 'Unknown error'; show('error'); }
 }
 
-async function runPermanentInstall() {
+async function runPermanentInstall(key) {
   show('progress');
   $('progress-label').textContent = 'Blocking permanently…';
   const res = await window.nogoon.installPermanent();
-  if (res.ok) showDone(true);
-  else { $('error-msg').textContent = res.error || 'Unknown error'; show('error'); }
+  if (res.ok) {
+    // Mark key as used only after successful install
+    await window.nogoon.activateLicense(key);
+    showDone(true);
+  } else {
+    $('error-msg').textContent = res.error || 'Unknown error';
+    show('error');
+  }
 }
 
 let paymentPollInterval = null;
@@ -107,9 +113,9 @@ async function activateLicenseKey() {
   $('btn-activate').textContent = 'Activating…';
   $('license-error').classList.add('hidden');
 
-  const res = await window.nogoon.activateLicense(key);
+  const res = await window.nogoon.activateLicense(key, true);
   if (res.ok) {
-    await runPermanentInstall();
+    await runPermanentInstall(key);
   } else {
     $('license-error').textContent = res.error || 'Activation failed.';
     $('license-error').classList.remove('hidden');
