@@ -526,10 +526,16 @@
           <!-- Ask ChatGPT -->
           <div style="margin-top:1.75rem;padding-top:1.5rem;border-top:1px solid rgba(107,114,128,0.15);text-align:center;">
             <p style="font-size:0.78rem;color:#6b7280;margin-bottom:0.75rem;">If you have your doubts</p>
+            <div style="display:inline-flex;gap:0.6rem;flex-wrap:wrap;justify-content:center;">
             <a href="#" id="askGptBtnSuccess" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 1.1rem;border-radius:9px;border:1px solid rgba(107,114,128,0.25);background:#fff;color:#374151;font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:600;text-decoration:none;transition:border-color 0.2s,box-shadow 0.2s;" onmouseover="this.style.borderColor='rgba(107,114,128,0.5)';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'" onmouseout="this.style.borderColor='rgba(107,114,128,0.25)';this.style.boxShadow='none'">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" fill="currentColor"/></svg>
               Ask ChatGPT if it's safe
             </a>
+            <a href="#" onclick="window.__toggleChat();return false;" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 1.1rem;border-radius:9px;border:1px solid rgba(107,114,128,0.25);background:#fff;color:#374151;font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:600;text-decoration:none;transition:border-color 0.2s,box-shadow 0.2s;" onmouseover="this.style.borderColor='rgba(107,114,128,0.5)';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'" onmouseout="this.style.borderColor='rgba(107,114,128,0.25)';this.style.boxShadow='none'">
+              <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+              Get in touch
+            </a>
+            </div>
           </div>
         </div>
 
@@ -689,6 +695,141 @@
       const prompt = `I just paid for a Mac app called Nogoon (a permanent porn blocker). Before I enter my admin password, I want to verify what it does is safe.\n\nThe app will: (1) switch my DNS to CleanBrowsing Adult (a free public DNS that blocks adult content), (2) add 60+ adult domains to /etc/hosts pointing to 0.0.0.0, (3) enforce Google & Bing SafeSearch at the DNS level, (4) lock the hosts file so it requires an admin command to edit.\n\nDoes any of this sound malicious or harmful, or does it strictly match what a legitimate porn blocker would do? Answer briefly.`;
       window.open('https://chatgpt.com/?q=' + encodeURIComponent(prompt), '_blank');
     });
+  </script>
+
+  <!-- Chat Widget -->
+  <div id="chat-bubble" onclick="window.__toggleChat()" title="Chat with us" style="position:fixed;bottom:24px;right:24px;z-index:9999;width:56px;height:56px;border-radius:50%;background:#00555A;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,85,90,0.5);transition:transform 0.2s,box-shadow 0.2s;">
+    <svg id="chat-icon" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+    <svg id="chat-x-icon" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2" style="display:none"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    <span id="chat-notif" style="display:none;position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#ef4444;border:2px solid #0B1120;"></span>
+  </div>
+
+  <div id="chat-panel" style="display:none;position:fixed;bottom:92px;right:24px;z-index:9999;width:380px;max-width:calc(100vw - 48px);height:500px;max-height:calc(100vh - 140px);background:#111827;border:1px solid rgba(161,234,251,0.15);border-radius:16px;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,0.6);overflow:hidden;">
+    <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;background:#111827;border-bottom:1px solid rgba(161,234,251,0.15);flex-shrink:0;">
+      <img src="/slack-bruce-profile-photo.png" alt="Bruce" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:14px;color:#fafafa;font-family:'Inter',sans-serif;">Bruce</div>
+        <div style="font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:5px;margin-top:2px;"><span style="width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;"></span> Online — replies in minutes</div>
+      </div>
+      <button onclick="window.__toggleChat()" style="background:none;border:none;color:#94a3b8;cursor:pointer;padding:4px;border-radius:6px;" aria-label="Close">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="ch-msgs" style="flex:1;overflow-y:auto;padding:16px 14px 8px;display:flex;flex-direction:column;gap:6px;"></div>
+    <div style="padding:10px 14px;border-top:1px solid rgba(161,234,251,0.15);background:#111827;flex-shrink:0;">
+      <form id="ch-form" onsubmit="return window.__sendMsg(event)" style="display:flex;gap:8px;">
+        <input type="text" id="ch-in" placeholder="Type a message…" autocomplete="off" style="flex:1;padding:9px 12px;border-radius:8px;border:1px solid rgba(161,234,251,0.15);background:#0B1120;color:#fafafa;font-family:'Inter',sans-serif;font-size:13px;outline:none;">
+        <button type="submit" style="width:38px;height:38px;border-radius:8px;border:none;background:#00555A;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    @keyframes mFadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes tBounce { 0%,60%,100% { transform:translateY(0);opacity:0.4; } 30% { transform:translateY(-5px);opacity:1; } }
+    .m-row { display:flex;gap:8px;animation:mFadeIn 0.25s ease; }
+    .m-row.agent { align-self:flex-start; }
+    .m-row.visitor { align-self:flex-end;flex-direction:row-reverse; }
+    .m-av { width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;margin-top:2px; }
+    .m-av-spacer { width:28px;flex-shrink:0; }
+    .m-body { max-width:78%; }
+    .m-name { font-size:11px;font-weight:600;color:#A1EAFB;margin-bottom:2px;font-family:'Inter',sans-serif; }
+    .m-row.visitor .m-name,.m-row.visitor .m-av { display:none; }
+    .m-bubble { padding:10px 14px;border-radius:14px;font-size:13.5px;line-height:1.5;font-family:'Inter',sans-serif;word-break:break-word; }
+    .m-row.agent .m-bubble { background:#111827;color:#fafafa;border-bottom-left-radius:4px; }
+    .m-row.visitor .m-bubble { background:#00555A;color:#fff;border-bottom-right-radius:4px; }
+    .m-time { font-size:10px;color:#94a3b8;margin-top:3px;opacity:0.7; }
+    .m-row.visitor .m-time { text-align:right; }
+    .typing-dots { display:flex;gap:4px;padding:10px 14px;background:#111827;border-radius:14px;border-bottom-left-radius:4px; }
+    .typing-dots span { width:6px;height:6px;border-radius:50%;background:#94a3b8;animation:tBounce 1.2s infinite; }
+    .typing-dots span:nth-child(2){animation-delay:0.2s;} .typing-dots span:nth-child(3){animation-delay:0.4s;}
+    #chat-bubble:hover { transform:scale(1.08);box-shadow:0 6px 28px rgba(0,85,90,0.7); }
+  </style>
+
+  <script>
+  (function() {
+    var AGENT = { name: 'Bruce', av: '/slack-bruce-profile-photo.png' };
+    var chatId = localStorage.getItem('nogoon_cid');
+    if (!chatId) { chatId = 'c_' + Date.now().toString(36) + Math.random().toString(36).substr(2,5); localStorage.setItem('nogoon_cid', chatId); }
+    var isOpen = false, pollTimer = null, bgTimer = null;
+    var lastTs = parseInt(localStorage.getItem('nogoon_lts') || '0');
+    var loaded = false, lastSender = '';
+    function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function fmtTime(ts) { var d = ts ? new Date(ts) : new Date(); return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0'); }
+    function agentBubble(text, ts) {
+      var c = document.getElementById('ch-msgs'), row = document.createElement('div');
+      row.className = 'm-row agent';
+      var showName = lastSender !== 'agent';
+      row.innerHTML = (showName ? '<img class="m-av" src="'+AGENT.av+'" alt="'+AGENT.name+'">' : '<div class="m-av-spacer"></div>')
+        + '<div class="m-body">' + (showName ? '<div class="m-name">'+AGENT.name+'</div>' : '')
+        + '<div class="m-bubble">'+esc(text)+'</div><div class="m-time">'+fmtTime(ts)+'</div></div>';
+      c.appendChild(row); c.scrollTop = c.scrollHeight; lastSender = 'agent';
+    }
+    function userBubble(text, ts) {
+      var c = document.getElementById('ch-msgs'), row = document.createElement('div');
+      row.className = 'm-row visitor';
+      row.innerHTML = '<div class="m-body"><div class="m-bubble">'+esc(text)+'</div><div class="m-time">'+fmtTime(ts)+'</div></div>';
+      c.appendChild(row); c.scrollTop = c.scrollHeight; lastSender = 'user';
+    }
+    async function loadHistory() {
+      try {
+        var res = await fetch('/api/chat-poll?id='+chatId);
+        if (!res.ok) throw 0;
+        var data = await res.json(), msgs = data.messages || [];
+        if (msgs.length === 0) { agentBubble("Hey! \uD83D\uDC4B I'm "+AGENT.name+". How can I help you?"); }
+        else { msgs.forEach(function(m) { if (m.from==='agent') agentBubble(m.text,m.ts); else { userBubble(m.text,m.ts); } lastTs = Math.max(lastTs, m.ts||0); }); localStorage.setItem('nogoon_lts', String(lastTs)); }
+      } catch(e) { agentBubble("Hey! \uD83D\uDC4B I'm "+AGENT.name+". How can I help you?"); }
+    }
+    window.__toggleChat = function() {
+      var panel = document.getElementById('chat-panel');
+      var ico = document.getElementById('chat-icon'), xco = document.getElementById('chat-x-icon');
+      isOpen = !isOpen;
+      if (isOpen) {
+        panel.style.display = 'flex'; ico.style.display = 'none'; xco.style.display = 'block';
+        document.getElementById('chat-notif').style.display = 'none';
+        if (!loaded) { loaded = true; loadHistory(); }
+        startPoll(); stopBg();
+        setTimeout(function() { document.getElementById('ch-in').focus(); }, 120);
+      } else {
+        panel.style.display = 'none'; ico.style.display = 'block'; xco.style.display = 'none';
+        stopPoll(); startBg();
+      }
+    };
+    window.__sendMsg = async function(e) {
+      e.preventDefault();
+      var input = document.getElementById('ch-in'), msg = input.value.trim();
+      if (!msg) return false;
+      userBubble(msg); input.value = '';
+      try {
+        var res = await fetch('/api/support', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({chatId:chatId, message:msg}) });
+        if (!res.ok) throw 0;
+      } catch(err) { agentBubble('Something went wrong. Please try again.'); }
+      input.focus(); return false;
+    };
+    function startPoll() { if (pollTimer) return; pollTimer = setInterval(poll, 3000); }
+    function stopPoll()  { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+    function startBg()   { if (bgTimer) return; bgTimer = setInterval(bgPoll, 12000); }
+    function stopBg()    { if (bgTimer) { clearInterval(bgTimer); bgTimer = null; } }
+    async function poll() {
+      try {
+        var res = await fetch('/api/chat-poll?id='+chatId+'&after='+lastTs+'&from=agent');
+        if (!res.ok) return;
+        var data = await res.json();
+        (data.messages||[]).forEach(function(m) { if (m.ts > lastTs) { agentBubble(m.text,m.ts); lastTs=m.ts; localStorage.setItem('nogoon_lts',String(lastTs)); } });
+      } catch(e) {}
+    }
+    async function bgPoll() {
+      try {
+        var res = await fetch('/api/chat-poll?id='+chatId+'&after='+lastTs+'&from=agent');
+        if (!res.ok) return;
+        var data = await res.json();
+        if (data.messages && data.messages.length > 0) { var n = document.getElementById('chat-notif'); n.style.display='block'; }
+      } catch(e) {}
+    }
+    startBg();
+  })();
   </script>
 
   <!-- Unicorn Studio WebGL background -->
