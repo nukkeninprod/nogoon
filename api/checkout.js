@@ -78,7 +78,7 @@ export default async function handler(req, res) {
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}${wantsJson ? '&source=app' : ''}`,
       cancel_url: `${baseUrl}/`,
       metadata,
       payment_intent_data: { metadata },

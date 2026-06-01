@@ -399,7 +399,17 @@
     <div class="card">
       <div class="check" style="border-color: var(--blue); background: rgba(161, 234, 251, 0.1);">✓</div>
       <h1>Payment confirmed.</h1>
-      <p class="sub">Paste this in your terminal. Porn is blocked permanently.</p>
+
+      <!-- App flow: just return to app -->
+      <div id="app-flow" style="display:none;">
+        <p class="sub" style="margin-bottom: 1.5rem;">Return to the Nogoon app — it's finishing the install for you.</p>
+        <div class="divider"></div>
+        <p class="footer-note" style="margin-top: 0;">You can close this tab.</p>
+      </div>
+
+      <!-- Web flow: paste command in terminal -->
+      <div id="web-flow">
+        <p class="sub">Paste this in your terminal. Porn is blocked permanently.</p>
 
       <div class="os-tabs">
         <button class="os-tab active" data-os="mac" onclick="switchOS('mac')">macOS</button>
@@ -444,6 +454,7 @@
       </div>
 
       <p class="footer-note"><strong>One-time link.</strong> This command works once. Save the .txt to keep it.</p>
+      </div><!-- /web-flow -->
     </div>
   </div>
 
@@ -451,6 +462,12 @@
     let currentOS = 'mac';
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get('session_id');
+    const isAppFlow = params.get('source') === 'app';
+
+    if (isAppFlow) {
+      document.getElementById('app-flow').style.display = '';
+      document.getElementById('web-flow').style.display = 'none';
+    }
 
     if (!sessionId) {
       document.querySelector('.card').innerHTML = `
