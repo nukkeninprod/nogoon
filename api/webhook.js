@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { Redis } from '@upstash/redis';
+import crypto from 'crypto';
 
 // Vercel: disable automatic body parsing so we can read the raw body
 // needed for Stripe signature verification.
@@ -27,10 +28,28 @@ function getRawBody(req) {
   });
 }
 
+/** Generate a license key: NGON-XXXX-XXXX-XXXX (no ambiguous chars 0/O/1/I) */
+function generateLicenseKey() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const segment = () => Array.from({ length: 4 }, () => chars[crypto.randomInt(chars.length)]).join('');
+  return `NGON-${segment()}-${segment()}-${segment()}`;
+}
+
 /** Send a post-purchase email via Resend. */
-async function sendPurchaseEmail(toEmail, sessionId) {
+async function sendPurchaseEmail(toEmail, sessionId, licenseKey) {
   const macCmd = `curl -sL "https://nogoon.io/api/go?s=${sessionId}&os=mac" | sudo bash`;
   const winCmd = `powershell -Command "irm 'https://nogoon.io/api/go?s=${sessionId}&os=win' | iex"`;
+  const licenseSection = licenseKey ? `
+              <!-- License Key -->
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 28px; background: linear-gradient(135deg, #0B1729 0%, #0A1322 100%); border: 2px solid rgba(161,234,251,0.3); border-radius: 12px;">
+                <tr>
+                  <td style="padding: 20px 24px;">
+                    <p style="margin: 0 0 6px 0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #9CA3AF;">Your license key</p>
+                    <p style="margin: 0 0 12px 0; font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 800; letter-spacing: 0.12em; color: #A1EAFB;">${licenseKey}</p>
+                    <p style="margin: 0; font-size: 13px; color: #9CA3AF; line-height: 1.6;">Open the <strong style="color:#E5E7EB">Nogoon app</strong> &rarr; click <strong style="color:#E5E7EB">Block permanently</strong> &rarr; enter this key when prompted.</p>
+                  </td>
+                </tr>
+              </table>` : '';
   const orderId = sessionId.slice(-8).toUpperCase();
   const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -96,6 +115,8 @@ async function sendPurchaseEmail(toEmail, sessionId) {
                   </td>
                 </tr>
               </table>
+
+              ${licenseSection}
 
               <!-- Order info -->
               <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 32px; background-color: #0B1120; border-radius: 10px; border: 1px solid rgba(161, 234, 251, 0.08);">
@@ -487,13 +508,29 @@ export default async function handler(req, res) {
       }
     }
 
+    // Generate and store license key
+    let licenseKey = null;
+    if (redis) {
+      try {
+        licenseKey = generateLicenseKey();
+        await redis.set(
+          `nogoon:license:${licenseKey}`,
+          JSON.stringify({ sessionId: session.id, email: email || null, used: false, createdAt: Date.now() }),
+          { ex: 86400 * 365 }
+        );
+      } catch (e) {
+        console.error('Redis license key store failed:', e.message);
+        licenseKey = null;
+      }
+    }
+
     if (!email) {
       console.warn('checkout.session.completed: no customer email, skipping email send');
       return res.status(200).json({ received: true });
     }
 
     try {
-      await sendPurchaseEmail(email, session.id);
+      await sendPurchaseEmail(email, session.id, licenseKey);
       console.log(`Purchase email sent to ${email} for session ${session.id}`);
     } catch (err) {
       // Log but don't fail — Stripe will retry if we return 5xx

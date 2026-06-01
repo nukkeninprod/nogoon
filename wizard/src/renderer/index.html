@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Nogoon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Unicorn Studio animated background -->
+  <div class="cyber-bg" data-us-project="nqjFCHlAg41OBQKXsVqT"></div>
+
+  <!-- Titlebar: traffic lights left + logo centered -->
+  <div class="titlebar">
+    <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="3 10.5 18 4" aria-label="nogoon">
+      <path fill="#ffffff" d="M3.4,10.9h0.9v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8H5v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H3.4V10.9z"/>
+      <image style="overflow:visible;" width="512" height="512" href="./shield.png" transform="matrix(5.965982e-03 0 0 5.965982e-03 6.0347 10.6575)"/>
+      <path fill="#ffffff" d="M9.2,12.1c0-0.9,0.4-1.4,1.1-1.4c0.3,0,0.5,0.1,0.6,0.3v-0.2h0.9v2.7c0,0.7-0.5,1.1-1.3,1.1c-0.7,0-1.2-0.3-1.3-1h0.9c0,0.2,0.2,0.3,0.4,0.3c0.2,0,0.3-0.1,0.3-0.4v-0.4c-0.2,0.2-0.4,0.3-0.6,0.3C9.6,13.5,9.2,13,9.2,12.1z M10.9,12.1c0-0.4-0.1-0.6-0.4-0.6c-0.2,0-0.4,0.2-0.4,0.6s0.1,0.6,0.4,0.6C10.8,12.7,10.9,12.5,10.9,12.1z"/>
+      <path fill="#ffffff" d="M12.1,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C12.7,13.6,12.1,13.1,12.1,12.2z M13.9,12.2c0-0.4-0.1-0.7-0.4-0.7s-0.4,0.2-0.4,0.7c0,0.4,0.1,0.7,0.4,0.7S13.9,12.6,13.9,12.2z"/>
+      <path fill="#ffffff" d="M15,12.2c0-0.9,0.5-1.4,1.4-1.4c0.8,0,1.4,0.5,1.4,1.4c0,0.9-0.5,1.4-1.4,1.4C15.6,13.6,15,13.1,15,12.2z M16.8,12.2c0-0.4-0.1-0.7-0.4-0.7S16,11.8,16,12.2c0,0.4,0.1,0.7,0.4,0.7S16.8,12.6,16.8,12.2z"/>
+      <path fill="#ffffff" d="M18,10.9H19v0.4c0.2-0.3,0.4-0.4,0.7-0.4c0.5,0,0.9,0.3,0.9,1v1.8h-0.9v-1.6c0-0.3-0.1-0.4-0.3-0.4c-0.2,0-0.4,0.2-0.4,0.5v1.5H18V10.9z"/>
+    </svg>
+  </div>
+
+  <main class="screen" id="screen-home">
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-permanent">
+        Block permanently
+      </button>
+      <button class="btn btn-secondary" id="btn-free">
+        Block 72 hours <span class="muted">(free)</span>
+      </button>
+    </div>
+    <button class="btn btn-unblock" id="btn-unblock">Unblock (dev)</button>
+  </main>
+
+  <main class="screen hidden" id="screen-payment">
+    <p class="screen-title">Enter your license key</p>
+    <p class="screen-sub">Check your email after completing payment.</p>
+    <div class="license-input-wrap">
+      <input
+        type="text"
+        id="license-key-input"
+        class="license-input"
+        placeholder="NGON-XXXX-XXXX-XXXX"
+        maxlength="19"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+    <p class="license-error hidden" id="license-error"></p>
+    <button class="btn btn-primary" id="btn-activate">Activate</button>
+    <button class="btn btn-unblock" id="btn-cancel-payment">Cancel</button>
+  </main>
+
+  <main class="screen hidden" id="screen-progress">
+    <div class="spinner-wrap">
+      <div class="spinner-pulse"></div>
+      <div class="spinner"></div>
+    </div>
+    <p class="progress-label" id="progress-label">Installing…</p>
+  </main>
+
+  <main class="screen hidden" id="screen-done">
+    <img id="done-shield" src="./shield.png" class="done-shield hidden" alt="">
+    <h2 id="done-title">Porn is blocked.</h2>
+    <p class="tagline" id="done-desc">Trial active for 72 hours.</p>
+    <div class="countdown" id="countdown">72:00:00</div>
+    <button class="btn btn-secondary" id="btn-permanent-2">Make it permanent</button>
+    <button class="btn btn-unblock" id="btn-back-home">(dev) back</button>
+    <p class="support-link">contact: <a href="mailto:support@nogoon.io">support@nogoon.io</a></p>
+
+  </main>
+
+  <main class="screen hidden" id="screen-error">
+    <div class="cross">✕</div>
+    <h2>Something went wrong.</h2>
+    <pre class="error-msg" id="error-msg"></pre>
+    <button class="btn btn-secondary" id="btn-retry">Retry</button>
+  </main>
+
+  <script src="renderer.js"></script>
+  <script>!function(){var u=window.UnicornStudio;if(u&&u.init){document.readyState==="loading"?document.addEventListener("DOMContentLoaded",function(){u.init()}):u.init()}else{window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.0.5/dist/unicornStudio.umd.js",i.onload=function(){document.readyState==="loading"?document.addEventListener("DOMContentLoaded",function(){UnicornStudio.init()}):UnicornStudio.init()},(document.head||document.body).appendChild(i)}}();</script>
+</body>
+</html>
