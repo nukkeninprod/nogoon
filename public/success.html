@@ -23,6 +23,29 @@
       --accent: #00555A;
       --accent-glow: rgba(0, 85, 90, 0.25);
       --blue: #A1EAFB;
+
+    /* App-flow card animations */
+    @keyframes afFadeUp {
+      0%   { opacity:0; transform:translateY(20px); filter:blur(4px); }
+      100% { opacity:1; transform:translateY(0);    filter:blur(0); }
+    }
+    @keyframes afScaleIn {
+      0%   { opacity:0; transform:scale(0.8); }
+      100% { opacity:1; transform:scale(1); }
+    }
+    @keyframes afDrawCheck {
+      from { stroke-dashoffset: 30; }
+      to   { stroke-dashoffset: 0;  }
+    }
+    .af-card       { opacity:0; animation: afFadeUp   0.8s cubic-bezier(0.16,1,0.3,1) 0.05s forwards; }
+    .af-icon       { opacity:0; animation: afScaleIn  0.6s cubic-bezier(0.34,1.56,0.64,1) 0.25s forwards; }
+    .af-check-path { stroke-dasharray:30; stroke-dashoffset:30; animation: afDrawCheck 0.55s cubic-bezier(0.65,0,0.45,1) 0.65s forwards; }
+    .af-item       { opacity:0; animation: afFadeUp   0.55s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .af-item:nth-child(1) { animation-delay:.45s }
+    .af-item:nth-child(2) { animation-delay:.55s }
+    .af-item:nth-child(3) { animation-delay:.65s }
+    .af-item:nth-child(4) { animation-delay:.75s }
+    .af-item:nth-child(5) { animation-delay:.85s }
     }
 
     body {
@@ -396,53 +419,93 @@
   </div>
 
   <div class="container">
-    <div class="card">
+
+    <!-- ── APP FLOW CARD (shown when source=app) ── -->
+    <div id="app-card" style="display:none; width:100%; max-width:600px; margin:0 auto;">
+      <div class="af-card" style="position:relative; background:#090E17; border:1px solid rgba(255,255,255,0.07); border-radius:24px; overflow:hidden; box-shadow:0 30px 60px -15px rgba(0,0,0,0.8), 0 0 40px -10px rgba(161,234,251,0.07);">
+        <!-- Top highlight -->
+        <div style="position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);pointer-events:none;"></div>
+
+        <!-- Hero -->
+        <div style="padding:3rem 2.5rem 2.5rem; display:flex; flex-direction:column; align-items:center; text-align:center;">
+          <!-- Animated check -->
+          <div class="af-icon" style="position:relative; display:flex; align-items:center; justify-content:center; margin-bottom:2rem;">
+            <div style="position:absolute;inset:0;border-radius:50%;background:rgba(161,234,251,0.08);filter:blur(16px);"></div>
+            <div style="position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(161,234,251,0.08);"></div>
+            <div style="position:relative;width:64px;height:64px;border-radius:50%;border:1px solid rgba(161,234,251,0.25);background:linear-gradient(160deg,rgba(161,234,251,0.1),transparent);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 20px rgba(161,234,251,0.08);">
+              <svg width="28" height="28" fill="none" stroke="#A1EAFB" stroke-width="2.5" viewBox="0 0 24 24" style="filter:drop-shadow(0 0 8px rgba(161,234,251,0.5));">
+                <path class="af-check-path" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+          </div>
+          <h1 style="font-size:1.625rem;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:0.6rem;">Payment confirmed.</h1>
+          <p style="font-size:1rem;font-weight:600;color:#e2e8f0;margin-bottom:0.35rem;">Return to the Nogoon app.</p>
+          <p style="font-size:0.9rem;color:#94a3b8;line-height:1.6;max-width:360px;">Enter your Mac password in the popup that just appeared &mdash; then you're done.</p>
+        </div>
+
+        <!-- Divider -->
+        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(148,163,184,0.15),transparent);"></div>
+
+        <!-- Details section -->
+        <div style="padding:2.5rem; background:rgba(15,20,35,0.5);">
+          <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1.75rem;">
+            <div style="width:20px;height:20px;border-radius:5px;background:#0f172a;border:1px solid rgba(148,163,184,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="11" height="11" fill="none" stroke="#94a3b8" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+            </div>
+            <span style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#64748b;">What your password authorizes</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:1.25rem;">
+
+            <div class="af-item" style="display:flex;gap:0.875rem;align-items:flex-start;">
+              <div style="flex-shrink:0;width:24px;height:24px;border-radius:5px;border:1px solid rgba(161,234,251,0.18);background:rgba(161,234,251,0.04);display:flex;align-items:center;justify-content:center;margin-top:1px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:600;color:#A1EAFB;">01</span>
+              </div>
+              <p style="font-size:0.875rem;color:#94a3b8;line-height:1.65;"><strong style="color:#e2e8f0;font-weight:600;">Your DNS is switched</strong> to CleanBrowsing Adult &mdash; a free public DNS that blocks adult content at the network level, before your browser even loads anything.</p>
+            </div>
+
+            <div class="af-item" style="display:flex;gap:0.875rem;align-items:flex-start;">
+              <div style="flex-shrink:0;width:24px;height:24px;border-radius:5px;border:1px solid rgba(161,234,251,0.18);background:rgba(161,234,251,0.04);display:flex;align-items:center;justify-content:center;margin-top:1px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:600;color:#A1EAFB;">02</span>
+              </div>
+              <p style="font-size:0.875rem;color:#94a3b8;line-height:1.65;"><strong style="color:#e2e8f0;font-weight:600;">60+ sites are added to</strong> <code style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#e2e8f0;background:#02040a;border:1px solid rgba(148,163,184,0.2);border-radius:4px;padding:0.1rem 0.4rem;margin:0 0.1rem;">/etc/hosts</code> &mdash; a file built into every Mac that points those domains to nowhere. DNS bypass tricks (Google DoH, Cloudflare, etc.) are blocked too.</p>
+            </div>
+
+            <div class="af-item" style="display:flex;gap:0.875rem;align-items:flex-start;">
+              <div style="flex-shrink:0;width:24px;height:24px;border-radius:5px;border:1px solid rgba(161,234,251,0.18);background:rgba(161,234,251,0.04);display:flex;align-items:center;justify-content:center;margin-top:1px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:600;color:#A1EAFB;">03</span>
+              </div>
+              <p style="font-size:0.875rem;color:#94a3b8;line-height:1.65;"><strong style="color:#e2e8f0;font-weight:600;">Google & Bing SafeSearch are enforced</strong> &mdash; explicit results are filtered even in search, at the DNS level.</p>
+            </div>
+
+            <div class="af-item" style="display:flex;gap:0.875rem;align-items:flex-start;">
+              <div style="flex-shrink:0;width:24px;height:24px;border-radius:5px;border:1px solid rgba(161,234,251,0.18);background:rgba(161,234,251,0.04);display:flex;align-items:center;justify-content:center;margin-top:1px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:600;color:#A1EAFB;">04</span>
+              </div>
+              <p style="font-size:0.875rem;color:#94a3b8;line-height:1.65;"><strong style="color:#e2e8f0;font-weight:600;">The hosts file is locked</strong> so it can't be edited without running another admin command. Not impossible to undo &mdash; but it takes real, deliberate effort.</p>
+            </div>
+
+            <div class="af-item" style="display:flex;gap:0.875rem;align-items:flex-start;">
+              <div style="flex-shrink:0;width:24px;height:24px;border-radius:5px;border:1px solid rgba(161,234,251,0.18);background:rgba(161,234,251,0.04);display:flex;align-items:center;justify-content:center;margin-top:1px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:600;color:#A1EAFB;">05</span>
+              </div>
+              <p style="font-size:0.875rem;color:#94a3b8;line-height:1.65;"><strong style="color:#e2e8f0;font-weight:600;">Nothing else is installed.</strong> No background process, no extension, no account. One anonymous ping is sent to nogoon.io to confirm the install &mdash; that's it.</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="border-top:1px solid rgba(148,163,184,0.08);background:rgba(6,9,15,0.6);padding:1.1rem 2.5rem;text-align:center;border-radius:0 0 24px 24px;">
+          <p style="font-size:0.8rem;color:#475569;font-weight:500;">You can close this tab once your password is entered.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="web-card">
       <div class="check" style="border-color: var(--blue); background: rgba(161, 234, 251, 0.1);">✓</div>
       <h1>Payment confirmed.</h1>
-
-      <!-- App flow: just return to app -->
-      <div id="app-flow" style="display:none;">
-
-        <div style="display:flex; flex-direction:column; align-items:center; gap:0.25rem; margin-bottom:1.75rem;">
-          <p style="font-size:0.95rem; color:var(--text); font-weight:600; line-height:1.5;">Return to the Nogoon app.</p>
-          <p style="font-size:0.875rem; color:var(--muted); line-height:1.5;">Enter your Mac password in the popup<br>that just appeared — then you're done.</p>
-        </div>
-
-        <div style="background:rgba(161,234,251,0.05); border:1px solid rgba(161,234,251,0.12); border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.5rem; text-align:left;">
-          <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
-            <svg style="width:14px;height:14px;color:var(--blue);flex-shrink:0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
-            <span style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted);">What your password authorizes</span>
-          </div>
-          <ul style="display:flex; flex-direction:column; gap:0.65rem; list-style:none; padding:0;">
-            <li style="display:flex; gap:0.6rem; align-items:flex-start;">
-              <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">01</span>
-              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;"><strong style="color:var(--text);">Your DNS is switched</strong> to CleanBrowsing Adult — a free public DNS that blocks adult content at the network level, before your browser even loads anything.</span>
-            </li>
-            <li style="display:flex; gap:0.6rem; align-items:flex-start;">
-              <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">02</span>
-              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;"><strong style="color:var(--text);">60+ sites are added to <code style="background:#1a2332;border:1px solid #253040;border-radius:4px;padding:0.05rem 0.3rem;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text);">/etc/hosts</code></strong> — a file built into every Mac that points those domains to nowhere. DNS bypass tricks (Google DoH, Cloudflare, etc.) are blocked too.</span>
-            </li>
-            <li style="display:flex; gap:0.6rem; align-items:flex-start;">
-              <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">03</span>
-              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;"><strong style="color:var(--text);">Google & Bing SafeSearch are enforced</strong> — explicit results are filtered even in search, at the DNS level.</span>
-            </li>
-            <li style="display:flex; gap:0.6rem; align-items:flex-start;">
-              <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">04</span>
-              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;"><strong style="color:var(--text);">The hosts file is locked</strong> so it can't be edited without running another admin command. Not impossible to undo — but it takes real, deliberate effort.</span>
-            </li>
-            <li style="display:flex; gap:0.6rem; align-items:flex-start;">
-              <span style="color:var(--blue); font-size:0.75rem; margin-top:0.15rem; flex-shrink:0;">05</span>
-              <span style="font-size:0.82rem; color:var(--muted); line-height:1.5;"><strong style="color:var(--text);">Nothing else is installed.</strong> No background process, no extension, no account. One anonymous ping is sent to nogoon.io to confirm the install — that's it.</span>
-            </li>
-          </ul>
-        </div>
-
-        <p style="font-size:0.75rem; color:#444; text-align:center;">You can close this tab once your password is entered.</p>
-      </div>
-
-      <!-- Web flow: paste command in terminal -->
-      <div id="web-flow">
-        <p class="sub">Paste this in your terminal. Porn is blocked permanently.</p>
+      <p class="sub">Paste this in your terminal. Porn is blocked permanently.</p>
 
       <div class="os-tabs">
         <button class="os-tab active" data-os="mac" onclick="switchOS('mac')">macOS</button>
@@ -487,8 +550,7 @@
       </div>
 
       <p class="footer-note"><strong>One-time link.</strong> This command works once. Save the .txt to keep it.</p>
-      </div><!-- /web-flow -->
-    </div>
+    </div><!-- /web-card -->
   </div>
 
   <script>
@@ -498,8 +560,8 @@
     const isAppFlow = params.get('source') === 'app';
 
     if (isAppFlow) {
-      document.getElementById('app-flow').style.display = '';
-      document.getElementById('web-flow').style.display = 'none';
+      document.getElementById('app-card').style.display = '';
+      document.getElementById('web-card').style.display = 'none';
     }
 
     if (!sessionId) {
