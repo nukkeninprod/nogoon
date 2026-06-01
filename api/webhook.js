@@ -518,6 +518,8 @@ export default async function handler(req, res) {
           JSON.stringify({ sessionId: session.id, email: email || null, used: false, createdAt: Date.now() }),
           { ex: 86400 * 365 }
         );
+        // Reverse lookup: session → key (so success page can display it)
+        await redis.set(`nogoon:session-license:${session.id}`, licenseKey, { ex: 86400 * 365 });
       } catch (e) {
         console.error('Redis license key store failed:', e.message);
         licenseKey = null;

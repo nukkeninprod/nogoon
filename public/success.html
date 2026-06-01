@@ -465,11 +465,17 @@
             </div>
           </div>
           <h1 style="font-size:1.625rem;font-weight:700;color:#fff;letter-spacing:-0.02em;margin-bottom:0.6rem;">Payment confirmed.</h1>
-          <p style="font-size:1rem;font-weight:600;color:#e2e8f0;margin-bottom:0.35rem;">Return to the Nogoon app.</p>
-          <p style="display:inline-flex;align-items:center;gap:0.5rem;font-size:0.875rem;font-weight:600;color:#0f172a;background:#38bdf8;border-radius:8px;padding:0.45rem 0.9rem;line-height:1.5;">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-            Enter your password in the popup that just appeared and all adult content will be permanently blocked.
-          </p>
+          <p style="font-size:1rem;font-weight:600;color:#e2e8f0;margin-bottom:1.25rem;">Return to the Nogoon app and enter this key.</p>
+
+          <!-- License key display -->
+          <div id="license-key-box" style="width:100%;background:rgba(161,234,251,0.05);border:1px solid rgba(161,234,251,0.2);border-radius:14px;padding:1.1rem 1.25rem;margin-bottom:0.5rem;">
+            <p style="font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#64748b;margin:0 0 0.5rem;">Your license key</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;">
+              <span id="license-key-value" style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:800;letter-spacing:0.12em;color:#A1EAFB;flex:1;">—</span>
+              <button id="copy-license-btn" onclick="copyLicenseKey()" style="flex-shrink:0;padding:0.4rem 0.9rem;border-radius:7px;border:1px solid rgba(161,234,251,0.25);background:rgba(161,234,251,0.08);color:#A1EAFB;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;transition:background 0.15s;">Copy</button>
+            </div>
+          </div>
+          <p id="license-key-status" style="font-size:0.75rem;color:#64748b;margin:0 0 0.5rem;">Loading your key…</p>
         </div>
 
         <!-- Divider -->
@@ -535,7 +541,7 @@
 
         <!-- Footer -->
         <div style="border-top:1px solid rgba(148,163,184,0.08);background:rgba(6,9,15,0.6);padding:1.1rem 2.5rem;text-align:center;border-radius:0 0 24px 24px;">
-          <p style="font-size:0.8rem;color:#475569;font-weight:500;">You can close this tab once your password is entered.</p>
+          <p style="font-size:0.8rem;color:#475569;font-weight:500;">Copy the key above, return to the Nogoon app, and enter it to activate.</p>
         </div>
       </div>
     </div>
@@ -600,6 +606,40 @@
     if (isAppFlow) {
       document.getElementById('app-card').style.display = '';
       document.getElementById('web-card').style.display = 'none';
+
+      // Fetch and display the license key
+      if (sessionId) {
+        (async function loadLicenseKey() {
+          const statusEl = document.getElementById('license-key-status');
+          const valueEl = document.getElementById('license-key-value');
+          const copyBtn = document.getElementById('copy-license-btn');
+          let attempts = 0;
+          async function tryFetch() {
+            attempts++;
+            try {
+              const r = await fetch(`/api/get-license?session=${encodeURIComponent(sessionId)}`);
+              if (r.ok) {
+                const { key } = await r.json();
+                valueEl.textContent = key;
+                statusEl.textContent = 'Enter this key in the Nogoon app.';
+                statusEl.style.color = '#22c55e';
+                copyBtn.style.display = '';
+                return;
+              }
+            } catch (e) {}
+            // Webhook may not have fired yet — retry up to 10s
+            if (attempts < 10) {
+              setTimeout(tryFetch, 1000);
+            } else {
+              statusEl.textContent = 'Key not found. Check your email or contact support.';
+              statusEl.style.color = '#f87171';
+              copyBtn.style.display = 'none';
+            }
+          }
+          copyBtn.style.display = 'none';
+          tryFetch();
+        })();
+      }
     }
 
     if (!sessionId) {
@@ -616,6 +656,24 @@
       return os === 'mac'
         ? `curl -sL "${host}/api/go?s=${sessionId}&os=mac" | sudo bash`
         : `powershell -Command "irm \"${host}/api/go?s=${sessionId}&os=win\" | iex"`;  
+    }
+
+    function copyLicenseKey() {
+      const key = document.getElementById('license-key-value').textContent;
+      if (!key || key === '—') return;
+      navigator.clipboard.writeText(key).then(() => {
+        const btn = document.getElementById('copy-license-btn');
+        btn.textContent = 'Copied!';
+        btn.style.background = 'rgba(34,197,94,0.15)';
+        btn.style.borderColor = 'rgba(34,197,94,0.4)';
+        btn.style.color = '#22c55e';
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.style.background = 'rgba(161,234,251,0.08)';
+          btn.style.borderColor = 'rgba(161,234,251,0.25)';
+          btn.style.color = '#A1EAFB';
+        }, 2000);
+      });
     }
 
     function switchOS(os) {
