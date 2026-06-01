@@ -683,8 +683,7 @@
 
     document.getElementById('askGptBtnSuccess').addEventListener('click', (e) => {
       e.preventDefault();
-      const src = 'https://github.com/nukkeninprod/nogoon/blob/main/public/go.sh';
-      const prompt = `I just paid for a Mac app called Nogoon (a permanent porn blocker). Before I enter my admin password, I want to verify the script it will run is safe.\n\nHere is the full source code: ${src}\n\nBased solely on reviewing the code, does this script contain any malicious behavior (such as backdoors, credential harvesting, remote code execution, hidden downloads, or data exfiltration), or does it strictly perform the DNS and hosts-file modifications described? Answer briefly.`;
+      const prompt = `I just paid for a Mac app called Nogoon (a permanent porn blocker). Before I enter my admin password, I want to verify what it does is safe.\n\nThe app will: (1) switch my DNS to CleanBrowsing Adult (a free public DNS that blocks adult content), (2) add 60+ adult domains to /etc/hosts pointing to 0.0.0.0, (3) enforce Google & Bing SafeSearch at the DNS level, (4) lock the hosts file so it requires an admin command to edit.\n\nDoes any of this sound malicious or harmful, or does it strictly match what a legitimate porn blocker would do? Answer briefly.`;
       window.open('https://chatgpt.com/?q=' + encodeURIComponent(prompt), '_blank');
     });
   </script>

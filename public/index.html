@@ -2842,9 +2842,7 @@
       track('click_ask_gpt');
       const activeOS = document.querySelector('#hero-terminal .os-tab.active').dataset.os;
       const cmd = commands[activeOS];
-      const file = activeOS === 'mac' ? 'setup.sh' : 'setup.ps1';
-      const src = `https://github.com/nukkeninprod/nogoon/blob/main/public/${file}`;
-      const prompt = `I'm about to run this command:\n\n${cmd}\n\nHere is the full source code: ${src}\n\nBased solely on reviewing the code, does this script contain any malicious behavior (such as backdoors, credential harvesting, remote code execution, hidden downloads, or data exfiltration), or does it strictly perform the DNS and hosts-file modifications expected from a porn blocker? Answer briefly.`;
+      const prompt = `I'm about to run this command to install a permanent porn blocker called Nogoon:\n\n${cmd}\n\nThe script will: (1) switch my DNS to CleanBrowsing Adult, (2) add 60+ adult domains to the hosts file pointing to 0.0.0.0, (3) enforce SafeSearch on Google and Bing at DNS level, (4) lock the hosts file so it requires an admin command to edit.\n\nDoes this command look safe, or does it do anything beyond those DNS and hosts-file changes? Answer briefly.`;
       window.open('https://chatgpt.com/?q=' + encodeURIComponent(prompt), '_blank');
     });
 
