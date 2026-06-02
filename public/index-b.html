@@ -715,6 +715,13 @@
       animation: float 3.5s ease-in-out infinite;
       filter: drop-shadow(0 0 40px rgba(56, 189, 248, 0.32)) drop-shadow(0 0 120px rgba(56, 189, 248, 0.18));
     }
+    .download-btn-wrapper {
+      --terminal-teal: #38bdf8;
+      --inset: -1.5px;
+      position: relative;
+      display: inline-block;
+      border-radius: 14px;
+    }
     .download-btn {
       background: var(--blue);
       border: none;
@@ -730,6 +737,9 @@
       align-items: center;
       gap: 0.6rem;
       box-shadow: 0 0 30px rgba(161, 234, 251, 0.25);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
     }
     .download-btn:hover {
       background: #ffffff;
@@ -2083,10 +2093,14 @@
 
     
 
-    <a class="cta download-btn" id="btn-download-mac" href="https://pub-a2492cfac08a428b86bea0af43d3bd94.r2.dev/Nogoon-0.1.0-universal.dmg" onclick="if(typeof track==='function')track('download_click',{location:'hero'})">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-      Download for Mac — Free
-    </a>
+    <div class="download-btn-wrapper">
+      <div aria-hidden="true" class="terminal-beam glow animate-border-beam"></div>
+      <div aria-hidden="true" class="terminal-beam animate-border-beam"></div>
+      <a class="cta download-btn" id="btn-download-mac" href="https://pub-a2492cfac08a428b86bea0af43d3bd94.r2.dev/Nogoon-0.1.0-universal.dmg" onclick="if(typeof track==='function')track('download_click',{location:'hero'})">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        Download for Mac — Free
+      </a>
+    </div>
     <div class="floppy-wrap"><img src="/floppy.png" alt="Permanent Blocker"></div>
 
 
