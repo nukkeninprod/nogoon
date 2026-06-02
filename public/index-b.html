@@ -2431,18 +2431,24 @@
 
       <!-- SECTION 4: Install / Pricing -->
       <section id="install" class="flex flex-col items-center justify-center pt-16 pb-16 w-full max-w-3xl mx-auto text-center relative" style="z-index:20;">
-        <div style="background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%); border-radius: 2rem; padding: 3.5rem 3rem; width: 100%; box-shadow: 0 4px 32px 0 rgba(99,179,237,0.13), 0 1.5px 6px 0 rgba(99,179,237,0.08);">
-          <h2 class="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-6">
+        <div style="position:relative; overflow:hidden; background: linear-gradient(135deg, #1a1f4e 0%, #12184a 50%, #0d1340 100%); border-radius: 1.5rem; padding: 3.5rem 3rem; width: 100%; border: 1px solid rgba(120,130,255,0.25); box-shadow: 0 8px 48px 0 rgba(10,15,60,0.45);">
+          <!-- Abstract decorative shapes -->
+          <div style="pointer-events:none; position:absolute; inset:0; overflow:hidden; border-radius:1.5rem;">
+            <div style="position:absolute; top:-60px; left:-80px; width:320px; height:220px; background: rgba(80,90,200,0.22); border-radius:50%; filter:blur(2px); transform:rotate(-30deg);"></div>
+            <div style="position:absolute; bottom:-50px; right:-60px; width:280px; height:180px; background: rgba(80,90,200,0.18); border-radius:50%; filter:blur(2px); transform:rotate(20deg);"></div>
+            <div style="position:absolute; top:20px; right:40px; width:160px; height:100px; background: rgba(100,110,220,0.13); border-radius:50%; filter:blur(1px); transform:rotate(-15deg);"></div>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-6" style="color:#ffffff; position:relative; z-index:1;">
             Not ready to block permanently yet?
           </h2>
-          <div class="text-sky-400 mb-8 animate-bounce">
+          <div class="mb-8 animate-bounce" style="color:rgba(160,170,255,0.7); position:relative; z-index:1;">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <polyline points="19 12 12 19 5 12"></polyline>
             </svg>
           </div>
 
-          <div class="download-btn-wrapper">
+          <div class="download-btn-wrapper" style="position:relative; z-index:1;">
             <div aria-hidden="true" class="terminal-beam glow animate-border-beam"></div>
             <div aria-hidden="true" class="terminal-beam animate-border-beam"></div>
             <a class="cta download-btn" href="https://pub-a2492cfac08a428b86bea0af43d3bd94.r2.dev/Nogoon-0.1.0-universal.dmg" onclick="if(typeof track==='function')track('download_click',{location:'section_install'})">
@@ -2451,7 +2457,7 @@
             </a>
           </div>
 
-          <p class="text-slate-400 text-sm mt-6 font-medium">
+          <p class="text-sm mt-6 font-medium" style="color:rgba(160,170,220,0.65); position:relative; z-index:1;">
             One-time payment. No subscription. No account.
           </p>
         </div>
