@@ -31,7 +31,7 @@ const ATTR_FIELDS = [
 ];
 
 const MAX_FIELD_LEN = 200;
-const TTL_SECONDS = 1800; // 30 minutes
+const TTL_SECONDS = 2592000; // 30 days — covers the download → install → buy delay (app flow)
 
 function getClientIp(req) {
   const xff = req.headers['x-forwarded-for'];
