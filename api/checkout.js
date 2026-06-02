@@ -72,9 +72,9 @@ export default async function handler(req, res) {
             product_data: {
               name: isTest
                 ? '[TEST] Permanent Blocker Script'
-                : (isApp ? 'Nogoon — Permanent Block' : 'Permanent Blocker Script'),
+                : (isApp ? 'Nogoon — Permanent Block License Key' : 'Permanent Blocker Script'),
               description: isApp
-                ? "One-time setup. Block porn permanently on macOS. No subscription. No app to manage. Just install and it's done."
+                ? "One-time licence key to enter in order to block permanently. No subscription. No app to manage. Just enter it once and it's done for good."
                 : "One-time setup. Block it permanently on macOS & Windows. No subscription. No app to manage. Just execute a script and it's done.",
               images: [isApp
                 ? 'https://nogoon.io/license-key-buy.png'
