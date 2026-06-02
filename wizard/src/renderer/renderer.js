@@ -198,3 +198,14 @@ document.querySelector('.support-link a').addEventListener('click', (e) => {
   e.preventDefault();
   window.nogoon.openURL('mailto:support@nogoon.io');
 });
+
+// On startup: detect existing block state and skip home screen if already installed
+(async () => {
+  const { state } = await window.nogoon.checkState();
+  if (state === 'permanent') {
+    showDone(true);
+  } else if (state === 'free') {
+    showDone(false);
+  }
+  // else: show home screen (default)
+})();
