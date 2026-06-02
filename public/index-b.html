@@ -722,6 +722,10 @@
       display: inline-block;
       border-radius: 14px;
       cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .download-btn-wrapper:hover {
+      transform: translateY(-2px);
     }
     .download-btn {
       background: #ffffff;
@@ -733,7 +737,7 @@
       border-radius: 12px;
       cursor: pointer;
       text-decoration: none;
-      transition: all 0.2s;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 0.75rem;
@@ -741,13 +745,10 @@
       overflow: hidden;
       z-index: 1;
     }
-    .download-btn:hover {
+    .download-btn-wrapper:hover .download-btn {
       background: #111827;
       border-color: rgba(161, 234, 251, 0.6);
       color: rgba(161, 234, 251, 0.9);
-      transform: translateY(-2px);
-      box-shadow: none;
-      cursor: pointer;
     }
 
     .cta-secondary {
