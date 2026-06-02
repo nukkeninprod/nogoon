@@ -52,6 +52,7 @@ export default async function handler(req, res) {
     const requestUrl = new URL(req.url || '', baseUrl);
     const wantsJson = req.query?.json === '1' || requestUrl.searchParams.get('json') === '1';
     const isTest = req.query?.test === '1' || requestUrl.searchParams.get('test') === '1';
+    const isApp = req.query?.app === '1' || requestUrl.searchParams.get('app') === '1';
 
     // Use test key in test mode
     const stripeClient = isTest
@@ -69,9 +70,15 @@ export default async function handler(req, res) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: isTest ? '[TEST] Permanent Blocker Script' : 'Permanent Blocker Script',
-              description: 'One-time setup. Block it permanently on macOS & Windows. No subscription. No app to manage. Just execute a script and it\'s done.',
-              images: ['https://nogoon.io/page-success.png'],
+              name: isTest
+                ? '[TEST] Permanent Blocker Script'
+                : (isApp ? 'Nogoon — Permanent Block' : 'Permanent Blocker Script'),
+              description: isApp
+                ? "One-time setup. Block porn permanently on macOS. No subscription. No app to manage. Just install and it's done."
+                : "One-time setup. Block it permanently on macOS & Windows. No subscription. No app to manage. Just execute a script and it's done.",
+              images: [isApp
+                ? 'https://nogoon.io/license-key-buy.png'
+                : 'https://nogoon.io/page-success.png'],
             },
             unit_amount: isTest ? 100 : 900, // $1.00 in test, $9.00 in prod
           },

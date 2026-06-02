@@ -24,6 +24,7 @@ function startCountdown() {
 
 const screens = {
   home: $('screen-home'),
+  payment: $('screen-payment'),
   progress: $('screen-progress'),
   done: $('screen-done'),
   error: $('screen-error')
@@ -84,6 +85,65 @@ function finishProgress(cb) {
   setTimeout(cb, 400);
 }
 
+async function startStripeCheckout() {
+  const res = await window.nogoon.createCheckout();
+  if (!res.ok) {
+    $('error-msg').textContent = res.error || 'Could not open checkout';
+    show('error');
+    return;
+  }
+  // Stripe is now open in the browser. Show the license key entry screen.
+  $('license-key-input').value = '';
+  $('license-error').textContent = '';
+  $('license-error').classList.add('hidden');
+  $('btn-activate').disabled = false;
+  $('btn-activate').textContent = 'Activate';
+  show('payment');
+}
+
+async function activateLicenseKey() {
+  const key = $('license-key-input').value.trim().toUpperCase();
+  if (!key) {
+    $('license-error').textContent = 'Please enter your license key.';
+    $('license-error').classList.remove('hidden');
+    return;
+  }
+  $('btn-activate').disabled = true;
+  $('btn-activate').textContent = 'Activating…';
+  $('license-error').classList.add('hidden');
+  try {
+    const check = await window.nogoon.activateLicense(key, true);
+    if (!check.ok) {
+      $('license-error').textContent = check.error || 'Invalid or already used license key.';
+      $('license-error').classList.remove('hidden');
+      $('btn-activate').disabled = false;
+      $('btn-activate').textContent = 'Activate';
+      return;
+    }
+    window.nogoon.trackEvent('license_submitted');
+    show('progress');
+    startFakeProgress('Blocking permanently…');
+    const installRes = await window.nogoon.installPermanent();
+    if (!installRes.ok) {
+      finishProgress(() => {
+        $('error-msg').textContent = installRes.error || 'Unknown error';
+        show('error');
+      });
+      $('btn-activate').disabled = false;
+      $('btn-activate').textContent = 'Activate';
+      return;
+    }
+    // Mark license as used only after successful install
+    await window.nogoon.activateLicense(key, false);
+    finishProgress(() => showDone(true));
+  } catch (e) {
+    $('license-error').textContent = 'Network error. Please try again.';
+    $('license-error').classList.remove('hidden');
+    $('btn-activate').disabled = false;
+    $('btn-activate').textContent = 'Activate';
+  }
+}
+
 async function runFreeInstall() {
   show('progress');
   startFakeProgress('Blocking 72h…');
@@ -104,11 +164,35 @@ async function runPermanentInstall() {
   });
 }
 
-$('btn-free').addEventListener('click', runFreeInstall);
+// Normalize license key input: uppercase only
+$('license-key-input').addEventListener('input', (e) => {
+  const pos = e.target.selectionStart;
+  e.target.value = e.target.value.toUpperCase();
+  e.target.setSelectionRange(pos, pos);
+});
+$('license-key-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') activateLicenseKey();
+});
+$('btn-activate').addEventListener('click', activateLicenseKey);
+
+$('btn-cancel-payment').addEventListener('click', () => {
+  show('home');
+});
+
+$('btn-free').addEventListener('click', () => {
+  window.nogoon.trackEvent('cta_clicked', { type: '72h' });
+  runFreeInstall();
+});
 $('btn-retry').addEventListener('click', runFreeInstall);
 
-$('btn-permanent').addEventListener('click', runPermanentInstall);
-$('btn-permanent-2').addEventListener('click', runPermanentInstall);
+$('btn-permanent').addEventListener('click', () => {
+  window.nogoon.trackEvent('cta_clicked', { type: 'permanent' });
+  startStripeCheckout();
+});
+$('btn-permanent-2').addEventListener('click', () => {
+  window.nogoon.trackEvent('cta_clicked', { type: 'permanent' });
+  startStripeCheckout();
+});
 
 document.querySelector('.support-link a').addEventListener('click', (e) => {
   e.preventDefault();

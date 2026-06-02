@@ -239,7 +239,7 @@ ipcMain.handle('track:event', (_e, eventName, params = {}) => track(eventName, p
 ipcMain.handle('checkout:create', async () => {
   try {
     const testParam = app.isPackaged ? '' : '&test=1';
-    const res = await fetch(`https://nogoon.io/api/checkout?json=1${testParam}`);
+    const res = await fetch(`https://nogoon.io/api/checkout?json=1&app=1${testParam}`);
     const data = await res.json();
     if (!data.url) return { ok: false, error: 'No checkout URL' };
     // sessionId from response body, or parse from URL (cs_live_... / cs_test_...)

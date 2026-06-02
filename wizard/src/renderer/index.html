@@ -31,6 +31,25 @@
     </div>
   </main>
 
+  <main class="screen hidden" id="screen-payment">
+    <p class="screen-wait-title">Enter your license key</p>
+    <p class="screen-wait-sub">It's on the page that opens after you pay.</p>
+    <div class="license-input-wrap">
+      <input
+        type="text"
+        id="license-key-input"
+        class="license-input"
+        placeholder="NGON-XXXX-XXXX-XXXX"
+        maxlength="19"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </div>
+    <p class="license-error hidden" id="license-error"></p>
+    <button class="btn btn-primary" id="btn-activate">Activate</button>
+    <button class="btn btn-cancel" id="btn-cancel-payment">Cancel</button>
+  </main>
+
   <main class="screen hidden" id="screen-progress">
     <div class="ring-wrap">
       <svg class="progress-ring" viewBox="0 0 120 120">
