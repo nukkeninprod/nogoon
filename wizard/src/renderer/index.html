@@ -26,41 +26,20 @@
 
   <main class="screen" id="screen-home">
     <div class="actions">
-      <button class="btn btn-primary" id="btn-permanent">
-        Block permanently
-      </button>
-      <button class="btn btn-secondary" id="btn-free">
-        Block 72 hours <span class="muted">(free)</span>
-      </button>
+      <button class="btn btn-primary" id="btn-permanent">Block permanently</button>
+      <button class="btn btn-secondary" id="btn-free">Block 72 hours <span class="muted">(free)</span></button>
     </div>
-    <button class="btn btn-unblock" id="btn-unblock">Unblock (dev)</button>
-  </main>
-
-  <main class="screen hidden" id="screen-payment">
-    <p class="screen-title">Enter your license key</p>
-    <p class="screen-sub">Check your email after completing payment.</p>
-    <div class="license-input-wrap">
-      <input
-        type="text"
-        id="license-key-input"
-        class="license-input"
-        placeholder="NGON-XXXX-XXXX-XXXX"
-        maxlength="19"
-        autocomplete="off"
-        spellcheck="false"
-      />
-    </div>
-    <p class="license-error hidden" id="license-error"></p>
-    <button class="btn btn-primary" id="btn-activate">Activate</button>
-    <button class="btn btn-unblock" id="btn-cancel-payment">Cancel</button>
   </main>
 
   <main class="screen hidden" id="screen-progress">
-    <div class="spinner-wrap">
-      <div class="spinner-pulse"></div>
-      <div class="spinner"></div>
+    <div class="ring-wrap">
+      <svg class="progress-ring" viewBox="0 0 120 120">
+        <circle class="ring-bg" cx="60" cy="60" r="50"/>
+        <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="50"/>
+      </svg>
+      <span class="ring-pct" id="ring-pct">0%</span>
     </div>
-    <p class="progress-label" id="progress-label">Installing…</p>
+    <p class="progress-label" id="progress-label">Blocking…</p>
   </main>
 
   <main class="screen hidden" id="screen-done">
@@ -69,9 +48,7 @@
     <p class="tagline" id="done-desc">Trial active for 72 hours.</p>
     <div class="countdown" id="countdown">72:00:00</div>
     <button class="btn btn-secondary" id="btn-permanent-2">Make it permanent</button>
-    <button class="btn btn-unblock" id="btn-back-home">(dev) back</button>
     <p class="support-link">contact: <a href="mailto:support@nogoon.io">support@nogoon.io</a></p>
-
   </main>
 
   <main class="screen hidden" id="screen-error">

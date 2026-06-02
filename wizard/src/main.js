@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell, globalShortcut } = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const { execSync } = require('node:child_process');
@@ -115,10 +115,6 @@ app.whenReady().then(() => {
   if (autoMoveToApplications()) return;
   createWindow();
   track('app_open');
-  // Dev shortcut: Cmd+Shift+T → back to home screen
-  globalShortcut.register('CommandOrControl+Shift+T', () => {
-    win?.webContents.executeJavaScript("typeof show === 'function' && show('home')");
-  });
   // When running from /Applications, self-register with Spotlight so Cmd+Space finds the app
   if (process.platform === 'darwin') {
     try {
