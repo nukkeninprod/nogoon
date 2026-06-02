@@ -700,6 +700,21 @@
       opacity: 1;
     }
 
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .floppy-wrap {
+      margin-top: 3rem;
+      display: flex;
+      justify-content: center;
+    }
+    .floppy-wrap img {
+      width: 200px;
+      display: block;
+      animation: float 3.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 28px rgba(161, 234, 251, 0.55)) drop-shadow(0 0 60px rgba(100, 180, 255, 0.3));
+    }
     .download-btn {
       background: var(--blue);
       border: none;
@@ -2072,7 +2087,7 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
       Download for Mac — Free
     </a>
-    <img src="/floppy.png" alt="Permanent Blocker" style="width: 200px; margin-top: 2rem; display: block;">
+    <div class="floppy-wrap"><img src="/floppy.png" alt="Permanent Blocker"></div>
 
 
   </div>
