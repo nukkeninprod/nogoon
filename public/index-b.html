@@ -2431,24 +2431,29 @@
 
       <!-- SECTION 4: Install / Pricing -->
       <section id="install" class="flex flex-col items-center justify-center pt-16 pb-16 w-full max-w-3xl mx-auto text-center relative" style="z-index:20;">
-        <div style="position:relative; overflow:hidden; background: linear-gradient(135deg, #1a1f4e 0%, #12184a 50%, #0d1340 100%); border-radius: 1.5rem; padding: 3.5rem 3rem; width: 100%; border: 1px solid rgba(120,130,255,0.25); box-shadow: 0 8px 48px 0 rgba(10,15,60,0.45);">
-          <!-- Abstract decorative shapes -->
-          <div style="pointer-events:none; position:absolute; inset:0; overflow:hidden; border-radius:1.5rem;">
-            <div style="position:absolute; top:-60px; left:-80px; width:320px; height:220px; background: rgba(80,90,200,0.22); border-radius:50%; filter:blur(2px); transform:rotate(-30deg);"></div>
-            <div style="position:absolute; bottom:-50px; right:-60px; width:280px; height:180px; background: rgba(80,90,200,0.18); border-radius:50%; filter:blur(2px); transform:rotate(20deg);"></div>
-            <div style="position:absolute; top:20px; right:40px; width:160px; height:100px; background: rgba(100,110,220,0.13); border-radius:50%; filter:blur(1px); transform:rotate(-15deg);"></div>
-          </div>
-          <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-6" style="color:#ffffff; position:relative; z-index:1;">
+        <div style="position:relative; overflow:hidden; background-color:#e0f2fe; border-radius:24px; padding:5rem 2rem; width:100%; border:1px solid #cbd5e1; box-shadow:0 15px 40px rgba(148,163,184,0.15);">
+          <!-- Left-side wave patterns -->
+          <svg style="position:absolute; inset:0; height:100%; width:100%; pointer-events:none;" viewBox="0 0 1000 350" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M-100 380 C 150 340, 250 200, 300 100 C 320 60, 350 0, 320 -50" stroke="#bae6fd" stroke-width="56" stroke-linecap="round" opacity="0.6" />
+            <path d="M-120 290 C 80 260, 160 140, 190 60 C 210 20, 220 -20, 200 -60" stroke="#7dd3fc" stroke-width="48" stroke-linecap="round" opacity="0.4" />
+          </svg>
+          <!-- Right-side wave patterns -->
+          <svg style="position:absolute; inset:0; height:100%; width:100%; pointer-events:none;" viewBox="0 0 1000 350" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1100 -50 C 850 -20, 750 120, 700 220 C 680 260, 650 320, 680 370" stroke="#bae6fd" stroke-width="56" stroke-linecap="round" opacity="0.6" />
+            <path d="M1120 40 C 920 70, 840 190, 810 270 C 790 310, 780 350, 800 390" stroke="#7dd3fc" stroke-width="48" stroke-linecap="round" opacity="0.4" />
+          </svg>
+
+          <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-6" style="color:#0f172a; position:relative; z-index:10;">
             Not ready to block permanently yet?
           </h2>
-          <div class="mb-8 animate-bounce" style="color:rgba(160,170,255,0.7); position:relative; z-index:1;">
+          <div class="mb-8 animate-bounce" style="color:#38bdf8; position:relative; z-index:10;">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <polyline points="19 12 12 19 5 12"></polyline>
             </svg>
           </div>
 
-          <div class="download-btn-wrapper" style="position:relative; z-index:1;">
+          <div class="download-btn-wrapper" style="position:relative; z-index:10;">
             <div aria-hidden="true" class="terminal-beam glow animate-border-beam"></div>
             <div aria-hidden="true" class="terminal-beam animate-border-beam"></div>
             <a class="cta download-btn" href="https://pub-a2492cfac08a428b86bea0af43d3bd94.r2.dev/Nogoon-0.1.0-universal.dmg" onclick="if(typeof track==='function')track('download_click',{location:'section_install'})">
@@ -2457,7 +2462,7 @@
             </a>
           </div>
 
-          <p class="text-sm mt-6 font-medium" style="color:rgba(160,170,220,0.65); position:relative; z-index:1;">
+          <p class="text-sm mt-6 font-medium" style="color:#64748b; position:relative; z-index:10;">
             One-time payment. No subscription. No account.
           </p>
         </div>
