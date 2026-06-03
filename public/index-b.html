@@ -2081,9 +2081,9 @@
 
       <!-- Right: Links -->
       <div class="header-right">
-        <a href="#how-it-works" class="header-item">How it works</a>
-        <a href="#faq" class="header-item">FAQ</a>
-        <a href="/blog" class="header-item">Blog</a>
+        <a href="#how-it-works" class="header-item" onclick="if(typeof track==='function')track('nav_click',{location:'header',label:'how_it_works'})">How it works</a>
+        <a href="#faq" class="header-item" onclick="if(typeof track==='function')track('nav_click',{location:'header',label:'faq'})">FAQ</a>
+        <a href="/blog" class="header-item" onclick="if(typeof track==='function')track('nav_click',{location:'header',label:'blog'})">Blog</a>
       </div>
     </nav>
   </header>
@@ -2184,7 +2184,7 @@
     <main class="max-w-6xl mx-auto px-6 py-12 flex flex-col gap-32 relative" style="z-index:2;">
 
       <!-- SECTION 1: Resisting is never enough -->
-      <section class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+      <section data-section="resisting" class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <!-- Left Text Content -->
         <div class="space-y-8 z-10">
           <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
@@ -2240,7 +2240,7 @@
       </section>
 
       <!-- SECTION 2: Limiters do not work -->
-      <section class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative">
+      <section data-section="apps" class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative">
         <div class="absolute left-1/2 -top-16 bottom-0 w-px bg-gradient-to-b from-transparent via-slate-200 to-transparent -z-10 hidden lg:block"></div>
 
         <!-- Visual Column Left (Deactivation Limiter) -->
@@ -2317,7 +2317,7 @@
       </section>
 
       <!-- SECTION 3: Blocking them all is hard (Manual Interactive Step Terminal) -->
-      <section class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative">
+      <section data-section="blocking" class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative">
         <div class="absolute left-1/2 -top-16 bottom-0 w-px bg-gradient-to-b from-transparent via-slate-200 to-transparent -z-10 hidden lg:block"></div>
 
         <!-- Text Column Left -->
@@ -2431,7 +2431,7 @@
       </section>
 
       <!-- SECTION 4: Install / Pricing -->
-      <section id="install" class="flex flex-col items-center justify-center pt-16 pb-16 w-full text-center relative" style="z-index:20;">
+      <section id="install" data-section="install" class="flex flex-col items-center justify-center pt-16 pb-16 w-full text-center relative" style="z-index:20;">
         <div class="relative w-full overflow-hidden px-8 py-20 sm:px-16 sm:py-28 text-center" style="background-color:#0B1120; border-radius:24px; border:1px solid rgba(120,130,255,0.2);">
           <div class="cyber-bg" data-us-project="nqjFCHlAg41OBQKXsVqT" style="inset: -50% -25%; width: 150%; height: 200%;"></div>
 
@@ -2451,7 +2451,7 @@
             <div aria-hidden="true" class="terminal-beam animate-border-beam"></div>
             <a class="cta download-btn" href="https://pub-a2492cfac08a428b86bea0af43d3bd94.r2.dev/Nogoon-0.1.0-universal.dmg" onclick="if(typeof track==='function')track('download_click',{location:'section_install'})" style="background:#ffffff;border-color:#ffffff;color:#000000;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="#000000" style="fill:#000000 !important;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-              Download and block for 72 hours
+              Download — Block for 72h
             </a>
           </div>
 
@@ -2462,56 +2462,6 @@
       </section>
     </main>
   </div>
-
-  <script>
-    // Premium-mid OS toggle + copy
-    (function () {
-      const pmSnippets = {
-        mac: 'curl -sL ' + window.location.origin + '/setup.sh | sudo bash',
-        win: 'powershell -Command "irm https://nogoon.io/setup.ps1 | iex"'
-      };
-
-      window.pmSetOS = function (os) {
-        const code = document.getElementById('pm-code-snippet');
-        const mac = document.getElementById('pm-btn-mac');
-        const win = document.getElementById('pm-btn-win');
-        if (!code || !mac || !win) return;
-        code.textContent = pmSnippets[os];
-        if (os === 'mac') { mac.classList.add('active'); win.classList.remove('active'); }
-        else              { win.classList.add('active'); mac.classList.remove('active'); }
-      };
-      function pmActiveOS() {
-        const mac = document.getElementById('pm-btn-mac');
-        return mac && mac.classList.contains('active') ? 'mac' : 'win';
-      }
-      window.pmCopyCode = function () {
-        const code = document.getElementById('pm-code-snippet');
-        const btn  = document.getElementById('pm-copy-btn');
-        if (!code || !btn) return;
-        const os = pmActiveOS();
-        try { navigator.clipboard.writeText(code.textContent); }
-        catch (e) {
-          const t = document.createElement('textarea');
-          t.value = code.textContent; document.body.appendChild(t); t.select();
-          document.execCommand('copy'); document.body.removeChild(t);
-        }
-        btn.textContent = 'Copied!';
-        btn.classList.add('copied');
-        if (typeof track === 'function') track('copy_command', { location: 'mid', os: os });
-        if (typeof reportCopyConversion === 'function') reportCopyConversion('mid_copy');
-        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-      };
-      // initial OS
-      window.pmSetOS(navigator.userAgent.includes('Windows') ? 'win' : 'mac');
-
-      // Click on the snippet itself to copy
-      const pmCode = document.getElementById('pm-code-snippet');
-      if (pmCode) {
-        pmCode.title = 'Click to copy';
-        pmCode.addEventListener('click', window.pmCopyCode);
-      }
-    })();
-  </script>
 
   <!-- FAQ -->
   <section id="faq">
@@ -2582,11 +2532,11 @@
     <p class="footer-tagline">Built by someone who needed this too.</p>
 
     <nav class="footer-links" aria-label="Footer links">
-      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/privacy.html" onclick="if(typeof track==='function')track('nav_click',{location:'footer',label:'privacy'})">Privacy Policy</a>
       <span class="footer-sep" aria-hidden="true"></span>
-      <a href="/terms.html">Terms of Service</a>
+      <a href="/terms.html" onclick="if(typeof track==='function')track('nav_click',{location:'footer',label:'terms'})">Terms of Service</a>
       <span class="footer-sep" aria-hidden="true"></span>
-      <a href="mailto:support@nogoon.com">Contact Us</a>
+      <a href="mailto:support@nogoon.com" onclick="if(typeof track==='function')track('nav_click',{location:'footer',label:'contact'})">Contact Us</a>
     </nav>
 
     <div class="footer-legal">
@@ -2595,6 +2545,12 @@
   </footer>
 
   <script>
+    // Analytics helper
+    function track(name, data) {
+      if (window.va) window.va('event', { name, data });
+      if (typeof gtag === 'function') gtag('event', name, data || {});
+    }
+
     // FAQ accordion
     document.querySelectorAll('.faq-q').forEach(q => {
       q.addEventListener('click', () => {
@@ -2603,58 +2559,6 @@
         if (!wasOpen) track('faq_open', { question: q.textContent.trim().slice(0, 50) });
       });
     });
-
-    // OS tab switching
-    const macBar = `<div class="terminal-dots"><span></span><span></span><span></span></div><span class="terminal-title"></span>`;
-    const winBar = `<div class="terminal-win-bar">
-      <svg class="win-icon" viewBox="0 0 24 24" fill="#555"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg>
-      <span class="win-title">Windows PowerShell (Admin)</span>
-      <span class="win-controls">— ☐ ✕</span>
-    </div>`;
-
-    const host = window.location.origin;
-    const commands = {
-      mac: `curl -sL ${host}/setup.sh | sudo bash`,
-      win: `powershell -Command "irm https://nogoon.io/setup.ps1 | iex"`
-    };
-
-    function switchOS(os, scope) {
-      // scope: 'hero' or 'mid' (mid no longer exists — premium-mid handles its own UI)
-      const container = scope === 'hero' ? document.getElementById('hero-terminal') : document.getElementById('mid-terminal');
-      if (!container) return;
-      container.querySelectorAll('.os-tab').forEach(t => t.classList.remove('active'));
-      const activeTab = container.querySelector(`.os-tab[data-os="${os}"]`);
-      if (activeTab) activeTab.classList.add('active');
-      const barId = scope === 'hero' ? 'terminal-bar' : 'mid-terminal-bar';
-      const barEl = document.getElementById(barId);
-      if (barEl) barEl.innerHTML = os === 'mac' ? macBar : winBar;
-      const cmdId = scope === 'hero' ? 'hero-command' : 'mid-command';
-      const cmdEl = document.getElementById(cmdId);
-      if (cmdEl) cmdEl.textContent = commands[os];
-      if (scope === 'hero') {
-        const appName = document.getElementById('app-name');
-        if (appName) appName.textContent = 'Terminal';
-      }
-      const btnId = scope === 'hero' ? 'heroCopyBtn' : 'midCopyBtn';
-      const btn = document.getElementById(btnId);
-      if (btn) { btn.textContent = 'Copy'; btn.classList.remove('copied'); }
-    }
-
-    // Hero OS tabs
-    document.querySelectorAll('#hero-terminal .os-tab').forEach(tab => {
-      tab.addEventListener('click', () => switchOS(tab.dataset.os, 'hero'));
-    });
-
-    // Mid-page OS tabs
-    document.querySelectorAll('#mid-terminal .os-tab').forEach(tab => {
-      tab.addEventListener('click', () => switchOS(tab.dataset.os, 'mid'));
-    });
-
-    // Analytics helper
-    function track(name, data) {
-      if (window.va) window.va('event', { name, data });
-      if (typeof gtag === 'function') gtag('event', name, data || {});
-    }
 
     // ── Attribution capture ────────────────────────────────────────────────
     // Fires once per session: posts UTMs / click-ids / referrer to /api/attr,
@@ -2679,7 +2583,6 @@
           referrer:     document.referrer      || '',
           landing_path: window.location.pathname || '/',
         };
-        // Skip the call if there's literally nothing useful (no utm, no click-id, no referrer)
         const hasSignal = payload.utm_source || payload.gclid || payload.fbclid ||
                           payload.rdt_cid || payload.ttclid || payload.referrer;
         if (!hasSignal) {
@@ -2697,175 +2600,21 @@
       } catch (e) { /* ignore */ }
     })();
 
-    // Google Ads conversion: Copy command (dedup once per session)
-    function reportCopyConversion(source) {
-      if (sessionStorage.getItem('copy_conversion_fired')) return;
-      sessionStorage.setItem('copy_conversion_fired', '1');
-      if (typeof gtag === 'function') {
-        gtag('event', 'conversion', {
-          send_to: 'AW-17897044845/qoAwCIiBv7AcEO32_NVC',
-          value: 1.0,
-          currency: 'USD'
+    // Section view tracking (fires once per section)
+    if ('IntersectionObserver' in window) {
+      const seen = new Set();
+      const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const name = entry.target.dataset.section;
+          if (!name || seen.has(name)) return;
+          seen.add(name);
+          track('section_view', { section: name });
+          sectionObserver.unobserve(entry.target);
         });
-      }
-      if (typeof rdt === 'function') {
-        rdt('track', 'Lead', { value: 1.0, currency: 'USD' });
-      }
-      track('ads_conversion_copy', { source: source });
+      }, { threshold: 0.5 });
+      document.querySelectorAll('[data-section]').forEach(s => sectionObserver.observe(s));
     }
-
-    // Copy hero command
-    function copyHeroCommand() {
-      const activeOS = document.querySelector('#hero-terminal .os-tab.active').dataset.os;
-      track('copy_command', { location: 'hero', os: activeOS });
-      reportCopyConversion('hero_copy');
-      navigator.clipboard.writeText(commands[activeOS]).then(() => {
-        const btn = document.getElementById('heroCopyBtn');
-        btn.textContent = 'Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-      });
-    }
-
-    // Auto-detect OS
-    if (navigator.userAgent.includes('Windows')) {
-      switchOS('win', 'hero');
-      switchOS('win', 'mid');
-    } else {
-      switchOS('mac', 'hero');
-      switchOS('mac', 'mid');
-    }
-
-    // Click on the hero snippet itself to copy
-    (function () {
-      const heroCode = document.getElementById('hero-command');
-      if (!heroCode) return;
-      heroCode.style.cursor = 'pointer';
-      heroCode.title = 'Click to copy';
-      heroCode.addEventListener('click', copyHeroCommand);
-    })();
-
-    // Selection of the command counts as conversion intent (any snippet on the page)
-    const SELECT_TARGETS = {
-      'hero-command':    { location: 'hero',   source: 'select_hero-command' },
-      'pm-code-snippet': { location: 'mid',    source: 'select_mid-command'  },
-      'mdl-code-snippet':{ location: 'modal',  source: 'select_modal-command'}
-    };
-    function wireSelectionTracking() {
-      Object.keys(SELECT_TARGETS).forEach(id => {
-        const el = document.getElementById(id);
-        if (!el || el.dataset.selTracked === '1') return;
-        el.dataset.selTracked = '1';
-        el.addEventListener('mouseup', () => {
-          const sel = window.getSelection && window.getSelection().toString();
-          if (sel && sel.trim().length > 5) {
-            const meta = SELECT_TARGETS[id];
-            if (typeof track === 'function') track('copy_command', { location: meta.location, via: 'select' });
-            reportCopyConversion(meta.source);
-          }
-        });
-      });
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', wireSelectionTracking);
-    } else {
-      wireSelectionTracking();
-    }
-
-    // Stripe checkout — prewarms a hosted Checkout session, then redirects
-    let checkoutUrlPromise = null;
-    function prepareCheckoutUrl() {
-      if (checkoutUrlPromise) return checkoutUrlPromise;
-      checkoutUrlPromise = fetch('/api/checkout?json=1', { cache: 'no-store' })
-        .then((res) => {
-          if (!res.ok) throw new Error('Checkout prewarm failed');
-          return res.json();
-        })
-        .then((data) => {
-          if (!data || !data.url) throw new Error('Checkout URL missing');
-          return data.url;
-        })
-        .catch((err) => {
-          console.warn(err);
-          checkoutUrlPromise = null;
-          throw err;
-        });
-      return checkoutUrlPromise;
-    }
-
-    function redirectToCheckout() {
-      window.location.href = '/api/checkout';
-    }
-
-    function checkoutLocation(btn, index) {
-      if (btn.dataset && btn.dataset.buyLocation) return btn.dataset.buyLocation;
-      if (btn.id === 'buy-cta') return 'final_cta';
-      if (btn.closest('.install-modal')) return 'modal';
-      if (btn.classList.contains('pm-buy-link')) return 'premium_mid';
-      if (btn.closest('#install')) return 'install';
-      if (btn.closest('footer')) return 'footer';
-      return index === 0 ? 'hero' : 'buy';
-    }
-
-    function wireStripeBuyButtons() {
-      const stripeBuyButtons = document.querySelectorAll('.stripe-buy');
-      stripeBuyButtons.forEach((btn, i) => {
-        if (btn.dataset.buyWired === '1') return;
-        btn.dataset.buyWired = '1';
-        ['mouseenter', 'focus', 'touchstart'].forEach((eventName) => {
-          btn.addEventListener(eventName, () => { prepareCheckoutUrl().catch(() => {}); }, { passive: true });
-        });
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const loc = checkoutLocation(btn, i);
-          track('click_buy', { location: loc });
-          if (typeof gtag === 'function') {
-            gtag('event', 'begin_checkout', { value: 9.0, currency: 'USD', location: loc });
-          }
-          if (typeof rdt === 'function') {
-            rdt('track', 'AddToCart', { value: 9.0, currency: 'USD', itemCount: 1 });
-          }
-          redirectToCheckout();
-        });
-      });
-
-      const buyIntentTarget = document.getElementById('buy-cta') || stripeBuyButtons[0];
-      if ('IntersectionObserver' in window && buyIntentTarget) {
-        const checkoutObserver = new IntersectionObserver((entries) => {
-          if (entries.some((entry) => entry.isIntersecting)) {
-            prepareCheckoutUrl().catch(() => {});
-            checkoutObserver.disconnect();
-          }
-        }, { rootMargin: '300px 0px' });
-        checkoutObserver.observe(buyIntentTarget);
-      }
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', wireStripeBuyButtons);
-    } else {
-      wireStripeBuyButtons();
-    }
-
-    // Ask GPT if it's safe
-    document.getElementById('askGptBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      track('click_ask_gpt');
-      const activeOS = document.querySelector('#hero-terminal .os-tab.active').dataset.os;
-      const cmd = commands[activeOS];
-      const prompt = `I'm about to run this command to install a permanent porn blocker called Nogoon:\n\n${cmd}\n\nThe script will: (1) switch my DNS to CleanBrowsing Adult, (2) add 60+ adult domains to the hosts file pointing to 0.0.0.0, (3) enforce SafeSearch on Google and Bing at DNS level, (4) lock the hosts file so it requires an admin command to edit.\n\nDoes this command look safe, or does it do anything beyond those DNS and hosts-file changes? Answer briefly.`;
-      window.open('https://chatgpt.com/?q=' + encodeURIComponent(prompt), '_blank');
-    });
-
-    // Scroll reveal for story sections
-    const storyObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          storyObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.story-section').forEach(s => storyObserver.observe(s));
 
     // Scroll depth tracking
     const depths = [25, 50, 75, 100];
@@ -2874,29 +2623,6 @@
       const pct = Math.round((window.scrollY + window.innerHeight) / document.body.scrollHeight * 100);
       depths.forEach(d => { if (pct >= d && !firedDepths.has(d)) { firedDepths.add(d); track('scroll_depth', { percent: d }); } });
     }, { passive: true });
-
-    // Typing animation for browser illustration
-    (function typeLoop() {
-      const el = document.getElementById('typedUrl');
-      if (!el) return;
-      const text = 'por';
-      let i = 0;
-      function typeChar() {
-        if (i <= text.length) {
-          el.textContent = text.slice(0, i);
-          i++;
-          setTimeout(typeChar, 400 + Math.random() * 200);
-        } else {
-          setTimeout(() => {
-            el.textContent = '';
-            i = 0;
-            setTimeout(typeChar, 1500);
-          }, 2500);
-        }
-      }
-      typeChar();
-    })();
-
   </script>
 
   <!-- Vercel Analytics -->
@@ -3205,196 +2931,6 @@
     // Start background polling
     startBg();
   })();
-  </script>
-
-  <!-- Install Modal (triggered by Try For Free CTAs) -->
-  <div class="install-modal" id="install-modal" role="dialog" aria-modal="true" aria-labelledby="install-modal-title" hidden>
-    <div class="modal-card">
-      <button class="modal-close" type="button" aria-label="Close" onclick="closeInstallModal()">×</button>
-      <div class="mdl-success-card">
-        <div class="mdl-check">⚡</div>
-        <h1 id="install-modal-title" class="mdl-h1">Your free trial command</h1>
-        <p class="mdl-sub">Paste this in your terminal. Porn is blocked for 72 hours.</p>
-
-        <div class="terminal-wrapper pm-terminal" id="mdl-terminal-wrapper">
-          <div aria-hidden="true" class="terminal-beam glow animate-border-beam"></div>
-          <div aria-hidden="true" class="terminal-beam animate-border-beam"></div>
-
-          <div class="terminal mdl-hero-terminal pm-terminal-inner" id="mdl-terminal">
-            <a class="watch-btn" href="#" data-video-modal="https://pub-eba67e33706546ad8b08618bb59530ea.r2.dev/demo/Democomp.mp4" data-video-title="nogoon — Demo" data-video-event="watch_tutorial_install_modal"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Watch Tutorial</a>
-            <button class="copy-btn" id="mdl-copy-btn" type="button" onclick="mdlCopyCode()">Copy</button>
-            <div class="terminal-bar">
-              <div class="terminal-dots"><span></span><span></span><span></span></div>
-              <span class="terminal-title"></span>
-            </div>
-            <div class="os-tabs">
-              <button class="os-tab active" id="mdl-btn-mac" type="button" onclick="mdlSetOS('mac')"><svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg> macOS</button>
-              <button class="os-tab" id="mdl-btn-win" type="button" onclick="mdlSetOS('win')"><svg viewBox="0 0 24 24"><path d="M3 12V6.75l6-1.32v6.48L3 12zm17-9v8.75l-10 .08V5.98L20 3zm-10 9.32l10-.1V21l-10-1.76V12.32zM3 12.25l6 .08v6.35l-6-1.07V12.25z"/></svg> Windows</button>
-            </div>
-            <code id="mdl-code-snippet"></code>
-            <div class="mdl-terminal-foot">Try it for free during 72 hours, re-run it as much as you want</div>
-          </div>
-        </div>
-
-        <div class="mdl-divider"></div>
-
-        <div class="mdl-steps" id="mdl-steps-mac">
-          <div class="mdl-steps-title">How to run it</div>
-          <ol>
-            <li>Open <strong>Terminal</strong> (<kbd>⌘</kbd> + <kbd>Space</kbd> → type "Terminal")</li>
-            <li><strong>Paste</strong> (<kbd>⌘</kbd> + <kbd>V</kbd>) and press <strong>Enter</strong></li>
-            <li>Type your <strong>password</strong> (invisible — that's normal) → <strong>Enter</strong></li>
-          </ol>
-        </div>
-
-        <div class="mdl-steps" id="mdl-steps-win" style="display: none;">
-          <div class="mdl-steps-title">How to run it</div>
-          <ol>
-            <li>Right-click Start → <strong>Terminal (Admin)</strong></li>
-            <li><strong>Paste</strong> (<kbd>Ctrl</kbd> + <kbd>V</kbd>) and press <strong>Enter</strong></li>
-            <li>Type <strong>Y</strong> if asked → wait for the green "Done" message</li>
-          </ol>
-        </div>
-
-        <p class="mdl-footer-note"><strong>72-hour free trial.</strong> Auto-reverts after 72h. Want it forever? <a href="/api/checkout" class="stripe-buy mdl-buy-inline" data-buy-location="modal">Buy permanent block — $9</a>.</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Install modal wiring (Try For Free CTAs open a modal of the install terminal)
-    (function () {
-      const mdlSnippets = {
-        mac: 'curl -sL ' + window.location.origin + '/setup.sh | sudo bash',
-        win: 'powershell -Command "irm https://nogoon.io/setup.ps1 | iex"'
-      };
-      const modal = document.getElementById('install-modal');
-      if (!modal) return;
-
-      window.mdlSetOS = function (os) {
-        const code = document.getElementById('mdl-code-snippet');
-        const mac  = document.getElementById('mdl-btn-mac');
-        const win  = document.getElementById('mdl-btn-win');
-        const sMac = document.getElementById('mdl-steps-mac');
-        const sWin = document.getElementById('mdl-steps-win');
-        if (!code || !mac || !win) return;
-        code.textContent = mdlSnippets[os];
-        if (os === 'mac') {
-          mac.classList.add('active'); win.classList.remove('active');
-          if (sMac) sMac.style.display = 'block';
-          if (sWin) sWin.style.display = 'none';
-        } else {
-          win.classList.add('active'); mac.classList.remove('active');
-          if (sMac) sMac.style.display = 'none';
-          if (sWin) sWin.style.display = 'block';
-        }
-      };
-      function mdlActiveOS() {
-        const mac = document.getElementById('mdl-btn-mac');
-        return mac && mac.classList.contains('active') ? 'mac' : 'win';
-      }
-      window.mdlCopyCode = function () {
-        const code = document.getElementById('mdl-code-snippet');
-        const btn  = document.getElementById('mdl-copy-btn');
-        if (!code) return;
-        const os = mdlActiveOS();
-        try { navigator.clipboard.writeText(code.textContent); }
-        catch (e) {
-          const t = document.createElement('textarea');
-          t.value = code.textContent; document.body.appendChild(t); t.select();
-          document.execCommand('copy'); document.body.removeChild(t);
-        }
-        if (btn) {
-          btn.textContent = 'Copied!';
-          btn.classList.add('copied');
-          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-        }
-        if (typeof track === 'function') track('copy_command', { location: 'modal', os: os });
-        if (typeof reportCopyConversion === 'function') reportCopyConversion('modal_copy');
-      };
-      window.mdlDownloadTxt = function () {
-        const macCmd = mdlSnippets.mac;
-        const winCmd = mdlSnippets.win;
-        const txt = [
-          '═══════════════════════════════════════════',
-          '  nogoon.io — Free 72-Hour Porn Block',
-          '  Your trial install command',
-          '═══════════════════════════════════════════',
-          '',
-          '⏱  This block auto-reverts after 72 hours.',
-          '',
-          '── macOS ──────────────────────────────────',
-          '',
-          '  1. Open Terminal (⌘ + Space → "Terminal")',
-          '  2. Paste the command below and press Enter',
-          '  3. Type your password (invisible) → Enter',
-          '',
-          '  ' + macCmd,
-          '',
-          '── Windows ────────────────────────────────',
-          '',
-          '  1. Right-click Start → Terminal (Admin)',
-          '  2. Paste the command below and press Enter',
-          '  3. Type Y if asked → wait for "Done"',
-          '',
-          '  ' + winCmd,
-          '',
-          '───────────────────────────────────────────',
-          '  Want it permanent? https://nogoon.io/#install',
-          '───────────────────────────────────────────'
-        ].join('\n');
-        const blob = new Blob([txt], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = 'nogoon-trial-command.txt';
-        document.body.appendChild(a); a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        if (typeof track === 'function') track('download_txt', { location: 'modal' });
-      };
-
-      window.openInstallModal = function (source) {
-        // Re-detect OS each time in case user changes platform
-        window.mdlSetOS(navigator.userAgent.includes('Windows') ? 'win' : 'mac');
-        modal.hidden = false;
-        modal.classList.add('open');
-        document.body.classList.add('modal-open');
-        window.__modalOpenedFrom = source || 'unknown';
-        if (typeof track === 'function') track('open_install_modal', { source: source || 'unknown' });
-      };
-      window.closeInstallModal = function () {
-        modal.classList.remove('open');
-        document.body.classList.remove('modal-open');
-        setTimeout(() => { if (!modal.classList.contains('open')) modal.hidden = true; }, 200);
-      };
-
-      // Close on backdrop click
-      modal.addEventListener('click', function (e) {
-        if (e.target === modal) closeInstallModal();
-      });
-      // Close on ESC
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && modal.classList.contains('open')) closeInstallModal();
-      });
-      // Click snippet to copy
-      const mdlCode = document.getElementById('mdl-code-snippet');
-      if (mdlCode) {
-        mdlCode.title = 'Click to copy';
-        mdlCode.addEventListener('click', window.mdlCopyCode);
-      }
-
-      // Wire all Try For Free CTAs to open the modal
-      document.querySelectorAll('.pm-try-cta').forEach(function (el, i) {
-        el.addEventListener('click', function (e) {
-          e.preventDefault();
-          var source = el.getAttribute('data-cta-source') || ('pm_try_cta_' + (i + 1));
-          if (typeof gtag === 'function') {
-            gtag('event', source, { event_category: 'cta' });
-          }
-          window.openInstallModal(source);
-        });
-      });
-    })();
   </script>
 
   <!-- Reusable video modal -->
