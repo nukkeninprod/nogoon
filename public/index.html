@@ -2642,13 +2642,13 @@
 
     // Analytics helper
     function track(name, data) {
-      const payload = Object.assign({ variant: 'A' }, data || {});
+      const payload = Object.assign({ product: 'script' }, data || {});
       if (window.va) window.va('event', { name, data: payload });
       if (typeof gtag === 'function') gtag('event', name, payload);
     }
 
     // Fire once per page load — denominator for conversion rate
-    track('variant_view');
+    track('product_view');
 
     // ── Attribution capture ────────────────────────────────────────────────
     // Fires once per session: posts UTMs / click-ids / referrer to /api/attr,
