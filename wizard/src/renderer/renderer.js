@@ -201,6 +201,13 @@ document.querySelector('.support-link a').addEventListener('click', (e) => {
 
 // On startup: detect existing block state and skip home screen if already installed
 (async () => {
+  // Show Windows window controls and flag body for CSS
+  if (navigator.platform.startsWith('Win') || navigator.userAgent.includes('Windows')) {
+    document.body.classList.add('is-windows');
+    document.getElementById('win-minimize').addEventListener('click', () => window.nogoon.minimizeWindow());
+    document.getElementById('win-close').addEventListener('click', () => window.nogoon.closeWindow());
+  }
+
   const { state } = await window.nogoon.checkState();
   if (state === 'permanent') {
     showDone(true);
