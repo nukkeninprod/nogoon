@@ -18,6 +18,9 @@ try {
 let SCRIPT_BODY = '';
 try {
   SCRIPT_BODY = readFileSync(join(process.cwd(), 'scripts', 'setup.ps1'), 'utf8');
+  // Strip UTF-8 BOM so `irm | iex` users get a clean string (BOM is for the
+  // bundled file consumed by Windows PowerShell 5.1 only).
+  if (SCRIPT_BODY.charCodeAt(0) === 0xFEFF) SCRIPT_BODY = SCRIPT_BODY.slice(1);
 } catch (e) {
   console.error('[setup-ps1] cannot read scripts/setup.ps1:', e.message);
 }
