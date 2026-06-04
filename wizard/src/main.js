@@ -1,9 +1,65 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
-const { execSync } = require('node:child_process');
+const { exec, execSync, execFile } = require('node:child_process');
 const crypto = require('node:crypto');
-const sudo = require('sudo-prompt');
+
+// Native macOS sudo via osascript — works on all CPU architectures (no binary applet)
+function sudoExec(cmd) {
+  return new Promise((resolve, reject) => {
+    const tmpScript = path.join(app.getPath('temp'), `nogoon_sudo_${Date.now()}.sh`);
+    fs.writeFileSync(tmpScript, `#!/bin/bash\n${cmd}\n`, { mode: 0o755 });
+    const escaped = tmpScript.replace(/"/g, '\\"');
+    const applescript = `do shell script "/bin/bash ${escaped}" with administrator privileges`;
+    exec(`osascript -e '${applescript.replace(/'/g, "'\\''")}' 2>&1`, (err, stdout) => {
+      try { fs.unlinkSync(tmpScript); } catch {}
+      if (err) reject(new Error(stdout || err.message));
+      else resolve({ stdout: stdout || '' });
+    });
+  });
+}
+
+// Windows elevation via UAC — runs a raw PowerShell script as admin and waits.
+// Resolves with stdout; rejects on script failure or if the user cancels the UAC prompt.
+function sudoExecWin(psScript) {
+  return new Promise((resolve, reject) => {
+    const ts = Date.now();
+    const tmpDir = app.getPath('temp');
+    const workScript = path.join(tmpDir, `nogoon_work_${ts}.ps1`);
+    const errFile = path.join(tmpDir, `nogoon_err_${ts}.txt`);
+    const wrapped = [
+      '$ErrorActionPreference = "Stop"',
+      'try {',
+      psScript,
+      '  exit 0',
+      '} catch {',
+      `  $_ | Out-String | Out-File -FilePath "${errFile}" -Encoding utf8`,
+      '  exit 1',
+      '}',
+    ].join('\n');
+    fs.writeFileSync(workScript, wrapped, 'utf8');
+
+    // Non-elevated launcher spawns the elevated child, waits, and mirrors its exit code.
+    const launcher =
+      `$p = Start-Process powershell -Verb RunAs -Wait -PassThru ` +
+      `-ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File','"${workScript}"'; ` +
+      `exit $p.ExitCode`;
+
+    execFile(
+      'powershell.exe',
+      ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', launcher],
+      (err, stdout, stderr) => {
+        let errText = '';
+        try {
+          if (fs.existsSync(errFile)) { errText = fs.readFileSync(errFile, 'utf8').trim(); fs.unlinkSync(errFile); }
+        } catch {}
+        try { fs.unlinkSync(workScript); } catch {}
+        if (err) reject(new Error(errText || stderr || err.message));
+        else resolve({ stdout: stdout || '' });
+      }
+    );
+  });
+}
 
 // ── GA4 Measurement Protocol tracking ──────────────────────────────────────
 const GA_MEASUREMENT_ID = 'G-0TPCRYPNQT';
@@ -147,20 +203,15 @@ ipcMain.handle('install:free', async () => {
     return { ok: false, error: `Script introuvable: ${scriptPath}` };
   }
 
-  const cmd = process.platform === 'darwin'
-    ? `/bin/bash "${scriptPath}"`
-    : `powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}"`;
-
-  return new Promise((resolve) => {
-    sudo.exec(cmd, { name: 'Nogoon' }, (err, stdout, stderr) => {
-      if (err) {
-        resolve({ ok: false, error: err.message, stderr: String(stderr || '') });
-      } else {
-        track('install_success', { type: 'free' });
-        resolve({ ok: true, stdout: String(stdout || '') });
-      }
-    });
-  });
+  try {
+    const { stdout } = process.platform === 'darwin'
+      ? await sudoExec(`/bin/bash "${scriptPath}"`)
+      : await sudoExecWin(`& "${scriptPath}"`);
+    track('install_success', { type: 'free' });
+    return { ok: true, stdout: String(stdout || '') };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
 });
 
 ipcMain.handle('install:permanent', async () => {
@@ -169,47 +220,79 @@ ipcMain.handle('install:permanent', async () => {
     return { ok: false, error: `Script introuvable: ${scriptPath}` };
   }
 
-  // Check if nogoon is already installed (hosts file is locked = free trial active)
-  // If already installed: just cancel the cleanup daemon to make it permanent.
-  // If not installed: run setup.sh then cancel cleanup.
-  const isInstalled = fs.existsSync('/Library/LaunchDaemons/io.nogoon.cleanup.plist');
-
-  const removeCleanup = [
-    'launchctl unload /Library/LaunchDaemons/io.nogoon.cleanup.plist 2>/dev/null || true',
-    'rm -f /Library/LaunchDaemons/io.nogoon.cleanup.plist',
-    'rm -f /usr/local/bin/nogoon-cleanup.sh'
-  ].join(' && ');
-
-  const cmd = process.platform === 'darwin'
-    ? (isInstalled ? removeCleanup : `/bin/bash "${scriptPath}" && ${removeCleanup}`)
-    : `powershell.exe -ExecutionPolicy Bypass -File "${scriptPath}"`;
-
-  return new Promise((resolve) => {
-    sudo.exec(cmd, { name: 'Nogoon' }, (err, stdout, stderr) => {
-      if (err) resolve({ ok: false, error: err.message, stderr: String(stderr || '') });
-      else { track('install_success', { type: 'permanent' }); resolve({ ok: true, stdout: String(stdout || '') }); }
-    });
-  });
+  try {
+    if (process.platform === 'darwin') {
+      // If already installed (free trial active): just cancel the cleanup daemon.
+      // If not installed: run setup.sh then cancel cleanup.
+      const isInstalled = fs.existsSync('/Library/LaunchDaemons/io.nogoon.cleanup.plist');
+      const removeCleanup = [
+        'launchctl unload /Library/LaunchDaemons/io.nogoon.cleanup.plist 2>/dev/null || true',
+        'rm -f /Library/LaunchDaemons/io.nogoon.cleanup.plist',
+        'rm -f /usr/local/bin/nogoon-cleanup.sh'
+      ].join(' && ');
+      await sudoExec(isInstalled ? removeCleanup : `/bin/bash "${scriptPath}" && ${removeCleanup}`);
+    } else {
+      // Windows: install if needed, then delete the auto-revert task => permanent.
+      const ps = [
+        `$hostsPath = "$env:SystemRoot\\System32\\drivers\\etc\\hosts"`,
+        `$installed = Select-String -Path $hostsPath -Pattern '# === NOGOON.IO ===' -Quiet`,
+        `if (-not $installed) { & "${scriptPath}" }`,
+        `schtasks /Delete /TN "NogoonCleanup" /F 2>$null`,
+        `Remove-Item "$env:ProgramData\\nogoon\\cleanup.ps1" -Force -ErrorAction SilentlyContinue`,
+      ].join('\n');
+      await sudoExecWin(ps);
+    }
+    track('install_success', { type: 'permanent' });
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
 });
 
 ipcMain.handle('install:unblock', async () => {
-  const script = [
-    'chflags noschg /etc/hosts',
-    'sed -i \"\" \"/# === NOGOON.IO ===/,/# === END NOGOON.IO ===/d\" /etc/hosts',
-    'interfaces=$(networksetup -listallnetworkservices 2>/dev/null | tail -n +2 | grep -v ^\\*)',
-    'while IFS= read -r iface; do networksetup -setdnsservers "$iface" Empty 2>/dev/null || true; done <<< "$interfaces"',
-    'launchctl unload /Library/LaunchDaemons/io.nogoon.cleanup.plist 2>/dev/null || true',
-    'rm -f /Library/LaunchDaemons/io.nogoon.cleanup.plist',
-    'rm -f /usr/local/bin/nogoon-cleanup.sh',
-    'dscacheutil -flushcache 2>/dev/null || true',
-    'killall -HUP mDNSResponder 2>/dev/null || true'
-  ].join(' && ');
-  return new Promise((resolve) => {
-    sudo.exec(script, { name: 'Nogoon' }, (err) => {
-      if (err) resolve({ ok: false, error: err.message });
-      else resolve({ ok: true });
-    });
-  });
+  try {
+    if (process.platform === 'darwin') {
+      const script = [
+        'chflags noschg /etc/hosts',
+        'sed -i \"\" \"/# === NOGOON.IO ===/,/# === END NOGOON.IO ===/d\" /etc/hosts',
+        'interfaces=$(networksetup -listallnetworkservices 2>/dev/null | tail -n +2 | grep -v ^\\*)',
+        'while IFS= read -r iface; do networksetup -setdnsservers "$iface" Empty 2>/dev/null || true; done <<< "$interfaces"',
+        'launchctl unload /Library/LaunchDaemons/io.nogoon.cleanup.plist 2>/dev/null || true',
+        'rm -f /Library/LaunchDaemons/io.nogoon.cleanup.plist',
+        'rm -f /usr/local/bin/nogoon-cleanup.sh',
+        'dscacheutil -flushcache 2>/dev/null || true',
+        'killall -HUP mDNSResponder 2>/dev/null || true'
+      ].join(' && ');
+      await sudoExec(script);
+    } else {
+      // Windows: restore hosts perms, strip NOGOON block, reset DNS, drop the task.
+      const ps = [
+        `$hostsPath = "$env:SystemRoot\\System32\\drivers\\etc\\hosts"`,
+        `$marker = '# === NOGOON.IO ==='`,
+        `$endMarker = '# === END NOGOON.IO ==='`,
+        `try {`,
+        `  $acl = Get-Acl $hostsPath`,
+        `  $acl.SetAccessRuleProtection($true, $false)`,
+        `  $acl.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule('NT AUTHORITY\\SYSTEM','FullControl','Allow')))`,
+        `  $acl.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule('BUILTIN\\Administrators','FullControl','Allow')))`,
+        `  $acl.AddAccessRule((New-Object System.Security.AccessControl.FileSystemAccessRule('BUILTIN\\Users','ReadAndExecute','Allow')))`,
+        `  Set-Acl -Path $hostsPath -AclObject $acl`,
+        `  Set-ItemProperty -Path $hostsPath -Name IsReadOnly -Value $false`,
+        `} catch {}`,
+        `$content = Get-Content $hostsPath -Raw`,
+        `$content = $content -replace "(?s)\\r?\\n?$marker.*?$endMarker\\s*", ""`,
+        `Set-Content -Path $hostsPath -Value $content.TrimEnd() -Encoding ASCII`,
+        `Get-NetAdapter | Where-Object { $_.Status -eq 'Up' } | ForEach-Object { try { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ResetServerAddresses } catch {} }`,
+        `ipconfig /flushdns | Out-Null`,
+        `schtasks /Delete /TN "NogoonCleanup" /F 2>$null`,
+        `Remove-Item "$env:ProgramData\\nogoon\\cleanup.ps1" -Force -ErrorAction SilentlyContinue`,
+      ].join('\n');
+      await sudoExecWin(ps);
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
 });
 
 ipcMain.handle('open:url', async (_e, url) => {
@@ -219,10 +302,20 @@ ipcMain.handle('open:url', async (_e, url) => {
 
 ipcMain.handle('check:state', () => {
   try {
-    const hosts = fs.readFileSync('/etc/hosts', 'utf8');
+    if (process.platform === 'darwin') {
+      const hosts = fs.readFileSync('/etc/hosts', 'utf8');
+      const isBlocked = hosts.includes('# === NOGOON.IO ===');
+      if (!isBlocked) return { state: 'none' };
+      const isPermanent = !fs.existsSync('/Library/LaunchDaemons/io.nogoon.cleanup.plist');
+      return { state: isPermanent ? 'permanent' : 'free' };
+    }
+    // Windows
+    const hostsPath = path.join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'drivers', 'etc', 'hosts');
+    const hosts = fs.readFileSync(hostsPath, 'utf8');
     const isBlocked = hosts.includes('# === NOGOON.IO ===');
     if (!isBlocked) return { state: 'none' };
-    const isPermanent = !fs.existsSync('/Library/LaunchDaemons/io.nogoon.cleanup.plist');
+    const cleanupScript = path.join(process.env.ProgramData || 'C:\\ProgramData', 'nogoon', 'cleanup.ps1');
+    const isPermanent = !fs.existsSync(cleanupScript);
     return { state: isPermanent ? 'permanent' : 'free' };
   } catch {
     return { state: 'none' };

@@ -1,0 +1,41 @@
+name: Build Windows installer
+
+# Builds the Nogoon Windows (.exe / NSIS) installer on a real Windows runner.
+# No code signing yet — the artifact is unsigned. Trigger manually from the
+# Actions tab, or it runs automatically when wizard/ or scripts/ change on main.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'wizard/**'
+      - 'scripts/setup.ps1'
+      - '.github/workflows/build-windows.yml'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: wizard
+        run: npm install
+
+      - name: Build Windows installer
+        working-directory: wizard
+        run: npm run build:win
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: nogoon-windows-installer
+          path: wizard/dist/Nogoon-Setup-*.exe
+          if-no-files-found: error

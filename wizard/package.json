@@ -1,0 +1,88 @@
+{
+  "name": "nogoon-wizard",
+  "version": "0.1.0",
+  "description": "nogoon.io desktop installer",
+  "main": "src/main.js",
+  "author": "nogoon.io",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
+    "png-to-ico": "^2.1.8"
+  },
+  "build": {
+    "appId": "io.nogoon.wizard",
+    "productName": "Nogoon",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "scripts/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../scripts",
+        "to": "scripts"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "identity": "Alpay Topalka (GZC63LKVRQ)",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": false
+    },
+    "afterSign": "build/notarize.js",
+    "dmg": {
+      "title": "Nogoon",
+      "background": "build/dmg-background.png",
+      "window": {
+        "width": 400,
+        "height": 340
+      },
+      "iconSize": 80,
+      "contents": [
+        {
+          "x": 200,
+          "y": 230,
+          "type": "file"
+        }
+      ]
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": false,
+      "perMachine": true,
+      "artifactName": "Nogoon-Setup-${version}.exe"
+    }
+  }
+}
