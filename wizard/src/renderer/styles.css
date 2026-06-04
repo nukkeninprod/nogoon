@@ -51,7 +51,8 @@ html, body {
 .hidden { display: none; }
 
 /* Unicorn Studio background — container forced to 1200px so the canvas
-   renders at website density; body overflow:hidden clips to window width */
+   renders at website density; body overflow:hidden clips to window width.
+   The gradient is the fallback shown when WebGL is unavailable (e.g. VMs). */
 .cyber-bg {
   position: fixed;
   top: 0;
@@ -61,6 +62,8 @@ html, body {
   height: 100vh;
   z-index: 0;
   pointer-events: none;
+  background: radial-gradient(ellipse at 60% 30%, rgba(56,189,248,0.18) 0%, transparent 60%),
+              radial-gradient(ellipse at 20% 80%, rgba(99,102,241,0.12) 0%, transparent 55%);
 }
 
 .logo-svg {

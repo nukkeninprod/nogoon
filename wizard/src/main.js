@@ -4,6 +4,13 @@ const fs = require('node:fs');
 const { exec, execSync, execFile } = require('node:child_process');
 const crypto = require('node:crypto');
 
+// On Windows, force SwiftShader software WebGL so Unicorn Studio renders
+// inside VMs and on machines without hardware GPU acceleration.
+if (process.platform === 'win32') {
+  app.commandLine.appendSwitch('use-gl', 'swiftshader');
+  app.commandLine.appendSwitch('enable-unsafe-webgpu');
+}
+
 // Native macOS sudo via osascript — works on all CPU architectures (no binary applet)
 function sudoExec(cmd) {
   return new Promise((resolve, reject) => {
