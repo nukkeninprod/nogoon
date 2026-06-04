@@ -48,7 +48,7 @@ function sudoExecWin(psScript) {
 
     // Non-elevated launcher spawns the elevated child, waits, and mirrors its exit code.
     const launcher =
-      `$p = Start-Process powershell -Verb RunAs -Wait -PassThru ` +
+      `$p = Start-Process powershell -Verb RunAs -Wait -PassThru -WindowStyle Hidden ` +
       `-ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File','"${workScript}"'; ` +
       `exit $p.ExitCode`;
 
