@@ -13,11 +13,8 @@
 
 $ErrorActionPreference = "Stop"
 
-# -- Track execution (silent) -------------------------------------------------
 # $NOGOON_ATTR is injected by /api/setup-ps1 when the user landed via an ad/UTM.
-# Stays empty for direct fetches of /setup.ps1 (organic / direct traffic).
 $NOGOON_ATTR = ""
-try { Invoke-WebRequest -Uri "https://nogoon.io/api/track?t=free&os=win&$NOGOON_ATTR" -UseBasicParsing -TimeoutSec 3 | Out-Null } catch {}
 
 # -- Trial config -------------------------------------------------------------
 $TRIAL_SECONDS = 259200  # 72 hours
@@ -65,9 +62,9 @@ if ($env:OS -ne "Windows_NT") {
 # -- Check Administrator ------------------------------------------------------
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
-    Write-Err "This script must be run as Administrator."
-    Write-Host "  Right-click PowerShell → 'Run as administrator' → paste the command again." -ForegroundColor Gray
-    exit 1
+    Write-Host "  Requesting administrator privileges..." -ForegroundColor Yellow
+    Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://nogoon.io/setup.ps1 | iex`""
+    exit
 }
 
 # -- Parse flags via env vars --------------------------------------------------
@@ -84,8 +81,12 @@ $marker = "# === NOGOON.IO ==="
 if (Select-String -Path $hostsPath -Pattern $marker -Quiet 2>$null) {
     Write-Warn "nogoon.io is already installed on this machine."
     Write-Host "  To reinstall, first remove the NOGOON.IO entries from your hosts file." -ForegroundColor Gray
+    try { Invoke-WebRequest -Uri "https://nogoon.io/api/track?t=free&os=win&rerun=1&$NOGOON_ATTR" -UseBasicParsing -TimeoutSec 3 | Out-Null } catch {}
     exit 0
 }
+
+# -- Track real install -------------------------------------------------------
+try { Invoke-WebRequest -Uri "https://nogoon.io/api/track?t=free&os=win&$NOGOON_ATTR" -UseBasicParsing -TimeoutSec 3 | Out-Null } catch {}
 
 Write-Host "Starting installation (free trial)..." -ForegroundColor White
 Write-Host ""
@@ -97,7 +98,28 @@ Write-Step 1 7 "Setting up DNS filtering..."
 $dns1 = "185.228.168.10"
 $dns2 = "185.228.169.11"
 
+# Backup original DNS config per interface so we can restore it on uninstall.
+# Stored as JSON: [{ Index, Alias, IPv4: [...], IPv6: [...] }, ...]
+$backupDir = "$env:ProgramData\nogoon"
+$backupFile = "$backupDir\dns-backup.json"
+if (-not (Test-Path $backupDir)) { New-Item -Path $backupDir -ItemType Directory -Force | Out-Null }
+
 $adapters = Get-NetAdapter | Where-Object { $_.Status -eq "Up" }
+$dnsBackup = @()
+foreach ($adapter in $adapters) {
+    try {
+        $v4 = (Get-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue).ServerAddresses
+        $v6 = (Get-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -AddressFamily IPv6 -ErrorAction SilentlyContinue).ServerAddresses
+        $dnsBackup += [PSCustomObject]@{
+            Index = $adapter.ifIndex
+            Alias = $adapter.Name
+            IPv4  = @($v4)
+            IPv6  = @($v6)
+        }
+    } catch {}
+}
+$dnsBackup | ConvertTo-Json -Depth 4 | Set-Content -Path $backupFile -Encoding UTF8
+
 foreach ($adapter in $adapters) {
     try {
         Set-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -ServerAddresses @($dns1, $dns2)
@@ -421,9 +443,27 @@ if ($content -match "(?s)$marker.*?$endMarker\s*") {
     Set-Content -Path $hostsPath -Value $content.TrimEnd() -Encoding ASCII
 }
 
-# Reset DNS to automatic on all adapters
+# Restore DNS: prefer the saved backup (per-interface user config),
+# otherwise fall back to ResetServerAddresses (DHCP).
+$dnsBackupFile = "$env:ProgramData\nogoon\dns-backup.json"
+$backup = $null
+if (Test-Path $dnsBackupFile) {
+    try { $backup = Get-Content $dnsBackupFile -Raw | ConvertFrom-Json } catch {}
+}
 Get-NetAdapter | Where-Object { $_.Status -eq "Up" } | ForEach-Object {
-    try { Set-DnsClientServerAddress -InterfaceIndex $_.ifIndex -ResetServerAddresses } catch {}
+    $idx = $_.ifIndex
+    $entry = $null
+    if ($backup) { $entry = $backup | Where-Object { $_.Index -eq $idx } | Select-Object -First 1 }
+    try {
+        if ($entry -and ($entry.IPv4.Count -gt 0)) {
+            Set-DnsClientServerAddress -InterfaceIndex $idx -ServerAddresses $entry.IPv4
+        } else {
+            Set-DnsClientServerAddress -InterfaceIndex $idx -ResetServerAddresses
+        }
+    } catch {}
+    if ($entry -and ($entry.IPv6.Count -gt 0)) {
+        try { Set-DnsClientServerAddress -InterfaceIndex $idx -ServerAddresses $entry.IPv6 -AddressFamily IPv6 } catch {}
+    }
 }
 
 # Flush DNS
