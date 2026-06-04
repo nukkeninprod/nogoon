@@ -369,10 +369,16 @@ if (-not $NoSafeSearch) {
     Write-Step 3 7 "SafeSearch skipped (NOGOON_NO_SAFESEARCH=1)"
 }
 
-# -- Step 4: Flush DNS ---------------------------------------------------------
+# -- Step 4: Flush DNS + silently close browsers --------------------------------
 Write-Step 4 7 "Flushing DNS cache..."
 ipconfig /flushdns | Out-Null
 Write-Ok "DNS cache flushed"
+
+# Browsers cache DNS internally — kill them so block is instant on next open.
+$browsers = @('chrome','msedge','firefox','brave','opera','vivaldi','thorium','librewolf')
+foreach ($b in $browsers) {
+    Get-Process -Name $b -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+}
 
 # -- Step 5: Lock hosts file ----------------------------------------------------
 if (-not $NoLock) {
