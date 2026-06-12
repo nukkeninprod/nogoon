@@ -134,6 +134,22 @@ Write-Host ""
 # -- Step 2: Block adult sites in hosts file -----------------------------------
 Write-Step 2 7 "Blocking adult sites..."
 
+# Defender's Controlled Folder Access blocks writes to the hosts file even for
+# an elevated admin. Temporarily lift it so the block can be applied.
+$cfaWasOn = $false
+try {
+    $cfa = (Get-MpPreference -ErrorAction Stop).EnableControlledFolderAccess
+    if ($cfa -eq 1 -or $cfa -eq 2) {
+        Set-MpPreference -EnableControlledFolderAccess Disabled -ErrorAction Stop
+        $cfaWasOn = $true
+        Start-Sleep -Seconds 1
+    }
+} catch {}
+
+# Reclaim write access (a prior install may have locked the file)
+& takeown /F "$hostsPath" /A 2>$null | Out-Null
+& icacls "$hostsPath" /grant "*S-1-5-32-544:F" 2>$null | Out-Null
+
 # Remove read-only attribute if present
 $hostsFile = Get-Item $hostsPath -Force
 if ($hostsFile.IsReadOnly) {
@@ -277,6 +293,14 @@ $marker
 0.0.0.0 www.pornmd.com
 0.0.0.0 camhub.cc
 0.0.0.0 www.camhub.cc
+0.0.0.0 porntn.com
+0.0.0.0 www.porntn.com
+0.0.0.0 porndd.com
+0.0.0.0 www.porndd.com
+0.0.0.0 crushon.ai
+0.0.0.0 www.crushon.ai
+0.0.0.0 eroasmr.com
+0.0.0.0 www.eroasmr.com
 
 # -- DNS-over-HTTPS bypass prevention --
 0.0.0.0 dns.google
@@ -369,6 +393,22 @@ if (-not $NoSafeSearch) {
     Write-Step 3 7 "SafeSearch skipped (NOGOON_NO_SAFESEARCH=1)"
 }
 
+# -- Step 3b: Disable DNS-over-HTTPS via browser policies ----------------------
+# DoH lets browsers bypass the system DNS filter. Force it off so CleanBrowsing
+# (and the hosts file) always apply. The toggle becomes greyed-out for the user.
+$dohPolicies = @(
+    @{ Path = "HKLM:\SOFTWARE\Policies\Google\Chrome";              Name = "DnsOverHttpsMode";        Value = "off"; Type = "String" },
+    @{ Path = "HKLM:\SOFTWARE\Policies\Microsoft\Edge";             Name = "DnsOverHttpsMode";        Value = "off"; Type = "String" },
+    @{ Path = "HKLM:\SOFTWARE\Policies\BraveSoftware\Brave";        Name = "DnsOverHttpsMode";        Value = "off"; Type = "String" },
+    @{ Path = "HKLM:\SOFTWARE\Policies\Mozilla\Firefox\DNSOverHTTPS"; Name = "Enabled";              Value = 0;     Type = "DWord"  },
+    @{ Path = "HKLM:\SOFTWARE\Policies\Mozilla\Firefox\DNSOverHTTPS"; Name = "Locked";               Value = 1;     Type = "DWord"  }
+)
+foreach ($p in $dohPolicies) {
+    if (-not (Test-Path $p.Path)) { New-Item -Path $p.Path -Force | Out-Null }
+    Set-ItemProperty -Path $p.Path -Name $p.Name -Value $p.Value -Type $p.Type -Force
+}
+Write-Ok "DNS-over-HTTPS disabled in browsers (filter can't be bypassed)"
+
 # -- Step 4: Flush DNS + silently close browsers --------------------------------
 Write-Step 4 7 "Flushing DNS cache..."
 ipconfig /flushdns | Out-Null
@@ -415,6 +455,9 @@ if (-not $NoLock) {
 } else {
     Write-Step 5 7 "Hosts file lock skipped (NOGOON_NO_LOCK=1)"
 }
+
+# Restore Defender's Controlled Folder Access if we turned it off
+if ($cfaWasOn) { try { Set-MpPreference -EnableControlledFolderAccess Enabled } catch {} }
 
 # -- Step 6: Create cleanup script ---------------------------------------------
 Write-Step 6 7 "Setting up auto-revert timer (trial)..."
@@ -472,6 +515,12 @@ Get-NetAdapter | Where-Object { $_.Status -eq "Up" } | ForEach-Object {
     }
 }
 
+# Re-enable DNS-over-HTTPS (remove the policies we set)
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Google\Chrome" -Name "DnsOverHttpsMode" -ErrorAction SilentlyContinue
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Edge" -Name "DnsOverHttpsMode" -ErrorAction SilentlyContinue
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\BraveSoftware\Brave" -Name "DnsOverHttpsMode" -ErrorAction SilentlyContinue
+Remove-Item -Path "HKLM:\SOFTWARE\Policies\Mozilla\Firefox\DNSOverHTTPS" -Recurse -ErrorAction SilentlyContinue
+
 # Flush DNS
 ipconfig /flushdns | Out-Null
 
@@ -496,6 +545,24 @@ schtasks /Create /TN $TASK_NAME /TR "powershell.exe -ExecutionPolicy Bypass -Fil
     /RL HIGHEST /RU SYSTEM /F | Out-Null
 
 Write-Ok "Auto-revert scheduled"
+
+# -- Verify the block actually works -------------------------------------------
+$verified = $false
+try {
+    $ips = [System.Net.Dns]::GetHostAddresses("pornhub.com") | ForEach-Object { $_.IPAddressToString }
+    if ($ips -contains "0.0.0.0") { $verified = $true }
+} catch { $verified = $true }  # resolution failure also means it's blocked
+
+if (-not $verified) {
+    Write-Host ""
+    Write-Host "════════════════════════════════════════════" -ForegroundColor Yellow
+    Write-Err "The block could not be fully verified on this PC."
+    Write-Host "  This usually means a security tool is interfering." -ForegroundColor Yellow
+    Write-Host "  Please contact support@nogoon.io and we'll sort it out right away." -ForegroundColor Yellow
+    Write-Host "════════════════════════════════════════════" -ForegroundColor Yellow
+    try { Invoke-WebRequest -Uri "https://nogoon.io/api/track?t=free&os=win&verify=fail&$NOGOON_ATTR" -UseBasicParsing -TimeoutSec 3 | Out-Null } catch {}
+    exit 1
+}
 
 # -- Done ----------------------------------------------------------------------
 Write-Host ""

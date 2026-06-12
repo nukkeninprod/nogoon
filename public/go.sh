@@ -17,9 +17,6 @@
 
 set -e
 
-# ── Track execution (silent, non-blocking) ───────────────────────────────
-curl -s "https://nogoon.io/api/track?t=paid&os=mac" > /dev/null 2>&1 &
-
 # ── Colors ──────────────────────────────────────────────────────────────────
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -77,8 +74,12 @@ MARKER="# === NOGOON.IO ==="
 if grep -q "$MARKER" /etc/hosts 2>/dev/null; then
   echo -e "${YELLOW}⚠ nogoon.io is already installed on this machine.${NC}"
   echo "  To reinstall, first remove the existing entries from /etc/hosts."
+  curl -s "https://nogoon.io/api/track?t=paid&os=mac&rerun=1" > /dev/null 2>&1 &
   exit 0
 fi
+
+# ── Track real install (silent, non-blocking) ────────────────────────────
+curl -s "https://nogoon.io/api/track?t=paid&os=mac" > /dev/null 2>&1 &
 
 HOSTS_FILE="/etc/hosts"
 
@@ -245,6 +246,14 @@ cat >> "$HOSTS_FILE" << 'HOSTS'
 0.0.0.0 www.pornmd.com
 0.0.0.0 camhub.cc
 0.0.0.0 www.camhub.cc
+0.0.0.0 porntn.com
+0.0.0.0 www.porntn.com
+0.0.0.0 porndd.com
+0.0.0.0 www.porndd.com
+0.0.0.0 crushon.ai
+0.0.0.0 www.crushon.ai
+0.0.0.0 eroasmr.com
+0.0.0.0 www.eroasmr.com
 
 # ── DNS-over-HTTPS bypass prevention ──
 0.0.0.0 dns.google
@@ -334,6 +343,14 @@ else
   echo -e "${BLUE}[3/5]${NC} SafeSearch skipped (--no-safesearch)"
 fi
 
+# ── Step 3b: Disable DNS-over-HTTPS in browsers ──────────────────────────────
+# DoH lets browsers bypass the system DNS filter. Force it off via managed
+# preferences so CleanBrowsing-style filtering always applies.
+defaults write com.google.Chrome  DnsOverHttpsMode -string "off" 2>/dev/null || true
+defaults write com.microsoft.Edge DnsOverHttpsMode -string "off" 2>/dev/null || true
+defaults write com.brave.Browser  DnsOverHttpsMode -string "off" 2>/dev/null || true
+echo -e "  ${GREEN}✓${NC} DNS-over-HTTPS disabled in browsers (filter can't be bypassed)"
+
 # ── Step 4: Flush DNS ──────────────────────────────────────────────────────
 echo -e "${BLUE}[4/5]${NC} Flushing DNS cache..."
 dscacheutil -flushcache 2>/dev/null || true
@@ -347,6 +364,23 @@ if [ "$LOCK_HOSTS" = true ]; then
   echo -e "  ${GREEN}✓${NC} Hosts file locked (immutable)"
 else
   echo -e "${BLUE}[5/5]${NC} Hosts file lock skipped (--no-lock)"
+fi
+
+# ── Verify the block actually works ──────────────────────────────────────────
+VERIFIED=false
+RESOLVED=$(dscacheutil -q host -a name pornhub.com 2>/dev/null | awk '/ip_address/ {print $2}')
+if echo "$RESOLVED" | grep -q "0.0.0.0" || [ -z "$RESOLVED" ]; then
+  VERIFIED=true
+fi
+
+if [ "$VERIFIED" != true ]; then
+  echo ""
+  echo -e "${YELLOW}${BOLD}════════════════════════════════════════════${NC}"
+  echo -e "${YELLOW}  ⚠ The block could not be fully verified.${NC}"
+  echo -e "${YELLOW}  Please contact support@nogoon.io and we'll sort it out right away.${NC}"
+  echo -e "${YELLOW}${BOLD}════════════════════════════════════════════${NC}"
+  curl -s "https://nogoon.io/api/track?t=paid&os=mac&verify=fail" >/dev/null 2>&1 || true
+  exit 1
 fi
 
 # ── Done ────────────────────────────────────────────────────────────────────

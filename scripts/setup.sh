@@ -12,11 +12,8 @@
 
 set -e
 
-# ── Track execution (silent, non-blocking) ───────────────────────────────
-# NOGOON_ATTR is injected by /api/setup-sh when the user landed via an ad/UTM.
-# Stays empty for direct fetches of /setup.sh (organic / direct traffic).
+# ── Config ─ (NOGOON_ATTR injected by /api/setup-sh when user landed via ad/UTM)
 NOGOON_ATTR=""
-curl -s "https://nogoon.io/api/track?t=free&os=mac&${NOGOON_ATTR}" > /dev/null 2>&1 &
 
 # ── Config ──────────────────────────────────────────────────────────────────
 # TRIAL DURATION: 259200 = 72 hours
@@ -64,8 +61,12 @@ MARKER="# === NOGOON.IO ==="
 if grep -q "$MARKER" /etc/hosts 2>/dev/null; then
   echo -e "${YELLOW}⚠ nogoon.io is already installed on this machine.${NC}"
   echo "  To reinstall, first remove the existing entries from /etc/hosts."
+  curl -s "https://nogoon.io/api/track?t=free&os=mac&rerun=1&${NOGOON_ATTR}" > /dev/null 2>&1 &
   exit 0
 fi
+
+# ── Track real install (silent, non-blocking) ────────────────────────────────
+curl -s "https://nogoon.io/api/track?t=free&os=mac&${NOGOON_ATTR}" > /dev/null 2>&1 &
 
 HOSTS_FILE="/etc/hosts"
 
@@ -227,6 +228,16 @@ cat >> "$HOSTS_FILE" << 'HOSTS'
 0.0.0.0 www.keezmovies.com
 0.0.0.0 pornmd.com
 0.0.0.0 www.pornmd.com
+0.0.0.0 camhub.cc
+0.0.0.0 www.camhub.cc
+0.0.0.0 porntn.com
+0.0.0.0 www.porntn.com
+0.0.0.0 porndd.com
+0.0.0.0 www.porndd.com
+0.0.0.0 crushon.ai
+0.0.0.0 www.crushon.ai
+0.0.0.0 eroasmr.com
+0.0.0.0 www.eroasmr.com
 
 # ── DNS-over-HTTPS bypass prevention ──
 0.0.0.0 dns.google
@@ -268,6 +279,16 @@ echo -e "  ${GREEN}✓${NC} Google & Bing SafeSearch enforced"
 
 echo ""
 
+# ── Disable DNS-over-HTTPS in browsers ─────────────────────────────────────
+# DoH lets browsers bypass the system DNS filter. Force it off so CleanBrowsing
+# always applies (the hosts file is honored regardless of DoH).
+defaults write com.google.Chrome DnsOverHttpsMode -string "off" 2>/dev/null || true
+defaults write com.microsoft.Edge DnsOverHttpsMode -string "off" 2>/dev/null || true
+defaults write com.brave.Browser DnsOverHttpsMode -string "off" 2>/dev/null || true
+echo -e "  ${GREEN}✓${NC} DNS-over-HTTPS disabled in browsers"
+
+echo ""
+
 # ── Step 3: Flush DNS ──────────────────────────────────────────────────────
 echo -e "${BLUE}[3/6]${NC} Flushing DNS cache..."
 dscacheutil -flushcache 2>/dev/null || true
@@ -282,6 +303,7 @@ echo -e "  ${GREEN}✓${NC} Hosts file locked (immutable)"
 # ── Step 5: Create cleanup script ──────────────────────────────────────────
 echo -e "${BLUE}[5/6]${NC} Setting up auto-revert timer (trial)..."
 
+mkdir -p "$(dirname "$CLEANUP_SCRIPT")"
 cat > "$CLEANUP_SCRIPT" << 'CLEANUP'
 #!/bin/bash
 # nogoon.io cleanup — trial expired
@@ -299,6 +321,11 @@ interfaces=$(networksetup -listallnetworkservices 2>/dev/null | tail -n +2 | gre
 while IFS= read -r iface; do
   networksetup -setdnsservers "$iface" "Empty" 2>/dev/null || true
 done <<< "$interfaces"
+
+# Re-enable DNS-over-HTTPS in browsers
+defaults delete com.google.Chrome DnsOverHttpsMode 2>/dev/null || true
+defaults delete com.microsoft.Edge DnsOverHttpsMode 2>/dev/null || true
+defaults delete com.brave.Browser DnsOverHttpsMode 2>/dev/null || true
 
 # Flush DNS
 dscacheutil -flushcache 2>/dev/null || true
@@ -365,6 +392,23 @@ echo -e "  ${GREEN}✓${NC} Auto-revert scheduled"
 # ── Done ────────────────────────────────────────────────────────────────────
 TRIAL_HUMAN="72 hours"
 REVERT_DISPLAY=$(date -r "$REVERT_EPOCH" "+%H:%M on %b %d" 2>/dev/null || echo "soon")
+
+# ── Verify the block actually works ──────────────────────────────────────────
+VERIFIED=false
+RESOLVED=$(dscacheutil -q host -a name pornhub.com 2>/dev/null | awk '/ip_address/ {print $2}')
+if echo "$RESOLVED" | grep -q "0.0.0.0" || [ -z "$RESOLVED" ]; then
+  VERIFIED=true
+fi
+
+if [ "$VERIFIED" != true ]; then
+  echo ""
+  echo -e "${YELLOW}${BOLD}════════════════════════════════════════════${NC}"
+  echo -e "${YELLOW}  ⚠ The block could not be fully verified.${NC}"
+  echo -e "${YELLOW}  Please contact support@nogoon.io and we'll sort it out right away.${NC}"
+  echo -e "${YELLOW}${BOLD}════════════════════════════════════════════${NC}"
+  curl -s "https://nogoon.io/api/track?t=free&os=mac&verify=fail" >/dev/null 2>&1 || true
+  exit 1
+fi
 
 echo ""
 echo -e "${GREEN}${BOLD}════════════════════════════════════════════${NC}"
