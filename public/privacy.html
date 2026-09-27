@@ -76,7 +76,7 @@
   <div class="container">
     <a href="/" class="back">← Back to nogoon.io</a>
     <h1>Privacy Policy</h1>
-    <p class="date">Last updated: March 1, 2026</p>
+    <p class="date">Last updated: September 27, 2026</p>
 
     <h2>1. Who We Are</h2>
     <p>nogoon ("we", "us", "our") operates the website <a href="https://nogoon.io">nogoon.io</a> and provides a porn-blocking script for macOS and Windows.</p>
@@ -85,16 +85,18 @@
     <p>We collect as little data as possible:</p>
     <ul>
       <li><strong>Payment data:</strong> When you purchase the permanent version, your payment is processed by <a href="https://stripe.com/privacy" target="_blank">Stripe</a>. We never see or store your full card number. Stripe provides us with a transaction ID and payment status.</li>
-      <li><strong>Analytics:</strong> We use Vercel Analytics, which collects anonymous, aggregated page view data. No cookies are used. No personal information is collected.</li>
-      <li><strong>Execution tracking:</strong> When you run the free trial or paid script, a lightweight beacon records the event (operating system, timestamp). No personal identifiers are sent.</li>
+      <li><strong>Analytics:</strong> We use Vercel Analytics, which collects anonymous, aggregated page view data. Our website also uses analytics and advertising measurement tags, which may use cookies and identifiers.</li>
+      <li><strong>Execution tracking:</strong> When you run the free trial or paid script, a lightweight beacon records the event (operating system, timestamp). The server also receives the network address of the request for attribution and repeat-install measurement.</li>
     </ul>
 
-    <h2>3. What Data We Do NOT Collect</h2>
+    <p><strong>Windows app measurement:</strong> We count download requests with a random browser cookie (up to one year), and app openings, installation outcomes, and license confirmations with a random app-profile identifier and app version. Pending events can be stored locally and retried when the app is open. We do not collect the websites you visit. Download and app identifiers are separate; these counters do not identify which individual download became an installation.</p>
+
+    <h2>3. Accounts and Browsing Data</h2>
     <ul>
-      <li>No names, email addresses, or accounts</li>
+      <li>No account is needed to install the blocker. Payment and license delivery may involve your email address.</li>
       <li>No browsing history or browsing behavior</li>
-      <li>No IP addresses stored</li>
-      <li>No cookies placed on your device</li>
+
+
       <li>No data sold to third parties — ever</li>
     </ul>
 
@@ -105,20 +107,23 @@
       <li>Adds adult domain entries to your system's hosts file</li>
       <li>Enables SafeSearch on Google and Bing</li>
     </ul>
-    <p>No software is installed. No background process runs. No data is sent from your computer after execution (except the one-time tracking beacon).</p>
+    <p>The desktop installer installs the Nogoon app. On Windows, the trial creates a scheduled cleanup task to restore the previous settings after 72 hours. The app sends the measurement events described above when opened and used. DNS requests are handled by the configured DNS provider.</p>
 
     <h2>5. Third-Party Services</h2>
     <ul>
       <li><strong>Stripe</strong> — payment processing (<a href="https://stripe.com/privacy" target="_blank">Stripe Privacy Policy</a>)</li>
       <li><strong>Vercel</strong> — hosting and analytics (<a href="https://vercel.com/legal/privacy-policy" target="_blank">Vercel Privacy Policy</a>)</li>
+      <li><strong>Upstash</strong> — measurement and license storage</li>
+      <li><strong>GitHub</strong> — Windows installer downloads</li>
+      <li><strong>Google and Reddit</strong> — website analytics and advertising measurement</li>
       <li><strong>CleanBrowsing</strong> — DNS filtering (<a href="https://cleanbrowsing.org/privacy" target="_blank">CleanBrowsing Privacy Policy</a>)</li>
     </ul>
 
     <h2>6. Data Retention</h2>
-    <p>Stripe transaction records are retained as required by financial regulations. Anonymous analytics data is retained by Vercel per their standard policy. We do not maintain any personal database.</p>
+    <p>Stripe transaction records are retained as required by financial regulations. Anonymous analytics data is retained by Vercel per their standard policy. Windows measurement identifiers and counters are stored in our measurement database. The browser download cookie expires after one year.</p>
 
     <h2>7. Your Rights</h2>
-    <p>Since we don't collect personal data, there is typically nothing to request deletion of. If you have concerns, contact us at <strong>support@nogoon.io</strong>.</p>
+    <p>For questions about measurement or requests concerning your data, contact us at <strong>support@nogoon.io</strong>.</p>
 
     <h2>8. Children</h2>
     <p>This product is intended for adults (18+). We do not knowingly collect data from minors.</p>

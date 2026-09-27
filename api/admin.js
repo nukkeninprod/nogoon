@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { Redis } from '@upstash/redis';
+import { readWindowsFunnel } from '../lib/windows-funnel.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
 
   // Auth check
   const secret = req.query.secret || req.headers['x-admin-secret'];
-  if (secret !== process.env.ADMIN_SECRET) {
+  if (!process.env.ADMIN_SECRET || secret !== process.env.ADMIN_SECRET) {
     res.status(401).json({ error: 'unauthorized' });
     return;
   }
@@ -116,10 +117,14 @@ export default async function handler(req, res) {
       }
     }
 
+    let windowsFunnel = null;
+    if (redis) { try { windowsFunnel = await readWindowsFunnel(redis); } catch {} }
     const paid = sessions.filter(s => s.status === 'paid');
 
     res.status(200).json({
       summary: {
+        windows_funnel: windowsFunnel,
+        windows_purchases: paid.filter(s => s.attr?.platform === 'win' && s.attr?.app_version === windowsFunnel?.version).length,
         total_purchases: paid.length,
         total_revenue: paid.reduce((sum, s) => sum + (s.amount || 0), 0),
         redeemed: paid.filter(s => s.redeemed).length,

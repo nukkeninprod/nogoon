@@ -7,3 +7,9 @@ get-refresh-token.mjs
 test-google-ads.mjs
 google-ads-api-design.*
 .wrangler/
+
+# Desktop builds and automated verification
+wizard/node_modules/
+wizard/dist/
+test-results/
+playwright-report/

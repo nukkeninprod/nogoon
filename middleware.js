@@ -13,12 +13,18 @@ export default function middleware(request) {
   const ua = request.headers.get('user-agent') || '';
   const isMac = /Macintosh/.test(ua) && !/iPhone|iPad/.test(ua);
 
-  // Non-Mac users always get Version A
-  if (!isMac) return;
+  const isWindows = /Windows NT/.test(ua);
+  if (!isMac && !isWindows) return;
 
   const url = new URL(request.url);
   const test = TESTS[url.pathname];
   if (!test) return;
+
+  if (isWindows) {
+    const windowsUrl = new URL(request.url);
+    windowsUrl.pathname = test.bPath;
+    return rewrite(windowsUrl);
+  }
 
   // Sticky variant cookie — user stays on the same variant across visits
   const cookie = request.headers.get('cookie') || '';
