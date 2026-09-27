@@ -3,6 +3,7 @@ const $ = (id) => document.getElementById(id);
 let countdownInterval = null;
 
 let trialExpiresAt = null;
+let retryAction = runFreeInstall;
 const isWindows = navigator.userAgent.includes('Windows');
 
 function startCountdown() {
@@ -90,6 +91,7 @@ function finishProgress(cb) {
 }
 
 async function startStripeCheckout() {
+  retryAction = startStripeCheckout;
   const res = await window.nogoon.createCheckout();
   if (!res.ok) {
     $('error-msg').textContent = res.error || 'Could not open checkout';
@@ -106,6 +108,11 @@ async function startStripeCheckout() {
 }
 
 async function activateLicenseKey() {
+  retryAction = () => {
+    $('btn-activate').disabled = false;
+    $('btn-activate').textContent = 'Activate';
+    show('payment');
+  };
   const key = $('license-key-input').value.trim().toUpperCase();
   if (!key) {
     $('license-error').textContent = 'Please enter your license key.';
@@ -151,6 +158,8 @@ async function activateLicenseKey() {
     }
     finishProgress(() => showDone(true));
   } catch (e) {
+    clearInterval(fakeProgressTimer);
+    show('payment');
     $('license-error').textContent = 'Network error. Please try again.';
     $('license-error').classList.remove('hidden');
     $('btn-activate').disabled = false;
@@ -159,6 +168,7 @@ async function activateLicenseKey() {
 }
 
 async function runFreeInstall() {
+  retryAction = runFreeInstall;
   if (isWindows && !confirm('Nogoon will close your browsers to apply the block. Save any work in your browser before continuing.')) return;
   show('progress');
   startFakeProgress('Blocking 72h…');
@@ -198,7 +208,7 @@ $('btn-free').addEventListener('click', () => {
   window.nogoon.trackEvent('cta_clicked', { type: '72h' });
   runFreeInstall();
 });
-$('btn-retry').addEventListener('click', runFreeInstall);
+$('btn-retry').addEventListener('click', () => retryAction());
 
 $('btn-permanent').addEventListener('click', () => {
   window.nogoon.trackEvent('cta_clicked', { type: 'permanent' });

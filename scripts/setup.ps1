@@ -30,6 +30,46 @@ function Test-Administrator {
     return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
+function Initialize-ProductDirectory([bool]$CreateIfMissing) {
+    if (-not (Test-Path -LiteralPath $script:ProductDir)) {
+        if (-not $CreateIfMissing) { return }
+        New-Item -Path $script:ProductDir -ItemType Directory -Force | Out-Null
+    }
+
+    $directory = Get-Item -LiteralPath $script:ProductDir -Force
+    if (-not $directory.PSIsContainer) { throw "The nogoon data path is not a directory." }
+    if (($directory.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw "The nogoon data directory cannot be a link or reparse point." }
+
+    & takeown.exe /F $script:ProductDir /A | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Could not secure the nogoon data directory." }
+    $directory = Get-Item -LiteralPath $script:ProductDir -Force
+    if (($directory.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw "The nogoon data directory changed while it was being secured." }
+    & icacls.exe $script:ProductDir /grant '*S-1-5-32-544:(OI)(CI)F' | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Could not secure the nogoon data directory." }
+
+    $inheritance = [Security.AccessControl.InheritanceFlags]::ContainerInherit -bor [Security.AccessControl.InheritanceFlags]::ObjectInherit
+    $propagation = [Security.AccessControl.PropagationFlags]::None
+    $allow = [Security.AccessControl.AccessControlType]::Allow
+    $systemSid = [Security.Principal.SecurityIdentifier]::new("S-1-5-18")
+    $adminSid = [Security.Principal.SecurityIdentifier]::new("S-1-5-32-544")
+    $usersSid = [Security.Principal.SecurityIdentifier]::new("S-1-5-32-545")
+    $acl = New-Object Security.AccessControl.DirectorySecurity
+    $acl.SetOwner($adminSid)
+    $acl.SetAccessRuleProtection($true, $false)
+    $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($systemSid, [Security.AccessControl.FileSystemRights]::FullControl, $inheritance, $propagation, $allow))
+    $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($adminSid, [Security.AccessControl.FileSystemRights]::FullControl, $inheritance, $propagation, $allow))
+    $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($usersSid, [Security.AccessControl.FileSystemRights]::ReadAndExecute, $inheritance, $propagation, $allow))
+    Set-Acl -LiteralPath $script:ProductDir -AclObject $acl
+
+    foreach ($knownFile in @($script:StateFile, $script:CleanupScript)) {
+        if (-not (Test-Path -LiteralPath $knownFile)) { continue }
+        $item = Get-Item -LiteralPath $knownFile -Force
+        if ($item.PSIsContainer -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw "A nogoon data file is not a regular file: $knownFile" }
+        & icacls.exe $knownFile /reset | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "Could not secure the nogoon data file: $knownFile" }
+    }
+}
+
 function Request-Elevation([string]$RequestedAction, [bool]$RequestedPermanent) {
     Write-Host "  Requesting administrator privileges..." -ForegroundColor Yellow
     if ($PSCommandPath) {
@@ -329,9 +369,42 @@ function Register-CleanupTask([DateTime]$ExpiresAt) {
 }
 
 function Test-Block {
-    if (-not (Select-String -LiteralPath $script:HostsPath -Pattern '^0\.0\.0\.0\s+www\.pornhub\.com\s*$' -Quiet)) { return $false }
-    try { $addresses = @([Net.Dns]::GetHostAddresses("www.pornhub.com") | ForEach-Object { $_.IPAddressToString }) } catch { return $false }
-    return ($addresses -contains "0.0.0.0" -or $addresses -contains "::")
+    $script:BlockDiagnostic = ""
+    if (-not (Select-String -LiteralPath $script:HostsPath -Pattern '^0\.0\.0\.0\s+www\.pornhub\.com\s*$' -Quiet)) {
+        $script:BlockDiagnostic = "The expected hosts entry is missing."
+        return $false
+    }
+
+    try {
+        $controlAddresses = @([Net.Dns]::GetHostAddresses("example.com") | ForEach-Object { $_.IPAddressToString })
+    } catch {
+        $script:BlockDiagnostic = "The control domain example.com did not resolve: $($_.Exception.Message)"
+        return $false
+    }
+    if ($controlAddresses.Count -eq 0 -or @($controlAddresses | Where-Object { $_ -ne "0.0.0.0" -and $_ -ne "::" }).Count -eq 0) {
+        $script:BlockDiagnostic = "The control domain returned no usable address: $($controlAddresses -join ',')."
+        return $false
+    }
+
+    try {
+        $blockedAddresses = @([Net.Dns]::GetHostAddresses("www.pornhub.com") | ForEach-Object { $_.IPAddressToString })
+        if ($blockedAddresses.Count -gt 0 -and @($blockedAddresses | Where-Object { $_ -ne "0.0.0.0" -and $_ -ne "::" }).Count -eq 0) { return $true }
+        $script:BlockDiagnostic = "The blocked domain resolved to an external address: $($blockedAddresses -join ','). Control: $($controlAddresses -join ',')."
+        return $false
+    } catch {
+        $exception = $_.Exception
+        $socketException = $null
+        while ($exception) {
+            if ($exception -is [Net.Sockets.SocketException]) { $socketException = $exception; break }
+            $exception = $exception.InnerException
+        }
+        if ($socketException -and $socketException.SocketErrorCode -in @([Net.Sockets.SocketError]::HostNotFound, [Net.Sockets.SocketError]::NoData)) {
+            return $true
+        }
+        $code = if ($socketException) { $socketException.SocketErrorCode.ToString() } else { "non-socket" }
+        $script:BlockDiagnostic = "Blocked-domain resolution failed unexpectedly ($code): $($_.Exception.Message). Control: $($controlAddresses -join ',')."
+        return $false
+    }
 }
 
 function Invoke-Install([bool]$InstallPermanent) {
@@ -344,7 +417,7 @@ function Invoke-Install([bool]$InstallPermanent) {
             $existing = $null
             $hasMarker = $false
         } else {
-            if (-not (Test-Block)) { throw "The existing protection could not be verified." }
+            if (-not (Test-Block)) { throw "The existing protection could not be verified. $script:BlockDiagnostic" }
             if ($existing.Mode -eq "permanent") { Write-Ok "Permanent protection is already active."; return }
             if ($InstallPermanent) { Remove-CleanupTask; $existing.Mode = "permanent"; $existing.ExpiresAt = $null; Write-InstallState $existing $script:StateFile; Write-Ok "Protection is now permanent."; return }
             Write-Ok "The free trial is already active."; return
@@ -414,7 +487,7 @@ function Invoke-Install([bool]$InstallPermanent) {
         }
         if ($InstallPermanent) { Get-CleanupScriptContent | Set-Content -LiteralPath $script:CleanupScript -Encoding UTF8; Remove-CleanupTask }
         else { Register-CleanupTask ([DateTime]::Parse($expiresAt)) }
-        if (-not (Test-Block)) { throw "The hosts block could not be verified." }
+        if (-not (Test-Block)) { throw "The hosts block could not be verified. $script:BlockDiagnostic" }
         $state.Status = "Active"; Write-InstallState $state $script:StateFile
     } catch {
         $installError = $_.Exception.Message
@@ -437,6 +510,7 @@ if ($env:OS -ne "Windows_NT") {
 if ($Action -eq "State") { Get-PublicState; exit 0 }
 if (-not (Test-Administrator)) { Request-Elevation $Action ([bool]$Permanent); exit 0 }
 try {
+    Initialize-ProductDirectory ($Action -eq "Install")
     if ($Action -eq "Cleanup") { Invoke-RestoreInstallation $script:StateFile; Remove-Item -LiteralPath $script:CleanupScript -Force -ErrorAction SilentlyContinue; Write-Ok "nogoon protection was removed and previous settings were restored." }
     else { Invoke-Install ([bool]$Permanent) }
     exit 0

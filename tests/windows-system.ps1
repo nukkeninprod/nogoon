@@ -87,6 +87,23 @@ function Assert-DnsRestored([object[]]$Backup) {
     }
 }
 
+function Assert-StandardUsersReadOnly([string]$Path) {
+    $usersSid = "S-1-5-32-545"
+    $writeMask = [Security.AccessControl.FileSystemRights]::WriteData -bor
+        [Security.AccessControl.FileSystemRights]::AppendData -bor
+        [Security.AccessControl.FileSystemRights]::WriteExtendedAttributes -bor
+        [Security.AccessControl.FileSystemRights]::WriteAttributes -bor
+        [Security.AccessControl.FileSystemRights]::Delete -bor
+        [Security.AccessControl.FileSystemRights]::ChangePermissions -bor
+        [Security.AccessControl.FileSystemRights]::TakeOwnership
+    $rules = @((Get-Acl -LiteralPath $Path).Access | Where-Object {
+        try { $_.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value -eq $usersSid } catch { $false }
+    })
+    Assert-True ($rules.Count -gt 0) "The Users ACL is missing on $Path."
+    $allowedWrite = @($rules | Where-Object { $_.AccessControlType -eq "Allow" -and ($_.FileSystemRights -band $writeMask) -ne 0 })
+    Assert-True ($allowedWrite.Count -eq 0) "Standard Users can write $Path."
+}
+
 if ($env:OS -ne "Windows_NT") { throw "This test requires Windows." }
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = New-Object Security.Principal.WindowsPrincipal($identity)
@@ -118,6 +135,8 @@ try {
     Assert-True ($null -ne (Get-ScheduledTask -TaskName "NogoonCleanup" -ErrorAction SilentlyContinue)) "The cleanup task was not created."
     Assert-True (Select-String -LiteralPath $hostsPath -Pattern '^0\.0\.0\.0\s+www\.pornhub\.com\s*$' -Quiet) "The hosts block was not installed."
     Assert-True ((Get-Item -LiteralPath $hostsPath -Force).IsReadOnly) "The hosts file was not marked read-only."
+    Assert-StandardUsersReadOnly (Join-Path $env:ProgramData "nogoon")
+    Assert-StandardUsersReadOnly $cleanupPath
     $internalState = Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json
     $dnsBackup = @($internalState.Dns)
     $firstExpiry = $freeState.expiresAt
@@ -148,9 +167,17 @@ try {
     Add-Content -LiteralPath $hostsPath -Value "`r`n127.0.0.1 unrelated-system-test.invalid" -Encoding ASCII
     $expired.ExpiresAt = [DateTime]::UtcNow.AddMinutes(-5).ToString("o")
     $expired | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $statePath -Encoding UTF8
-    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $cleanupPath -Scheduled
-    Assert-True ($LASTEXITCODE -eq 0) "Scheduled cleanup failed after a missed expiry."
+    Start-ScheduledTask -TaskName "NogoonCleanup"
+    $deadline = [DateTime]::UtcNow.AddSeconds(45)
+    while ([DateTime]::UtcNow -lt $deadline -and ((Test-Path -LiteralPath $statePath) -or (Get-ScheduledTask -TaskName "NogoonCleanup" -ErrorAction SilentlyContinue))) {
+        Start-Sleep -Seconds 1
+    }
+    if ((Test-Path -LiteralPath $statePath) -or (Get-ScheduledTask -TaskName "NogoonCleanup" -ErrorAction SilentlyContinue)) {
+        $taskInfo = Get-ScheduledTaskInfo -TaskName "NogoonCleanup" -ErrorAction SilentlyContinue
+        throw "Scheduled cleanup timed out. LastTaskResult=$($taskInfo.LastTaskResult)"
+    }
     Assert-True ((Get-PublicState).mode -eq "none") "Scheduled cleanup did not clear an expired trial."
+    Assert-True ($null -eq (Get-ScheduledTask -TaskName "NogoonCleanup" -ErrorAction SilentlyContinue)) "Scheduled cleanup did not remove its task."
     Assert-True (Select-String -LiteralPath $hostsPath -SimpleMatch "127.0.0.1 unrelated-system-test.invalid" -Quiet) "Cleanup erased an unrelated hosts edit."
     & takeown.exe /F $hostsPath /A | Out-Null
     & icacls.exe $hostsPath /grant '*S-1-5-32-544:F' | Out-Null
