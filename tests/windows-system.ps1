@@ -16,8 +16,15 @@ function Assert-True([bool]$Condition, [string]$Message) {
 function Invoke-Setup([string]$Action, [switch]$Permanent) {
     $arguments = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $SetupPath, "-Action", $Action)
     if ($Permanent) { $arguments += "-Permanent" }
-    $output = & powershell.exe @arguments 2>&1
-    if ($LASTEXITCODE -ne 0) { throw "setup.ps1 $Action failed ($LASTEXITCODE): $($output -join ' ')" }
+    $previousPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "Continue"
+        $output = & powershell.exe @arguments 2>&1
+        $exitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousPreference
+    }
+    if ($exitCode -ne 0) { throw "setup.ps1 $Action failed ($exitCode): $($output -join ' ')" }
     return @($output)
 }
 

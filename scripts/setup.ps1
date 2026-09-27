@@ -109,15 +109,24 @@ function Get-DnsMode([Guid]$InterfaceGuid, [string]$Family) {
     return "manual"
 }
 
+function Get-EligibleDnsAdapters {
+    $ipv4Indexes = @(Get-DnsClientServerAddress -AddressFamily IPv4 -ErrorAction Stop | ForEach-Object { [int]$_.InterfaceIndex })
+    return @(Get-NetAdapter -ErrorAction Stop | Where-Object {
+        $_.Status -eq "Up" -and $null -ne $_.InterfaceGuid -and $ipv4Indexes -contains [int]$_.ifIndex
+    })
+}
+
 function Get-DnsBackup {
     $result = @()
-    foreach ($adapter in @(Get-NetAdapter -ErrorAction Stop | Where-Object { $_.Status -eq "Up" })) {
-        $v4 = @((Get-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue).ServerAddresses)
-        $v6 = @((Get-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -AddressFamily IPv6 -ErrorAction SilentlyContinue).ServerAddresses)
+    $ipv6Indexes = @(Get-DnsClientServerAddress -AddressFamily IPv6 -ErrorAction SilentlyContinue | ForEach-Object { [int]$_.InterfaceIndex })
+    foreach ($adapter in @(Get-EligibleDnsAdapters)) {
+        $v4 = @((Get-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -AddressFamily IPv4 -ErrorAction Stop).ServerAddresses)
+        $hasIPv6 = $ipv6Indexes -contains [int]$adapter.ifIndex
+        $v6 = if ($hasIPv6) { @((Get-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -AddressFamily IPv6 -ErrorAction Stop).ServerAddresses) } else { @() }
         $result += [PSCustomObject]@{
             Index = [int]$adapter.ifIndex; InterfaceGuid = $adapter.InterfaceGuid.ToString(); Alias = $adapter.Name
             IPv4Mode = Get-DnsMode $adapter.InterfaceGuid "IPv4"; IPv6Mode = Get-DnsMode $adapter.InterfaceGuid "IPv6"
-            IPv4 = $v4; IPv6 = $v6
+            IPv4 = $v4; IPv6 = $v6; HasIPv6 = $hasIPv6
         }
     }
     return @($result)
@@ -146,7 +155,7 @@ function Restore-Dns([object[]]$Backup) {
         if (-not $adapter) { $adapter = $currentAdapters | Where-Object { $_.Name -eq [string]$entry.Alias } | Select-Object -First 1 }
         if (-not $adapter) { continue }
         Invoke-NetshDnsRestore ([int]$adapter.ifIndex) "IPv4" ([string]$entry.IPv4Mode) @($entry.IPv4)
-        Invoke-NetshDnsRestore ([int]$adapter.ifIndex) "IPv6" ([string]$entry.IPv6Mode) @($entry.IPv6)
+        if ($entry.HasIPv6) { Invoke-NetshDnsRestore ([int]$adapter.ifIndex) "IPv6" ([string]$entry.IPv6Mode) @($entry.IPv6) }
     }
 }
 
@@ -309,7 +318,14 @@ function Register-CleanupTask([DateTime]$ExpiresAt) {
     $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 15)
     Register-ScheduledTask -TaskName $script:TaskName -Action $taskAction -Trigger $triggers -Settings $settings -User "SYSTEM" -RunLevel Highest -Force | Out-Null
     $task = Get-ScheduledTask -TaskName $script:TaskName -ErrorAction Stop
-    if ($task.Actions.Execute -notcontains "powershell.exe" -or $task.Actions.Arguments -notmatch [Regex]::Escape($script:CleanupScript)) { throw "The automatic cleanup task could not be verified." }
+    $taskSettings = $task | Get-ScheduledTaskInfo -ErrorAction Stop
+    if ($task.Actions.Execute -notcontains "powershell.exe" -or
+        $task.Actions.Arguments -notmatch [Regex]::Escape($script:CleanupScript) -or
+        @($task.Triggers).Count -lt 2 -or
+        -not $task.Settings.StartWhenAvailable -or
+        $null -eq $taskSettings.NextRunTime) {
+        throw "The automatic cleanup task could not be verified."
+    }
 }
 
 function Test-Block {
@@ -359,12 +375,26 @@ function Invoke-Install([bool]$InstallPermanent) {
         ContentBase64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($script:HostsPath))
     }
     $expiresAt = if ($InstallPermanent) { $null } else { [DateTime]::UtcNow.AddSeconds($script:TrialSeconds).ToString("o") }
-    $state = [PSCustomObject]@{ Version = 2; Status = "Installing"; Mode = if ($InstallPermanent) { "permanent" } else { "free" }; ExpiresAt = $expiresAt; Dns = @(Get-DnsBackup); Hosts = $hostsBackup; Policies = @($policyBackups) }
+    $state = [PSCustomObject]@{ Version = 2; Status = "Installing"; Mode = if ($InstallPermanent) { "permanent" } else { "free" }; ExpiresAt = $expiresAt; Dns = @(Get-DnsBackup); Hosts = $hostsBackup; Policies = @($policyBackups); CfaAtInstall = Get-CfaPreference }
     Write-InstallState $state $script:StateFile
     try {
         Write-Step "Setting DNS filtering..."
         $configured = 0
-        foreach ($adapter in @(Get-NetAdapter | Where-Object { $_.Status -eq "Up" })) { Set-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -ServerAddresses @("185.228.168.10", "185.228.169.11") -ErrorAction Stop; $configured++ }
+        $activeDnsBackup = New-Object Collections.Generic.List[object]
+        foreach ($entry in @($state.Dns)) { [void]$activeDnsBackup.Add($entry) }
+        foreach ($entry in @($state.Dns)) {
+            try {
+                Set-DnsClientServerAddress -InterfaceIndex ([int]$entry.Index) -ServerAddresses @("185.228.168.10", "185.228.169.11") -ErrorAction Stop
+                $configured++
+            } catch {
+                $configuration = Get-NetIPConfiguration -InterfaceIndex ([int]$entry.Index) -ErrorAction SilentlyContinue
+                if ($configuration -and $configuration.IPv4DefaultGateway) { throw }
+                [void]$activeDnsBackup.Remove($entry)
+                $state.Dns = @($activeDnsBackup)
+                Write-InstallState $state $script:StateFile
+                Write-Warn "Skipped an adapter that does not support DNS configuration: $($entry.Alias)"
+            }
+        }
         if ($configured -eq 0) { throw "No active network adapter could be configured." }
         Write-Step "Applying browser and hosts protections..."
         Set-NogoonPolicies $policyBackups
@@ -389,6 +419,7 @@ function Invoke-Install([bool]$InstallPermanent) {
     } catch {
         $installError = $_.Exception.Message
         try { Invoke-RestoreInstallation $script:StateFile } catch { $installError += " Rollback also failed: $($_.Exception.Message)" }
+        try { Restore-CfaPreference $state.CfaAtInstall } catch { $installError += " Controlled Folder Access restoration failed: $($_.Exception.Message)" }
         throw $installError
     }
     if (-not $InstallPermanent -and $env:NOGOON_NO_TRACK -ne "1" -and $env:NOGOON_DESKTOP -ne "1") {
