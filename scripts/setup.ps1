@@ -6,6 +6,21 @@ param(
     [switch]$Permanent
 )
 
+# Windows PowerShell can inherit PowerShell 7 module paths through an
+# intermediate desktop process. Put its own built-in modules first before any
+# module-backed command is resolved.
+if ($PSVersionTable.PSEdition -eq "Desktop") {
+    $builtInModulePath = [IO.Path]::Combine($PSHOME, "Modules")
+    $modulePaths = @($builtInModulePath)
+    foreach ($modulePath in @(([string]$env:PSModulePath).Split([IO.Path]::PathSeparator))) {
+        if (-not [string]::IsNullOrWhiteSpace($modulePath) -and $modulePath -ne $builtInModulePath) {
+            $modulePaths += $modulePath
+        }
+    }
+    $env:PSModulePath = $modulePaths -join [IO.Path]::PathSeparator
+    Import-Module ([IO.Path]::Combine($builtInModulePath, "Microsoft.PowerShell.Security", "Microsoft.PowerShell.Security.psd1")) -ErrorAction Stop
+}
+
 $ErrorActionPreference = "Stop"
 
 $script:ProductDir = Join-Path $env:ProgramData "nogoon"
@@ -61,10 +76,15 @@ function Initialize-ProductDirectory([bool]$CreateIfMissing) {
     $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($usersSid, [Security.AccessControl.FileSystemRights]::ReadAndExecute, $inheritance, $propagation, $allow))
     Set-Acl -LiteralPath $script:ProductDir -AclObject $acl
 
-    foreach ($knownFile in @($script:StateFile, $script:CleanupScript)) {
+    foreach ($knownFile in @($script:StateFile, "$($script:StateFile).tmp", $script:CleanupScript)) {
         if (-not (Test-Path -LiteralPath $knownFile)) { continue }
         $item = Get-Item -LiteralPath $knownFile -Force
         if ($item.PSIsContainer -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw "A nogoon data file is not a regular file: $knownFile" }
+        if ($knownFile -eq $script:StateFile) {
+            try { $ownerSid = (Get-Acl -LiteralPath $knownFile).GetOwner([Security.Principal.SecurityIdentifier]).Value }
+            catch { throw "The nogoon restoration backup owner could not be verified. Contact support@nogoon.io." }
+            if ($ownerSid -notin @("S-1-5-18", "S-1-5-32-544")) { throw "The nogoon restoration backup is not trusted. Contact support@nogoon.io." }
+        }
         & icacls.exe $knownFile /reset | Out-Null
         if ($LASTEXITCODE -ne 0) { throw "Could not secure the nogoon data file: $knownFile" }
     }
@@ -94,6 +114,9 @@ function Write-InstallState([object]$State, [string]$Path) {
     if (-not (Test-Path -LiteralPath $directory)) { New-Item -Path $directory -ItemType Directory -Force | Out-Null }
     $temporaryPath = "$Path.tmp"
     $State | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $temporaryPath -Encoding UTF8
+    $temporaryAcl = Get-Acl -LiteralPath $temporaryPath
+    $temporaryAcl.SetOwner([Security.Principal.SecurityIdentifier]::new("S-1-5-32-544"))
+    Set-Acl -LiteralPath $temporaryPath -AclObject $temporaryAcl
     Move-Item -LiteralPath $temporaryPath -Destination $Path -Force
 }
 
@@ -289,6 +312,15 @@ function Get-CleanupScriptContent {
     $builder = New-Object Text.StringBuilder
     [void]$builder.AppendLine('param([switch]$Scheduled)')
     [void]$builder.AppendLine('$ErrorActionPreference = "Stop"')
+    [void]$builder.AppendLine('if ($PSVersionTable.PSEdition -eq "Desktop") {')
+    [void]$builder.AppendLine('    $builtInModulePath = [IO.Path]::Combine($PSHOME, "Modules")')
+    [void]$builder.AppendLine('    $modulePaths = @($builtInModulePath)')
+    [void]$builder.AppendLine('    foreach ($modulePath in @(([string]$env:PSModulePath).Split([IO.Path]::PathSeparator))) {')
+    [void]$builder.AppendLine('        if (-not [string]::IsNullOrWhiteSpace($modulePath) -and $modulePath -ne $builtInModulePath) { $modulePaths += $modulePath }')
+    [void]$builder.AppendLine('    }')
+    [void]$builder.AppendLine('    $env:PSModulePath = $modulePaths -join [IO.Path]::PathSeparator')
+    [void]$builder.AppendLine('    Import-Module ([IO.Path]::Combine($builtInModulePath, "Microsoft.PowerShell.Security", "Microsoft.PowerShell.Security.psd1")) -ErrorAction Stop')
+    [void]$builder.AppendLine('}')
     [void]$builder.AppendLine('$script:ProductDir = Join-Path $env:ProgramData "nogoon"')
     [void]$builder.AppendLine('$script:StateFile = Join-Path $script:ProductDir "state.json"')
     [void]$builder.AppendLine('$script:CleanupScript = Join-Path $script:ProductDir "cleanup.ps1"')

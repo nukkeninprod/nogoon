@@ -35,7 +35,8 @@ async function start() {
   const page = await app.firstWindow(); await page.waitForLoadState('domcontentloaded'); return page;
 }
 async function done(page, permanent) {
-  await page.waitForFunction(() => !document.getElementById('screen-done').classList.contains('hidden'), null, { timeout: 120000 });
+  await page.waitForFunction(() => ['screen-done', 'screen-error'].some(id => !document.getElementById(id).classList.contains('hidden')), null, { timeout: 120000 });
+  if (await page.locator('#screen-error').isVisible()) throw new Error(await page.locator('#error-msg').innerText());
   assert.equal((await page.locator('#done-title').innerText()).includes('permanently'), permanent);
 }
 try {
@@ -71,4 +72,10 @@ try {
 } catch (error) {
   if (app) { try { const page = await app.firstWindow(); await page.screenshot({ path: path.join(out, 'windows-failure.png') }); console.error((await page.locator('body').innerText()).slice(-3000)); } catch {} }
   throw error;
-} finally { if (app) await app.close(); if (fs.existsSync(script)) cleanup(); }
+} finally {
+  if (app) await app.close();
+  if (fs.existsSync(script)) {
+    try { cleanup(); }
+    catch (error) { console.error('Final cleanup failed:', error.stderr?.toString() || error.message); process.exitCode = 1; }
+  }
+}
