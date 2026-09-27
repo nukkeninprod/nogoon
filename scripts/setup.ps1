@@ -209,11 +209,11 @@ function Restore-HostsContent([object]$HostsBackup) {
 }
 
 function Restore-HostsSecurity([object]$HostsBackup) {
+    $file = Get-Item -LiteralPath $script:HostsPath -Force
+    $file.Attributes = [IO.FileAttributes]([int]$HostsBackup.Attributes)
     $acl = New-Object Security.AccessControl.FileSecurity
     $acl.SetSecurityDescriptorSddlForm([string]$HostsBackup.Sddl)
     Set-Acl -LiteralPath $script:HostsPath -AclObject $acl
-    $file = Get-Item -LiteralPath $script:HostsPath -Force
-    $file.Attributes = [IO.FileAttributes]([int]$HostsBackup.Attributes)
 }
 
 function Remove-CleanupTask { Unregister-ScheduledTask -TaskName $script:TaskName -Confirm:$false -ErrorAction SilentlyContinue }
@@ -307,8 +307,8 @@ function Set-HostsLock {
     $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($systemSid, [Security.AccessControl.FileSystemRights]::FullControl, $inheritance, $propagation, $allow))
     $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($adminSid, [Security.AccessControl.FileSystemRights]::Read, $inheritance, $propagation, $allow))
     $acl.AddAccessRule([Security.AccessControl.FileSystemAccessRule]::new($usersSid, [Security.AccessControl.FileSystemRights]::Read, $inheritance, $propagation, $allow))
-    Set-Acl -LiteralPath $script:HostsPath -AclObject $acl
     (Get-Item -LiteralPath $script:HostsPath -Force).IsReadOnly = $true
+    Set-Acl -LiteralPath $script:HostsPath -AclObject $acl
 }
 
 function Register-CleanupTask([DateTime]$ExpiresAt) {

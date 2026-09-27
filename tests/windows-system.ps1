@@ -117,6 +117,7 @@ try {
     Assert-True (-not [string]::IsNullOrWhiteSpace($freeState.expiresAt)) "The free trial must have an expiry."
     Assert-True ($null -ne (Get-ScheduledTask -TaskName "NogoonCleanup" -ErrorAction SilentlyContinue)) "The cleanup task was not created."
     Assert-True (Select-String -LiteralPath $hostsPath -Pattern '^0\.0\.0\.0\s+www\.pornhub\.com\s*$' -Quiet) "The hosts block was not installed."
+    Assert-True ((Get-Item -LiteralPath $hostsPath -Force).IsReadOnly) "The hosts file was not marked read-only."
     $internalState = Get-Content -LiteralPath $statePath -Raw | ConvertFrom-Json
     $dnsBackup = @($internalState.Dns)
     $firstExpiry = $freeState.expiresAt
@@ -155,10 +156,10 @@ try {
     & icacls.exe $hostsPath /grant '*S-1-5-32-544:F' | Out-Null
     (Get-Item -LiteralPath $hostsPath -Force).IsReadOnly = $false
     [IO.File]::WriteAllBytes($hostsPath, [Convert]::FromBase64String($hostsOriginalBytes))
+    (Get-Item -LiteralPath $hostsPath -Force).Attributes = [IO.FileAttributes]$hostsOriginalAttributes
     $originalAcl = New-Object Security.AccessControl.FileSecurity
     $originalAcl.SetSecurityDescriptorSddlForm($hostsOriginalAcl)
     Set-Acl -LiteralPath $hostsPath -AclObject $originalAcl
-    (Get-Item -LiteralPath $hostsPath -Force).Attributes = [IO.FileAttributes]$hostsOriginalAttributes
 
     Invoke-Setup "Install" -Permanent | Out-Null
     Assert-True ((Get-PublicState).mode -eq "permanent") "A fresh permanent install failed."
@@ -175,10 +176,10 @@ try {
             & icacls.exe $hostsPath /grant '*S-1-5-32-544:F' | Out-Null
             (Get-Item -LiteralPath $hostsPath -Force).IsReadOnly = $false
             [IO.File]::WriteAllBytes($hostsPath, [Convert]::FromBase64String($hostsOriginalBytes))
+            (Get-Item -LiteralPath $hostsPath -Force).Attributes = [IO.FileAttributes]$hostsOriginalAttributes
             $acl = New-Object Security.AccessControl.FileSecurity
             $acl.SetSecurityDescriptorSddlForm($hostsOriginalAcl)
             Set-Acl -LiteralPath $hostsPath -AclObject $acl
-            (Get-Item -LiteralPath $hostsPath -Force).Attributes = [IO.FileAttributes]$hostsOriginalAttributes
         }
     } catch { Write-Warning $_ }
 }
