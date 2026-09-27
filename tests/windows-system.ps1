@@ -29,7 +29,7 @@ function Invoke-Setup([string]$Action, [switch]$Permanent) {
 }
 
 function Get-PublicState {
-    $output = Invoke-Setup "State"
+    $output = @(Invoke-Setup "State")
     Assert-True ($output.Count -eq 1) "State must emit exactly one line of JSON."
     return ($output[0] | ConvertFrom-Json)
 }
