@@ -37,6 +37,11 @@ function deriveSource(attr) {
 }
 
 export default async function handler(req, res) {
+  // Old Windows clients can report verification failures/reruns as installs.
+  if (req.query.os === 'win' && (req.query.verify === 'fail' || req.query.rerun === '1')) {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(200).send('ok');
+  }
   const type = req.query.t; // 'free' or 'paid'
   const os = req.query.os || 'unknown'; // 'mac' or 'win'
 

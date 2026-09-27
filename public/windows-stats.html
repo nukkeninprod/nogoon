@@ -1,0 +1,21 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Nogoon · Windows</title><style>
+body{margin:0;background:#0a0a0a;color:#eee;font:16px/1.5 system-ui}main{max-width:1000px;margin:40px auto;padding:24px}input,button{font:inherit;padding:12px;border-radius:8px;border:1px solid #444}input{background:#181818;color:white}button{background:#a1eafb;cursor:pointer}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0}.card{background:#181818;border:1px solid #333;padding:20px;border-radius:12px}.number{font-size:36px;font-weight:700;color:#a1eafb}.muted{color:#aaa}h1{margin-bottom:8px}#error{color:#f99}a{color:#a1eafb}</style></head><body><main>
+<h1>Nogoon · Windows</h1><p class="muted">Depuis la sortie de la version 0.2.0</p><form id="login"><label>Clé admin <input type="password" id="secret" required autocomplete="off"></label> <button>Afficher les chiffres</button></form><p id="error" role="status"></p>
+<section id="report" hidden><div class="cards" id="cards"></div><p id="ratio"></p><p class="muted">Téléchargements = navigateurs distincts ayant demandé le fichier, sans preuve que le transfert est terminé. Ouvertures et installations = profils Windows distincts. Ces deux groupes ne sont pas reliés individuellement : le ratio est indicatif. Une installation passée du gratuit au permanent figure dans les deux catégories, mais une seule fois dans le total.</p><p class="muted">Les échecs signalés commencent après l’ouverture de l’app. Les blocages avant ouverture ne sont visibles que dans l’écart entre les compteurs ou dans les réponses à l’aide d’installation. Un faible ratio ne permet pas, à lui seul, d’attribuer les abandons à SmartScreen.</p><p id="updated" class="muted"></p></section>
+<script>
+document.getElementById('login').addEventListener('submit', async event => {
+  event.preventDefault(); document.getElementById('error').textContent='Chargement…';
+  try {
+    const response=await fetch('/api/admin',{headers:{'x-admin-secret':document.getElementById('secret').value},cache:'no-store'});
+    if(!response.ok) throw new Error(response.status===401?'Clé admin incorrecte.':'Statistiques indisponibles.');
+    const data=await response.json(); const funnel=data.summary.windows_funnel;
+    if(!funnel) throw new Error('Le suivi Windows est indisponible.');
+    const c=funnel.counts; const rows=[['Téléchargements demandés',c.download],['App ouverte',c.app_open],['Installation lancée',c.install_started],['Installations réussies',c.install_success],['Gratuit installé',c.free_success],['Permanent installé',c.permanent_success],['Achats depuis l’app Windows',data.summary.windows_purchases],['Profils ayant eu un échec',c.install_failed],['Licences confirmées',c.license_activated],['Blocage Windows signalé',c.help_smartscreen],['Autre problème signalé',c.help_other]];
+    const cards=document.getElementById('cards');cards.replaceChildren();
+    for(const [label,value] of rows){const card=document.createElement('div');card.className='card';const number=document.createElement('div');number.className='number';number.textContent=String(value??0);const text=document.createElement('div');text.textContent=label;card.append(number,text);cards.append(card);}
+    document.getElementById('ratio').textContent=c.download?`Rapport indicatif installations / téléchargements : ${(100*c.install_success/c.download).toFixed(1)} % (${c.install_success} / ${c.download}).`:'Le ratio apparaîtra après le premier téléchargement.';
+    document.getElementById('updated').textContent='Actualisé le '+new Date().toLocaleString('fr-FR');
+    document.getElementById('report').hidden=false;document.getElementById('error').textContent='';
+  }catch(error){document.getElementById('report').hidden=true;document.getElementById('error').textContent=error.message;}
+});
+</script></main></body></html>

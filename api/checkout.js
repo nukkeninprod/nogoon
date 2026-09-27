@@ -62,6 +62,11 @@ export default async function handler(req, res) {
     const ip = getClientIp(req);
     const attr = await loadAttrByIp(ip);
     const metadata = { ...attr, attr_ip: ip };
+    if (req.query?.os === 'win' || /Windows/i.test(req.headers['user-agent'] || '')) {
+      metadata.platform = 'win';
+      metadata.delivery = isApp ? 'desktop' : 'website';
+      if (/^\d+\.\d+\.\d+$/.test(req.query?.app_version || '')) metadata.app_version = req.query.app_version;
+    }
 
     const checkoutParams = {
       mode: 'payment',

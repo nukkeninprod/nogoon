@@ -2,6 +2,10 @@ const $ = (id) => document.getElementById(id);
 
 let countdownInterval = null;
 
+let trialExpiresAt = null;
+let retryAction = runFreeInstall;
+const isWindows = navigator.userAgent.includes('Windows');
+
 function startCountdown() {
   const DURATION = 72 * 60 * 60 * 1000;
   const key = 'nogoon_block_start';
@@ -10,7 +14,7 @@ function startCountdown() {
 
   function tick() {
     const elapsed = Date.now() - parseInt(localStorage.getItem(key), 10);
-    const remaining = Math.max(0, DURATION - elapsed);
+    const remaining = Math.max(0, trialExpiresAt ? Date.parse(trialExpiresAt) - Date.now() : DURATION - elapsed);
     const h = Math.floor(remaining / 3600000);
     const m = Math.floor((remaining % 3600000) / 60000);
     const s = Math.floor((remaining % 60000) / 1000);
@@ -37,7 +41,8 @@ function show(name) {
 }
 
 
-function showDone(permanent) {
+function showDone(permanent, expiresAt) {
+  if (expiresAt) trialExpiresAt = expiresAt;
   if (permanent) {
     $('done-title').textContent = 'Blocked permanently.';
     $('done-desc').textContent = 'This block will never expire.';
@@ -86,6 +91,7 @@ function finishProgress(cb) {
 }
 
 async function startStripeCheckout() {
+  retryAction = startStripeCheckout;
   const res = await window.nogoon.createCheckout();
   if (!res.ok) {
     $('error-msg').textContent = res.error || 'Could not open checkout';
@@ -102,6 +108,11 @@ async function startStripeCheckout() {
 }
 
 async function activateLicenseKey() {
+  retryAction = () => {
+    $('btn-activate').disabled = false;
+    $('btn-activate').textContent = 'Activate';
+    show('payment');
+  };
   const key = $('license-key-input').value.trim().toUpperCase();
   if (!key) {
     $('license-error').textContent = 'Please enter your license key.';
@@ -120,6 +131,9 @@ async function activateLicenseKey() {
       $('btn-activate').textContent = 'Activate';
       return;
     }
+    if (isWindows && !confirm('Nogoon may close your browsers to apply the block. Save any work in your browser before continuing.')) {
+      $('btn-activate').disabled = false; $('btn-activate').textContent = 'Activate'; return;
+    }
     window.nogoon.trackEvent('license_submitted');
     show('progress');
     startFakeProgress('Blocking permanently…');
@@ -134,9 +148,18 @@ async function activateLicenseKey() {
       return;
     }
     // Mark license as used only after successful install
-    await window.nogoon.activateLicense(key, false);
+    const activation = await window.nogoon.activateLicense(key, false);
+    if (!activation.ok) {
+      finishProgress(() => {
+        $('error-msg').textContent = 'Protection is active, but license confirmation failed. Keep your key and contact support@nogoon.io.';
+        show('error');
+      });
+      return;
+    }
     finishProgress(() => showDone(true));
   } catch (e) {
+    clearInterval(fakeProgressTimer);
+    show('payment');
     $('license-error').textContent = 'Network error. Please try again.';
     $('license-error').classList.remove('hidden');
     $('btn-activate').disabled = false;
@@ -145,11 +168,13 @@ async function activateLicenseKey() {
 }
 
 async function runFreeInstall() {
+  retryAction = runFreeInstall;
+  if (isWindows && !confirm('Nogoon will close your browsers to apply the block. Save any work in your browser before continuing.')) return;
   show('progress');
   startFakeProgress('Blocking 72h…');
   const res = await window.nogoon.installFree();
   finishProgress(() => {
-    if (res.ok) showDone(false);
+    if (res.ok) showDone(res.state === 'permanent', res.expiresAt);
     else { $('error-msg').textContent = res.error || 'Unknown error'; show('error'); }
   });
 }
@@ -183,7 +208,7 @@ $('btn-free').addEventListener('click', () => {
   window.nogoon.trackEvent('cta_clicked', { type: '72h' });
   runFreeInstall();
 });
-$('btn-retry').addEventListener('click', runFreeInstall);
+$('btn-retry').addEventListener('click', () => retryAction());
 
 $('btn-permanent').addEventListener('click', () => {
   window.nogoon.trackEvent('cta_clicked', { type: 'permanent' });
@@ -208,11 +233,11 @@ document.querySelector('.support-link a').addEventListener('click', (e) => {
     document.getElementById('win-close').addEventListener('click', () => window.nogoon.closeWindow());
   }
 
-  const { state } = await window.nogoon.checkState();
+  const { state, expiresAt } = await window.nogoon.checkState();
   if (state === 'permanent') {
     showDone(true);
   } else if (state === 'free') {
-    showDone(false);
+    showDone(false, expiresAt);
   }
   // else: show home screen (default)
 })();

@@ -1,41 +1,69 @@
 name: Build Windows installer
-
-# Builds the Nogoon Windows (.exe / NSIS) installer on a real Windows runner.
-# No code signing yet — the artifact is unsigned. Trigger manually from the
-# Actions tab, or it runs automatically when wizard/ or scripts/ change on main.
-
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, codex/windows-release-0.2.0]
     paths:
       - 'wizard/**'
-      - 'scripts/setup.ps1'
+      - 'scripts/**'
+      - 'tests/windows-*'
+      - 'api/windows.js'
+      - 'lib/windows-funnel.js'
+      - 'package*.json'
       - '.github/workflows/build-windows.yml'
-
+permissions:
+  contents: read
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 25
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - name: Install dependencies
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            wizard/package-lock.json
+      - name: Install test dependencies
+        run: npm ci
+      - name: Test Windows counters and offline delivery
+        run: node --test tests/windows-api.test.js tests/windows-telemetry.test.js tests/windows-checkout.test.js
+      - name: Test Windows installation and restoration
+        shell: powershell
+        env:
+          NOGOON_NO_TRACK: '1'
+          NOGOON_SKIP_BROWSER_CLOSE: '1'
+        run: ./tests/windows-system.ps1
+      - name: Install desktop dependencies
         working-directory: wizard
-        run: npm install
-
-      - name: Build Windows installer
+        run: npm ci
+      - name: Build unsigned Windows installer
         working-directory: wizard
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
         run: npm run build:win
-
-      - name: Upload installer
+      - name: Test the packaged desktop installer
+        run: node tests/windows-desktop.mjs
+      - name: Installer checksum
+        shell: powershell
+        run: |
+          $file = Get-Item wizard/dist/Nogoon-Setup-0.2.0.exe
+          $hash = (Get-FileHash $file.FullName -Algorithm SHA256).Hash.ToLower()
+          "$hash  $($file.Name)" | Set-Content wizard/dist/SHA256SUMS.txt -Encoding ASCII
+      - name: Upload verified installer
         uses: actions/upload-artifact@v4
         with:
           name: nogoon-windows-installer
-          path: wizard/dist/Nogoon-Setup-*.exe
+          path: |
+            wizard/dist/Nogoon-Setup-0.2.0.exe
+            wizard/dist/SHA256SUMS.txt
           if-no-files-found: error
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-test-evidence
+          path: test-results/
+          if-no-files-found: ignore

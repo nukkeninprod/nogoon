@@ -1,6 +1,6 @@
 {
   "name": "nogoon-wizard",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "nogoon.io desktop installer",
   "main": "src/main.js",
   "author": "nogoon.io",

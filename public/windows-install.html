@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Install Nogoon for Windows</title>
+<style>body{background:#0a0a0a;color:#eee;font:17px/1.65 system-ui,sans-serif;margin:0}main{max-width:650px;margin:60px auto;padding:24px}a{color:#a1eafb}h1{line-height:1.2;font-size:38px}li{margin:16px 0}.button,button{display:inline-block;background:#a1eafb;color:#091114;border:0;border-radius:10px;padding:12px 20px;font:inherit;font-weight:600;text-decoration:none;cursor:pointer}button{background:#222;color:#eee;margin:5px}small{color:#aaa}section{margin-top:40px;border-top:1px solid #333;padding-top:20px}#reply{color:#a1eafb}</style></head>
+<body><main><a href="/">nogoon</a><h1>Install Nogoon for Windows</h1><p>Start your free 72-hour block. Windows 10 or 11, 64-bit.</p>
+<a class="button" href="/api/windows?action=download">Download for Windows</a><p><small>Version 0.2.0 · One-time payment inside the app to keep the block permanently.</small></p>
+<ol><li>Open <strong>Nogoon-Setup-0.2.0.exe</strong> from your Downloads folder.</li><li>Follow the installer, then open Nogoon.</li><li>Save your work in your browser, choose the free block or enter your paid license, and accept the Windows administrator prompt.</li></ol>
+<section><h2>Does Windows say “Windows protected your PC”?</h2><p>This release is unsigned, so Windows may show a SmartScreen warning. If you downloaded the installer using the link on nogoon.io, select <strong>More info</strong>, then <strong>Run anyway</strong>.</p><p>If Windows shows a different warning or does not offer that option, contact <a href="mailto:support@nogoon.io">support@nogoon.io</a> with the message you see.</p></section>
+<section><h2>What stopped your installation?</h2><p>This helps us improve the Windows installer.</p><button data-event="help_smartscreen">The Windows warning</button><button data-event="help_other">Something else</button><p id="reply" role="status"></p></section>
+</main><script>
+document.querySelectorAll('[data-event]').forEach(button => button.addEventListener('click', async () => {
+  let id; try { id = localStorage.getItem('nogoon_windows_help_id') || crypto.randomUUID(); localStorage.setItem('nogoon_windows_help_id', id); } catch { id = crypto.randomUUID(); }
+  button.disabled = true;
+  try { const response = await fetch('/api/windows', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({event:button.dataset.event,client_id:id,event_id:crypto.randomUUID(),version:'0.2.0'}) }); if (!response.ok) throw new Error(); document.getElementById('reply').textContent='Thanks. For personal help, email support@nogoon.io.'; }
+  catch { button.disabled=false; document.getElementById('reply').textContent='Please email support@nogoon.io so we can help.'; }
+}));
+</script></body></html>
